@@ -29,7 +29,7 @@ it('should GET a mocked response', function (done) {
 [![Coverage Status](https://coveralls.io/repos/papandreou/unexpected-mitm/badge.png)](https://coveralls.io/r/papandreou/unexpected-mitm)
 [![Dependency Status](https://david-dm.org/papandreou/unexpected-mitm.png)](https://david-dm.org/papandreou/unexpected-mitm)
 
-![An unexpected man in the middle :)](logoImage.png)
+![An unexpected man in the middle :)](logoImage.jpg)
 
 License
 -------
