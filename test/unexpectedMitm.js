@@ -146,6 +146,12 @@ describe('unexpectedMitm', function () {
         }, done);
     });
 
+    it('should work fine without any asseritions on the request', function (done) {
+        expect('http://www.google.com/', 'with http mocked out', {
+            response: 412
+        }, 'to yield response', 412, done);
+    });
+
     it('should support providing the response as a stream', function (done) {
         expect('http://www.google.com/', 'with http mocked out', {
             request: 'GET /',
