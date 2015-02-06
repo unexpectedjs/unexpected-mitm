@@ -1,0 +1,27 @@
+{
+  "name": "unexpected-mitm",
+  "version": "1.0.0",
+  "description": "Unexpected plugin for the mitm library",
+  "main": "lib/unexpectedMitm.js",
+  "scripts": {
+    "lint": "jshint .",
+    "test": "mocha && npm run lint",
+    "travis": "npm test && npm run coverage && <coverage/lcov.info coveralls",
+    "coverage": "NODE_ENV=development istanbul cover _mocha -- --reporter dot && echo google-chrome coverage/lcov-report/index.html"
+  },
+  "devDependencies": {
+    "istanbul": "0.3.5",
+    "jshint": "2.6.0",
+    "mitm": "1.0.3",
+    "request": "2.53.0",
+    "unexpected": "5.8.1",
+    "unexpected-http": "1.5.0"
+  },
+  "dependencies": {
+    "messy": "4.1.1",
+    "mocha": "2.1.0",
+    "underscore": "1.7.0",
+    "unexpected-http": "1.6.0",
+    "unexpected-messy": "2.9.0"
+  }
+}
