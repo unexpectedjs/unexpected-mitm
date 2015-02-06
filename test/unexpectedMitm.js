@@ -137,6 +137,15 @@ describe('unexpectedMitm', function () {
         }, done);
     });
 
+    it('should support mocking out the status code', function (done) {
+        expect('http://www.google.com/', 'with http mocked out', {
+            request: 'GET /',
+            response: 412
+        }, 'to yield response', {
+            statusCode: 412
+        }, done);
+    });
+
     it('should support providing the response as a stream', function (done) {
         expect('http://www.google.com/', 'with http mocked out', {
             request: 'GET /',
