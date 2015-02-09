@@ -27,7 +27,7 @@ describe('unexpectedMitm', function () {
     });
 
     // Awaiting https://github.com/moll/node-mitm/issues/10
-    describe.skip('when mocking out an https request and asserting that the request is https', function () {
+    describe('when mocking out an https request and asserting that the request is https', function () {
         describe('when https is specified as part of the request url', function () {
             it('should succeed', function (done) {
                 expect('https://www.google.com/', 'with http mocked out', {
