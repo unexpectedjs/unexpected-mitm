@@ -180,4 +180,20 @@ describe('unexpectedMitm', function () {
             done();
         });
     });
+
+    it('should produce an error if a mocked request is not exercised', function (done) {
+        expect('http://www.google.com/foo', 'with http mocked out', [
+            {
+                request: 'GET /foo',
+                response: 200
+            },
+            {
+                request: 'GET /foo',
+                response: 200
+            }
+        ], 'to yield response', 200, function (err) {
+            expect(err, 'to equal', new Error('unexpected-mitm: The test ended with 1 unused mocked out exchange'));
+            done();
+        });
+    });
 });
