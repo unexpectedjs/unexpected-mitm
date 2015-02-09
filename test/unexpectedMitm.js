@@ -196,4 +196,11 @@ describe('unexpectedMitm', function () {
             done();
         });
     });
+
+    it('should produce an error if the test issues more requests than has been mocked', function (done) {
+        expect('http://www.google.com/foo', 'with http mocked out', [], 'to yield response', 200, function (err) {
+            expect(err, 'to equal', new Error('No more mocked out HTTP traffic'));
+            done();
+        });
+    });
 });
