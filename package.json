@@ -23,6 +23,6 @@
     "mocha": "2.1.0",
     "underscore": "1.7.0",
     "unexpected-http": "1.6.0",
-    "unexpected-messy": "2.9.0"
+    "unexpected-messy": "2.10.0"
   }
 }
