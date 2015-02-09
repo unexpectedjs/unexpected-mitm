@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "messy": "4.1.1",
-    "mitm": "1.0.3",
+    "mitm-papandreou": "1.0.3-patch1",
     "mocha": "2.1.0",
     "underscore": "1.7.0",
     "unexpected-http": "1.6.0",
