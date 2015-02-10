@@ -146,7 +146,7 @@ describe('unexpectedMitm', function () {
         }, done);
     });
 
-    it('should work fine without any asseritions on the request', function (done) {
+    it('should work fine without any assertions on the request', function (done) {
         expect('http://www.google.com/', 'with http mocked out', {
             response: 412
         }, 'to yield response', 412, done);
@@ -279,13 +279,33 @@ describe('unexpectedMitm', function () {
             }
         ], 'to yield response', 200, function (err) {
             expect(err, 'to equal', new Error('unexpected-mitm: The test ended with 1 unused mocked out exchange'));
+            /* TODO:
+            expect(err.output.toString(), 'to equal',
+                "expected 'http://www.google.com/foo' with http mocked out [] to yield response 200\n" +
+                '\n' +
+                '// missing:\n' +
+                '// GET /foo HTTP/1.1\n' +
+                '// Host: www.google.com\n' +
+                '// Connection: keep-alive\n' +
+                '// \n' +
+                '// HTTP/1.1 200 OK');
+            */
             done();
         });
     });
 
     it('should produce an error if the test issues more requests than has been mocked', function (done) {
         expect('http://www.google.com/foo', 'with http mocked out', [], 'to yield response', 200, function (err) {
-            expect(err, 'to equal', new Error('No more mocked out HTTP traffic'));
+            expect(err, 'to be an', Error);
+            expect(err.output.toString(), 'to equal',
+                "expected 'http://www.google.com/foo' with http mocked out [] to yield response 200\n" +
+                '\n' +
+                '// should be removed:\n' +
+                '// GET /foo HTTP/1.1\n' +
+                '// Host: www.google.com\n' +
+                '// Connection: keep-alive\n' +
+                '// \n' +
+                '// <no response>');
             done();
         });
     });
