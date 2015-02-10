@@ -162,6 +162,66 @@ describe('unexpectedMitm', function () {
         }, done);
     });
 
+    describe('with the expected request body given as an object (shorthand for JSON)', function () {
+        it('should succeed the match', function (done) {
+            expect({
+                url: 'POST http://www.google.com/',
+                body: { foo: 123 }
+            }, 'with http mocked out', {
+                request: {
+                    url: 'POST /',
+                    body: { foo: 123 }
+                },
+                response: 200
+            }, 'to yield response', 200, done);
+        });
+
+        it('should fail with a diff', function (done) {
+            expect({
+                url: 'POST http://www.google.com/',
+                body: { foo: 123 }
+            }, 'with http mocked out', {
+                request: {
+                    url: 'POST /',
+                    body: { foo: 456 }
+                },
+                response: 200
+            }, 'to yield response', 200, function (err) {
+                expect(err, 'to be an', Error);
+                expect(err.output.toString(), 'to equal',
+                    'expected\n' +
+                    '{\n' +
+                    "  url: 'POST http://www.google.com/',\n" +
+                    '  body: { foo: 123 }\n' +
+                    '}\n' +
+                    'with http mocked out\n' +
+                    '{\n' +
+                    '  request: {\n' +
+                    "    url: '/',\n" +
+                    '    body: { foo: 456 },\n' +
+                    "    method: 'POST',\n" +
+                    "    headers: { 'Content-Type': 'application/json' }\n" +
+                    '  },\n' +
+                    '  response: 200\n' +
+                    '} to yield response 200\n' +
+                    '\n' +
+                    'POST / HTTP/1.1\n' +
+                    'Host: www.google.com\n' +
+                    'Content-Type: application/json\n' +
+                    'Connection: keep-alive\n' +
+                    'Transfer-Encoding: chunked\n' +
+                    '\n' +
+                    '{\n' +
+                    '  foo: 123 // should equal 456\n' +
+                    '}\n' +
+                    '\n' +
+                    'HTTP/1.1 200 OK'
+                );
+                done();
+            });
+        });
+    });
+
     it('should produce a JSON response if the response body is given as an object', function (done) {
         expect('http://www.google.com/', 'with http mocked out', {
             request: 'GET /',
