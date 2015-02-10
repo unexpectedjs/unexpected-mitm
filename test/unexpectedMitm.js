@@ -162,6 +162,32 @@ describe('unexpectedMitm', function () {
         }, done);
     });
 
+    it('should produce a JSON response if the response body is given as an object', function (done) {
+        expect('http://www.google.com/', 'with http mocked out', {
+            request: 'GET /',
+            response: { body: { foo: 123 } }
+        }, 'to yield response', {
+            statusCode: 200,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: {foo: 123}
+        }, done);
+    });
+
+    it('should produce a JSON response if the response body is given as an array', function (done) {
+        expect('http://www.google.com/', 'with http mocked out', {
+            request: 'GET /',
+            response: { body: [ { foo: 123 } ] }
+        }, 'to yield response', {
+            statusCode: 200,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: [ { foo: 123 } ]
+        }, done);
+    });
+
     it('should produce an error if the request conditions are not satisfied', function (done) {
         expect('http://www.google.com/foo', 'with http mocked out', {
             request: 'GET /bar',
