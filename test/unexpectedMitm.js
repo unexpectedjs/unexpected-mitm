@@ -309,4 +309,23 @@ describe('unexpectedMitm', function () {
             done();
         });
     });
+
+    it('should output the error if the assertion being delegated to fails', function (done) {
+        expect('http://www.google.com/foo', 'with http mocked out', {
+            request: 'GET /foo',
+            response: 200
+        }, 'to yield response', 412, function (err) {
+            expect(err, 'to be an', Error);
+            expect(err.output.toString('text').replace(/^Date:.*\n/m, ''), 'to equal',
+                "expected 'http://www.google.com/foo' to yield response 412\n" +
+                '\n' +
+                'GET /foo HTTP/1.1\n' +
+                'Host: www.google.com\n' +
+                '\n' +
+                'HTTP/1.1 200 OK // should be 412 Precondition Failed\n' +
+                'Connection: keep-alive\n' +
+                'Transfer-Encoding: chunked');
+            done();
+        });
+    });
 });
