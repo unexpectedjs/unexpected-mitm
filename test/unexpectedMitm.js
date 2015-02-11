@@ -338,4 +338,14 @@ describe('unexpectedMitm', function () {
             body: 'foo=bar'
         }, 'with http recorded', 'to yield response', 200, done);
     });
+
+    it('should record some more', function (done) {
+        expect({
+            url: 'DELETE http://www.google.com/',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: 'foo=bar'
+        }, 'with http recorded', 'to yield response', 200, done);
+    });
 });
