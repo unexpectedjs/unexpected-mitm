@@ -25,6 +25,7 @@
     "messy": "4.1.1",
     "mitm-papandreou": "1.0.3-patch1",
     "mocha": "2.1.0",
+    "serializeasync": "0.0.1",
     "underscore": "1.7.0"
   }
 }

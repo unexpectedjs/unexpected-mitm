@@ -336,7 +336,27 @@ describe('unexpectedMitm', function () {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
             body: 'foo=bar'
-        }, 'with http recorded', 'to yield response', 200, done);
+        }, 'with http mocked out', {
+            request: {
+                url: 'POST /',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    Host: 'www.google.com'
+                },
+                body: 'foo=bar'
+            },
+            response: {
+                headers: {
+                    Allow: 'GET, HEAD',
+                    'Content-Type': 'text/html; charset=UTF-8',
+                    Server: 'gws',
+                    'X-XSS-Protection': '1; mode=block',
+                    'X-Frame-Options': 'SAMEORIGIN',
+                    'Alternate-Protocol': '80:quic,p=0.08'
+                },
+                body: '<!DOCTYPE html>\n<html lang=en>\n  <meta charset=utf-8>\n  <meta name=viewport content="initial-scale=1, minimum-scale=1, width=device-width">\n  <title>Error 405 (Method Not Allowed)!!1</title>\n  <style>\n    *{margin:0;padding:0}html,code{font:15px/22px arial,sans-serif}html{background:#fff;color:#222;padding:15px}body{margin:7% auto 0;max-width:390px;min-height:180px;padding:30px 0 15px}* > body{background:url(//www.google.com/images/errors/robot.png) 100% 5px no-repeat;padding-right:205px}p{margin:11px 0 22px;overflow:hidden}ins{color:#777;text-decoration:none}a img{border:0}@media screen and (max-width:772px){body{background:none;margin-top:0;max-width:none;padding-right:0}}#logo{background:url(//www.google.com/images/errors/logo_sm_2.png) no-repeat}@media only screen and (min-resolution:192dpi){#logo{background:url(//www.google.com/images/errors/logo_sm_2_hr.png) no-repeat 0% 0%/100% 100%;-moz-border-image:url(//www.google.com/images/errors/logo_sm_2_hr.png) 0}}@media only screen and (-webkit-min-device-pixel-ratio:2){#logo{background:url(//www.google.com/images/errors/logo_sm_2_hr.png) no-repeat;-webkit-background-size:100% 100%}}#logo{display:inline-block;height:55px;width:150px}\n  </style>\n  <a href=//www.google.com/><span id=logo aria-label=Google></span></a>\n  <p><b>405.</b> <ins>That’s an error.</ins>\n  <p>The request method <code>POST</code> is inappropriate for the URL <code>/</code>.  <ins>That’s all we know.</ins>\n'
+            }
+        }, 'to yield response', 200, done);
     });
 
     it('should record some more', function (done) {
@@ -346,6 +366,23 @@ describe('unexpectedMitm', function () {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
             body: 'foo=bar'
-        }, 'with http recorded', 'to yield response', 200, done);
+        }, 'with http mocked out', {
+            request: {
+                url: 'DELETE /',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    Host: 'www.google.com'
+                },
+                body: 'foo=bar'
+            },
+            response: {
+                headers: {
+                    'Content-Type': 'text/html; charset=UTF-8',
+                    Server: 'GFE/2.0',
+                    'Alternate-Protocol': '80:quic,p=0.08'
+                },
+                body: '<!DOCTYPE html>\n<html lang=en>\n  <meta charset=utf-8>\n  <meta name=viewport content="initial-scale=1, minimum-scale=1, width=device-width">\n  <title>Error 405 (Method Not Allowed)!!1</title>\n  <style>\n    *{margin:0;padding:0}html,code{font:15px/22px arial,sans-serif}html{background:#fff;color:#222;padding:15px}body{margin:7% auto 0;max-width:390px;min-height:180px;padding:30px 0 15px}* > body{background:url(//www.google.com/images/errors/robot.png) 100% 5px no-repeat;padding-right:205px}p{margin:11px 0 22px;overflow:hidden}ins{color:#777;text-decoration:none}a img{border:0}@media screen and (max-width:772px){body{background:none;margin-top:0;max-width:none;padding-right:0}}#logo{background:url(//www.google.com/images/errors/logo_sm_2.png) no-repeat}@media only screen and (min-resolution:192dpi){#logo{background:url(//www.google.com/images/errors/logo_sm_2_hr.png) no-repeat 0% 0%/100% 100%;-moz-border-image:url(//www.google.com/images/errors/logo_sm_2_hr.png) 0}}@media only screen and (-webkit-min-device-pixel-ratio:2){#logo{background:url(//www.google.com/images/errors/logo_sm_2_hr.png) no-repeat;-webkit-background-size:100% 100%}}#logo{display:inline-block;height:55px;width:150px}\n  </style>\n  <a href=//www.google.com/><span id=logo aria-label=Google></span></a>\n  <p><b>405.</b> <ins>That’s an error.</ins>\n  <p>The request method <code>DELETE</code> is inappropriate for the URL <code>/</code>.  <ins>That’s all we know.</ins>\n'
+            }
+        }, 'to yield response', 200, done);
     });
 });
