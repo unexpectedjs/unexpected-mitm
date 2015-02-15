@@ -15,7 +15,7 @@
     "jshint": "2.6.0",
     "request": "2.53.0",
     "unexpected": "5.8.1",
-    "unexpected-http": "1.7.0",
+    "unexpected-http": "1.7.1",
     "unexpected-messy": "2.10.0"
   },
   "dependencies": {
