@@ -348,4 +348,9 @@ describe('unexpectedMitm', function () {
             body: 'foo=bar'
         }, 'with http recorded', 'to yield response', 200, done);
     });
+
+    it('should record an error', function (done) {
+        expect('http://www.icwqjecoiqwjecoiwqjecoiwqjceoiwq.com/', 'with http recorded', 'to yield response', (function () {var err = new Error('getaddrinfo EADDRINFO'); err.code = 'EADDRINFO'; err.errno = 'EADDRINFO'; err.syscall = 'getaddrinfo';return err;}()), done);
+    });
+
 });
