@@ -350,7 +350,18 @@ describe('unexpectedMitm', function () {
     });
 
     it('should record an error', function (done) {
-        expect('http://www.icwqjecoiqwjecoiwqjecoiwqjceoiwq.com/', 'with http recorded', 'to yield response', (function () {var err = new Error('getaddrinfo EADDRINFO'); err.code = 'EADDRINFO'; err.errno = 'EADDRINFO'; err.syscall = 'getaddrinfo';return err;}()), done);
+        var expectedError;
+        // I do not know the exact version where this change was introduced. Hopefully this is enough to get
+        // it working on Travis (0.10.36 presently):
+        if (process.version === 'v0.10.29') {
+            expectedError = new Error('getaddrinfo EADDRINFO');
+            expectedError.code = expectedError.errno = 'EADDRINFO';
+        } else {
+            expectedError = new Error('getaddrinfo ENOTFOUND');
+            expectedError.code = expectedError.errno = 'ENOTFOUND';
+        }
+        expectedError.syscall = 'getaddrinfo';
+        expect('http://www.icwqjecoiqwjecoiwqjecoiwqjceoiwq.com/', 'with http recorded', 'to yield response', expectedError, done);
     });
 
 });
