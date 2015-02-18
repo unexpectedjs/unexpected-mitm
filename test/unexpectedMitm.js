@@ -26,6 +26,14 @@ describe('unexpectedMitm', function () {
         }, done);
     });
 
+    it('should not break when the assertion being delegated to throws synchronously', function (done) {
+        expect('http://www.google.com/', 'with http mocked out', [], 'to foobarquux', function (err) {
+            expect(err, 'to be an', Error);
+            expect(err.output.toString(), 'to match', /^Unknown assertion "to foobarquux"/);
+            done();
+        });
+    });
+
     // Awaiting https://github.com/moll/node-mitm/issues/10
     describe('when mocking out an https request and asserting that the request is https', function () {
         describe('when https is specified as part of the request url', function () {
