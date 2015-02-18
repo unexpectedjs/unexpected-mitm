@@ -416,6 +416,15 @@ describe('unexpectedMitm', function () {
         }, 'with http recorded', 'to yield response', 200, done);
     });
 
+    it('should record a client certificate', function (done) {
+        expect({
+            url: 'POST https://www.google.com/',
+            cert: new Buffer([1]),
+            key: new Buffer([2]),
+            ca: new Buffer([3])
+        }, 'with http recorded', 'to yield response', 200, done);
+    });
+
     it('should record some more', function (done) {
         expect({
             url: 'DELETE http://www.google.com/',
