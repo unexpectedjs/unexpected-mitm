@@ -337,6 +337,75 @@ describe('unexpectedMitm', function () {
         });
     });
 
+    describe('wíth a client certificate', function () {
+        describe('when asserting on ca/cert/key', function () {
+            it('should succeed', function (done) {
+                expect({
+                    url: 'https://www.google.com/foo',
+                    cert: new Buffer([1]),
+                    key: new Buffer([2]),
+                    ca: new Buffer([3])
+                }, 'with http mocked out', {
+                    request: {
+                        url: 'GET /foo',
+                        cert: new Buffer([1]),
+                        key: new Buffer([2]),
+                        ca: new Buffer([3])
+                    },
+                    response: 200
+                }, 'to yield response', 200, done);
+            });
+
+            it('should fail with a meaningful error message', function (done) {
+                expect({
+                    url: 'https://www.google.com/foo',
+                    cert: new Buffer([1]),
+                    key: new Buffer([2]),
+                    ca: new Buffer([3])
+                }, 'with http mocked out', {
+                    request: {
+                        url: 'GET /foo',
+                        cert: new Buffer([1]),
+                        key: new Buffer([5]),
+                        ca: new Buffer([3])
+                    },
+                    response: 200
+                }, 'to yield response', 200, function (err) {
+                    expect(err, 'to be an', Error);
+                    expect(err.output.toString('text').replace(/^Date:.*\n/m, ''), 'to equal',
+                        'expected\n' +
+                        '{\n' +
+                        "  url: 'https://www.google.com/foo',\n" +
+                        '  cert: Buffer([0x01]),\n' +
+                        '  key: Buffer([0x02]),\n' +
+                        '  ca: Buffer([0x03])\n' +
+                        '}\n' +
+                        'with http mocked out\n' +
+                        '{\n' +
+                        '  request: {\n' +
+                        "    url: '/foo',\n" +
+                        '    cert: Buffer([0x01]),\n' +
+                        '    key: Buffer([0x05]),\n' +
+                        '    ca: Buffer([0x03]),\n' +
+                        "    method: 'GET'\n" +
+                        '  },\n' +
+                        '  response: 200\n' +
+                        '} to yield response 200\n' +
+                        '\n' +
+                        'GET /foo HTTP/1.1\n' +
+                        'Host: www.google.com\n' +
+                        'Connection: keep-alive\n' +
+                        '// key: expected Buffer([0x02]) to satisfy Buffer([0x05])\n' +
+                        '//   -02                                               │.│\n' +
+                        '//   +05                                               │.│\n' +
+                        '\n' +
+                        'HTTP/1.1 200 OK');
+                    done();
+                });
+            });
+        });
+    });
+
     it('should record', function (done) {
         expect({
             url: 'POST http://www.google.com/',

@@ -15,14 +15,14 @@
     "jshint": "2.6.0",
     "request": "2.53.0",
     "unexpected": "5.8.1",
-    "unexpected-http": "1.7.1",
-    "unexpected-messy": "2.10.0"
+    "unexpected-http": "1.8.0",
+    "unexpected-messy": "2.11.0"
   },
   "dependencies": {
     "callsite": "1.0.0",
     "detect-indent": "3.0.0",
     "memoizesync": "0.5.0",
-    "messy": "4.1.1",
+    "messy": "4.3.0",
     "mitm-papandreou": "1.0.3-patch1",
     "mocha": "2.1.0",
     "passerror": "1.1.0",
