@@ -413,7 +413,7 @@ describe('unexpectedMitm', function () {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
             body: 'foo=bar'
-        }, 'with http recorded', 'to yield response', 200, done);
+        }, 'with http recorded', 'to yield response', 405, done);
     });
 
     it('should record a client certificate', function (done) {
@@ -422,7 +422,7 @@ describe('unexpectedMitm', function () {
             cert: new Buffer([1]),
             key: new Buffer([2]),
             ca: new Buffer([3])
-        }, 'with http recorded', 'to yield response', 200, done);
+        }, 'with http recorded', 'to yield response', 405, done);
     });
 
     it('should record some more', function (done) {
@@ -432,7 +432,7 @@ describe('unexpectedMitm', function () {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
             body: 'foo=bar'
-        }, 'with http recorded', 'to yield response', 200, done);
+        }, 'with http recorded', 'to yield response', 405, done);
     });
 
     it('should record an error', function (done) {
@@ -449,5 +449,4 @@ describe('unexpectedMitm', function () {
         expectedError.syscall = 'getaddrinfo';
         expect('http://www.icwqjecoiqwjecoiwqjecoiwqjceoiwq.com/', 'with http recorded', 'to yield response', expectedError, done);
     });
-
 });
