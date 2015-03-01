@@ -1,2 +1,3 @@
 -R spec
 --check-leaks
+--timeout 120000
