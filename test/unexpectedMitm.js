@@ -1,4 +1,4 @@
-/*global describe, it, __dirname, setImmediate*/
+/*global describe, it, __dirname, setImmediate, beforeEach, afterEach*/
 var pathModule = require('path'),
     fs = require('fs'),
     http = require('http');
