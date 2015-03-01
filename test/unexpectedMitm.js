@@ -1,6 +1,7 @@
 /*global describe, it, __dirname, setImmediate*/
 var pathModule = require('path'),
-    fs = require('fs');
+    fs = require('fs'),
+    http = require('http');
 
 describe('unexpectedMitm', function () {
     var expect = require('unexpected')
@@ -429,107 +430,103 @@ describe('unexpectedMitm', function () {
         });
     });
 
-    it('should record', function (done) {
-        expect({
-            url: 'POST http://www.google.com/',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: 'foo=bar'
-        }, 'with expected http recording', {
-            request: {
-                url: 'POST /',
+    describe('in recording mode against a local server', function () {
+        var handleRequest,
+            server,
+            serverAddress,
+            serverUrl;
+        beforeEach(function () {
+            handleRequest = undefined;
+            server = http.createServer(function (req, res) {
+                res.sendDate = false;
+                handleRequest(req, res);
+            }).listen(0);
+            serverAddress = server.address();
+            serverUrl = 'http://' + serverAddress.address + ':' + serverAddress.port + '/';
+        });
+
+        afterEach(function () {
+            server.close();
+        });
+
+        it('should record', function (done) {
+            handleRequest = function (req, res) {
+                res.setHeader('Allow', 'GET, HEAD');
+                res.statusCode = 405;
+                res.end();
+            };
+            expect({
+                url: 'POST ' + serverUrl,
                 headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    Host: 'www.google.com'
+                    'Content-Type': 'application/x-www-form-urlencoded'
                 },
                 body: 'foo=bar'
-            },
-            response: {
-                statusCode: 405,
-                headers: {
-                    Allow: 'GET, HEAD',
-                    'Content-Type': 'text/html; charset=UTF-8',
-                    Server: 'gws',
-                    'X-XSS-Protection': '1; mode=block',
-                    'X-Frame-Options': 'SAMEORIGIN',
-                    'Alternate-Protocol': '80:quic,p=0.08'
+            }, 'with expected http recording', {
+                request: {
+                    url: 'POST /',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        Host: serverAddress.address + ':' + serverAddress.port
+                    },
+                    body: 'foo=bar'
                 },
-                body: '<!DOCTYPE html>\n<html lang=en>\n  <meta charset=utf-8>\n  <meta name=viewport content="initial-scale=1, minimum-scale=1, width=device-width">\n  <title>Error 405 (Method Not Allowed)!!1</title>\n  <style>\n    *{margin:0;padding:0}html,code{font:15px/22px arial,sans-serif}html{background:#fff;color:#222;padding:15px}body{margin:7% auto 0;max-width:390px;min-height:180px;padding:30px 0 15px}* > body{background:url(//www.google.com/images/errors/robot.png) 100% 5px no-repeat;padding-right:205px}p{margin:11px 0 22px;overflow:hidden}ins{color:#777;text-decoration:none}a img{border:0}@media screen and (max-width:772px){body{background:none;margin-top:0;max-width:none;padding-right:0}}#logo{background:url(//www.google.com/images/errors/logo_sm_2.png) no-repeat}@media only screen and (min-resolution:192dpi){#logo{background:url(//www.google.com/images/errors/logo_sm_2_hr.png) no-repeat 0% 0%/100% 100%;-moz-border-image:url(//www.google.com/images/errors/logo_sm_2_hr.png) 0}}@media only screen and (-webkit-min-device-pixel-ratio:2){#logo{background:url(//www.google.com/images/errors/logo_sm_2_hr.png) no-repeat;-webkit-background-size:100% 100%}}#logo{display:inline-block;height:55px;width:150px}\n  </style>\n  <a href=//www.google.com/><span id=logo aria-label=Google></span></a>\n  <p><b>405.</b> <ins>That’s an error.</ins>\n  <p>The request method <code>POST</code> is inappropriate for the URL <code>/</code>.  <ins>That’s all we know.</ins>\n'
-            }
-        }, 'to yield response', 405, done);
-    });
+                response: {
+                    statusCode: 405,
+                    headers: {
+                        Allow: 'GET, HEAD'
+                    }
+                }
+            }, 'to yield response', 405, done);
+        });
 
-    // Figure out why this started failing
-    it.skip('should record a client certificate', function (done) {
-        expect({
-            url: 'POST https://www.google.com/',
-            cert: new Buffer([1]),
-            key: new Buffer([2]),
-            ca: new Buffer([3])
-        }, 'with expected http recording', {
-            request: { url: 'POST /', headers: { Host: 'www.google.com' } },
-            response: {
-                statusCode: 405,
-                headers: {
-                    Allow: 'GET, HEAD',
-                    'Content-Type': 'text/html; charset=UTF-8',
-                    Server: 'gws',
-                    'X-XSS-Protection': '1; mode=block',
-                    'X-Frame-Options': 'SAMEORIGIN',
-                    'Alternate-Protocol': '443:quic,p=0.08'
-                },
-                body: '<!DOCTYPE html>\n<html lang=en>\n  <meta charset=utf-8>\n  <meta name=viewport content="initial-scale=1, minimum-scale=1, width=device-width">\n  <title>Error 405 (Method Not Allowed)!!1</title>\n  <style>\n    *{margin:0;padding:0}html,code{font:15px/22px arial,sans-serif}html{background:#fff;color:#222;padding:15px}body{margin:7% auto 0;max-width:390px;min-height:180px;padding:30px 0 15px}* > body{background:url(//www.google.com/images/errors/robot.png) 100% 5px no-repeat;padding-right:205px}p{margin:11px 0 22px;overflow:hidden}ins{color:#777;text-decoration:none}a img{border:0}@media screen and (max-width:772px){body{background:none;margin-top:0;max-width:none;padding-right:0}}#logo{background:url(//www.google.com/images/errors/logo_sm_2.png) no-repeat}@media only screen and (min-resolution:192dpi){#logo{background:url(//www.google.com/images/errors/logo_sm_2_hr.png) no-repeat 0% 0%/100% 100%;-moz-border-image:url(//www.google.com/images/errors/logo_sm_2_hr.png) 0}}@media only screen and (-webkit-min-device-pixel-ratio:2){#logo{background:url(//www.google.com/images/errors/logo_sm_2_hr.png) no-repeat;-webkit-background-size:100% 100%}}#logo{display:inline-block;height:55px;width:150px}\n  </style>\n  <a href=//www.google.com/><span id=logo aria-label=Google></span></a>\n  <p><b>405.</b> <ins>That’s an error.</ins>\n  <p>The request method <code>POST</code> is inappropriate for the URL <code>/</code>.  <ins>That’s all we know.</ins>\n'
-            }
-        }, 'to yield response', 405, done);
-    });
+        // Figure out why this started failing
+        it('should record a client certificate', function (done) {
+            handleRequest = function (req, res) {
+                res.setHeader('Allow', 'GET, HEAD');
+                res.statusCode = 405;
+                res.end();
+            };
 
-    it('should record some more', function (done) {
-        expect({
-            url: 'DELETE http://www.google.com/',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: 'foo=bar'
-        }, 'with expected http recording', {
-            request: {
-                url: 'DELETE /',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    Host: 'www.google.com'
+            expect({
+                url: 'POST ' + serverUrl,
+                cert: new Buffer([1]),
+                key: new Buffer([2]),
+                ca: new Buffer([3])
+            }, 'with expected http recording', {
+                request: {
+                    url: 'POST /',
+                    headers: {
+                        Host: serverAddress.address + ':' + serverAddress.port
+                    }
                 },
-                body: 'foo=bar'
-            },
-            response: {
-                statusCode: 405,
-                headers: {
-                    'Content-Type': 'text/html; charset=UTF-8',
-                    Server: 'GFE/2.0',
-                    'Alternate-Protocol': '80:quic,p=0.08'
-                },
-                body: '<!DOCTYPE html>\n<html lang=en>\n  <meta charset=utf-8>\n  <meta name=viewport content="initial-scale=1, minimum-scale=1, width=device-width">\n  <title>Error 405 (Method Not Allowed)!!1</title>\n  <style>\n    *{margin:0;padding:0}html,code{font:15px/22px arial,sans-serif}html{background:#fff;color:#222;padding:15px}body{margin:7% auto 0;max-width:390px;min-height:180px;padding:30px 0 15px}* > body{background:url(//www.google.com/images/errors/robot.png) 100% 5px no-repeat;padding-right:205px}p{margin:11px 0 22px;overflow:hidden}ins{color:#777;text-decoration:none}a img{border:0}@media screen and (max-width:772px){body{background:none;margin-top:0;max-width:none;padding-right:0}}#logo{background:url(//www.google.com/images/errors/logo_sm_2.png) no-repeat}@media only screen and (min-resolution:192dpi){#logo{background:url(//www.google.com/images/errors/logo_sm_2_hr.png) no-repeat 0% 0%/100% 100%;-moz-border-image:url(//www.google.com/images/errors/logo_sm_2_hr.png) 0}}@media only screen and (-webkit-min-device-pixel-ratio:2){#logo{background:url(//www.google.com/images/errors/logo_sm_2_hr.png) no-repeat;-webkit-background-size:100% 100%}}#logo{display:inline-block;height:55px;width:150px}\n  </style>\n  <a href=//www.google.com/><span id=logo aria-label=Google></span></a>\n  <p><b>405.</b> <ins>That’s an error.</ins>\n  <p>The request method <code>DELETE</code> is inappropriate for the URL <code>/</code>.  <ins>That’s all we know.</ins>\n'
-            }
-        }, 'to yield response', 405, done);
-    });
+                response: {
+                    statusCode: 405,
+                    headers: {
+                        Allow: 'GET, HEAD'
+                    }
+                }
+            }, 'to yield response', 405, done);
+        });
 
-    it('should record an error', function (done) {
-        var expectedError;
-        // I do not know the exact version where this change was introduced. Hopefully this is enough to get
-        // it working on Travis (0.10.36 presently):
-        if (process.version === 'v0.10.29') {
-            expectedError = new Error('getaddrinfo EADDRINFO');
-            expectedError.code = expectedError.errno = 'EADDRINFO';
-        } else {
-            expectedError = new Error('getaddrinfo ENOTFOUND');
-            expectedError.code = expectedError.errno = 'ENOTFOUND';
-        }
-        expectedError.syscall = 'getaddrinfo';
-        expect('http://www.icwqjecoiqwjecoiwqjecoiwqjceoiwq.com/', 'with expected http recording', {
-            request: {
-                url: 'GET /',
-                headers: { Host: 'www.icwqjecoiqwjecoiwqjecoiwqjceoiwq.com' }
-            },
-            response: expectedError
-        }, 'to yield response', expectedError, done);
+        it('should record an error', function (done) {
+            var expectedError;
+            // I do not know the exact version where this change was introduced. Hopefully this is enough to get
+            // it working on Travis (0.10.36 presently):
+            if (process.version === 'v0.10.29') {
+                expectedError = new Error('getaddrinfo EADDRINFO');
+                expectedError.code = expectedError.errno = 'EADDRINFO';
+            } else {
+                expectedError = new Error('getaddrinfo ENOTFOUND');
+                expectedError.code = expectedError.errno = 'ENOTFOUND';
+            }
+            expectedError.syscall = 'getaddrinfo';
+            expect('http://www.icwqjecoiqwjecoiwqjecoiwqjceoiwq.com/', 'with expected http recording', {
+                request: {
+                    url: 'GET /',
+                    headers: { Host: 'www.icwqjecoiqwjecoiwqjecoiwqjceoiwq.com' }
+                },
+                response: expectedError
+            }, 'to yield response', expectedError, done);
+        });
     });
 });
