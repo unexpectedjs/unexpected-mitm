@@ -529,7 +529,7 @@ describe('unexpectedMitm', function () {
                 url: 'GET /',
                 headers: { Host: 'www.icwqjecoiqwjecoiwqjecoiwqjceoiwq.com' }
             },
-            response: (function () {var err = new Error('getaddrinfo EADDRINFO'); err.code = 'EADDRINFO'; err.errno = 'EADDRINFO'; err.syscall = 'getaddrinfo'; return err;}())
+            response: expectedError
         }, 'to yield response', expectedError, done);
     });
 });
