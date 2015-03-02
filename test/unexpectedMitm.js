@@ -306,22 +306,34 @@ describe('unexpectedMitm', function () {
                 response: 200
             },
             {
-                request: 'GET /foo',
+                request: {
+                    url: 'GET /foo',
+                    headers: { Foo: /bar/ }
+                },
                 response: 200
             }
         ], 'to yield response', 200, function (err) {
-            expect(err, 'to equal', new Error('unexpected-mitm: The test ended with 1 unused mocked out exchange'));
-            /* TODO:
             expect(err.output.toString(), 'to equal',
-                "expected 'http://www.google.com/foo' with http mocked out [] to yield response 200\n" +
+                "expected 'http://www.google.com/foo' with http mocked out\n" +
+                '[\n' +
+                "  { request: 'GET /foo', response: 200 },\n" +
+                '  {\n' +
+                "    request: { url: '/foo', headers: ..., method: 'GET' },\n" +
+                "    response: 200\n" +
+                '  }\n' +
+                '] to yield response 200\n' +
+                '\n' +
+                'GET /foo HTTP/1.1\n' +
+                'Host: www.google.com\n' +
+                'Connection: keep-alive\n' +
+                '\n' +
+                'HTTP/1.1 200 OK\n' +
                 '\n' +
                 '// missing:\n' +
-                '// GET /foo HTTP/1.1\n' +
-                '// Host: www.google.com\n' +
-                '// Connection: keep-alive\n' +
-                '// \n' +
+                '// GET /foo\n' +
+                '// Foo: /bar/\n' +
+                '//\n' +
                 '// HTTP/1.1 200 OK');
-            */
             done();
         });
     });
