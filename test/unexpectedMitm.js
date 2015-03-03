@@ -303,7 +303,7 @@ describe('unexpectedMitm', function () {
             {
                 request: {
                     url: 'GET /foo',
-                    headers: { Foo: /bar/ }
+                    headers: { Foo: expect.it("to match", /bar/) }
                 },
                 response: 200
             }
@@ -326,7 +326,7 @@ describe('unexpectedMitm', function () {
                 '\n' +
                 '// missing:\n' +
                 '// GET /foo\n' +
-                '// Foo: /bar/\n' +
+                "// Foo: // should satisfy expect.it('to match', /bar/)\n" +
                 '//\n' +
                 '// HTTP/1.1 200 OK');
             done();
