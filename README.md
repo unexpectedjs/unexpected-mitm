@@ -2,9 +2,9 @@ unexpected-mitm
 ===============
 
 [![NPM version](https://badge.fury.io/js/unexpected-mitm.png)](http://badge.fury.io/js/unexpected-mitm)
-[![Build Status](https://travis-ci.org/papandreou/unexpected-mitm.png)](https://travis-ci.org/papandreou/unexpected-mitm)
-[![Coverage Status](https://coveralls.io/repos/papandreou/unexpected-mitm/badge.png)](https://coveralls.io/r/papandreou/unexpected-mitm)
-[![Dependency Status](https://david-dm.org/papandreou/unexpected-mitm.png)](https://david-dm.org/papandreou/unexpected-mitm)
+[![Build Status](https://travis-ci.org/unexpectedjs/unexpected-mitm.png)](https://travis-ci.org/unexpectedjs/unexpected-mitm)
+[![Coverage Status](https://coveralls.io/repos/unexpectedjs/unexpected-mitm/badge.png)](https://coveralls.io/r/unexpectedjs/unexpected-mitm)
+[![Dependency Status](https://david-dm.org/unexpectedjs/unexpected-mitm.png)](https://david-dm.org/unexpectedjs/unexpected-mitm)
 
 ![An unexpected man in the middle :)](logoImage.jpg)
 
