@@ -95,21 +95,21 @@ describe('unexpectedMitm', function () {
         describe('when \"encrypted\" is specified as a standalone property', function () {
             it('should succeed', function (done) {
                 expect('https://www.google.com/', 'with http mocked out', {
-                    request: {url: 'GET /', encrypted: true},
+                    request: { url: 'GET /', encrypted: true },
                     response: 200
                 }, 'to yield response', 200, done);
             });
 
             it('should fail', function (done) {
                 expect('http://www.google.com/', 'with http mocked out', {
-                    request: {url: 'GET /', encrypted: true},
+                    request: { url: 'GET /', encrypted: true },
                     response: 200
                 }, 'to yield response', 200, function (err) {
                     expect(err, 'to be an', Error);
                     expect(err.output.toString(), 'to equal',
                         "expected 'http://www.google.com/' with http mocked out\n" +
                         '{\n' +
-                        "  request: { url: '/', encrypted: true, method: 'GET' },\n" +
+                        "  request: { url: 'GET /', encrypted: true },\n" +
                         '  response: 200\n' +
                         '} to yield response 200\n' +
                         '\n' +
@@ -228,12 +228,7 @@ describe('unexpectedMitm', function () {
                     '}\n' +
                     'with http mocked out\n' +
                     '{\n' +
-                    '  request: {\n' +
-                    "    url: '/',\n" +
-                    '    body: { foo: 456 },\n' +
-                    "    method: 'POST',\n" +
-                    "    headers: { 'Content-Type': 'application/json' }\n" +
-                    '  },\n' +
+                    "  request: { url: 'POST /', body: { foo: 456 } },\n" +
                     '  response: 200\n' +
                     '} to yield response 200\n' +
                     '\n' +
@@ -318,7 +313,7 @@ describe('unexpectedMitm', function () {
                 '[\n' +
                 "  { request: 'GET /foo', response: 200 },\n" +
                 '  {\n' +
-                "    request: { url: '/foo', headers: ..., method: 'GET' },\n" +
+                "    request: { url: 'GET /foo', headers: ... },\n" +
                 "    response: 200\n" +
                 '  }\n' +
                 '] to yield response 200\n' +
@@ -419,11 +414,10 @@ describe('unexpectedMitm', function () {
                         'with http mocked out\n' +
                         '{\n' +
                         '  request: {\n' +
-                        "    url: '/foo',\n" +
+                        "    url: 'GET /foo',\n" +
                         '    cert: Buffer([0x01]),\n' +
                         '    key: Buffer([0x05]),\n' +
-                        '    ca: Buffer([0x03]),\n' +
-                        "    method: 'GET'\n" +
+                        '    ca: Buffer([0x03])\n' +
                         '  },\n' +
                         '  response: 200\n' +
                         '} to yield response 200\n' +
