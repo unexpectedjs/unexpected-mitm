@@ -336,7 +336,7 @@ describe('unexpectedMitm', function () {
                 '// GET /foo HTTP/1.1\n' +
                 '// Host: www.google.com\n' +
                 '// Connection: keep-alive\n' +
-                '// \n' +
+                '//\n' +
                 '// <no response>');
             done();
         });
