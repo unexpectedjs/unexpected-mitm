@@ -1,6 +1,6 @@
 {
   "name": "unexpected-mitm",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "description": "Unexpected plugin for the mitm library",
   "main": "lib/unexpectedMitm.js",
   "scripts": {
