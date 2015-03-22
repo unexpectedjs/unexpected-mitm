@@ -148,6 +148,8 @@ describe('unexpectedMitm', function () {
                     '\n' +
                     'GET / HTTP/1.1 // should be POST /\n' +
                     'Host: www.google.com // should equal www.example.com\n' +
+                    '                     // -www.google.com\n' +
+                    '                     // +www.example.com\n' +
                     'Connection: keep-alive\n' +
                     '\n' +
                     'HTTP/1.1 200 OK'
@@ -327,6 +329,7 @@ describe('unexpectedMitm', function () {
                 '// missing:\n' +
                 '// GET /foo\n' +
                 "// Foo: // should satisfy expect.it('to match', /bar/)\n" +
+                "//      // expected '' to match /bar/\n" + // Hmm, this is not ideal
                 '//\n' +
                 '// HTTP/1.1 200 OK');
             done();
