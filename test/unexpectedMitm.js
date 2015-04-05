@@ -18,6 +18,14 @@ describe('unexpectedMitm', function () {
                 expect(recordedExchanges, 'to equal', expectedRecordedExchanges);
             });
         })
+        .addAssertion('when delayed a little bit', function (expect, subject) {
+            var that = this;
+            return expect.promise(function (run) {
+                setTimeout(run(function () {
+                    return that.shift(expect, subject, 0);
+                }), 1);
+            });
+        })
         .addAssertion('Error', 'to have message', function (expect, subject, value) {
             this.errorMode = 'nested';
             return expect(subject._isUnexpected ? subject.output.toString() : subject.message, 'to satisfy', value);
@@ -39,6 +47,101 @@ describe('unexpectedMitm', function () {
                 'Content-Type': 'text/html; charset=UTF-8'
             },
             body: '<!DOCTYPE html>\n<html></html>'
+        });
+    });
+
+    describe('with async expects on the request', function () {
+        it('should succeed', function () {
+            return expect({
+                url: 'POST http://www.google.com/',
+                body: { foo: 123 }
+            }, 'with http mocked out', {
+                request: {
+                    url: 'POST /',
+                    body: expect.it('when delayed a little bit', 'to equal', { foo: 123 })
+                },
+                response: {
+                    statusCode: 200,
+                    headers: {
+                        'Content-Type': 'text/html; charset=UTF-8'
+                    },
+                    body: '<!DOCTYPE html>\n<html></html>'
+                }
+            }, 'to yield response', {
+                statusCode: 200,
+                headers: {
+                    'Content-Type': 'text/html; charset=UTF-8'
+                },
+                body: '<!DOCTYPE html>\n<html></html>'
+            });
+        });
+
+        it('should fail with a diff', function () {
+            return expect(
+                expect({
+                    url: 'POST http://www.google.com/',
+                    body: { foo: 123 }
+                }, 'with http mocked out', {
+                    request: {
+                        url: 'POST /',
+                        body: expect.it('when delayed a little bit', 'to equal', { foo: 456 })
+                    },
+                    response: {
+                        statusCode: 200,
+                        headers: {
+                            'Content-Type': 'text/html; charset=UTF-8'
+                        },
+                        body: '<!DOCTYPE html>\n<html></html>'
+                    }
+                }, 'to yield response', {
+                    statusCode: 200,
+                    headers: {
+                        'Content-Type': 'text/html; charset=UTF-8'
+                    },
+                    body: '<!DOCTYPE html>\n<html></html>'
+                }),
+                'when rejected',
+                'to have message',
+                    "expected\n" +
+                    "{\n" +
+                    "  url: 'POST http://www.google.com/',\n" +
+                    "  body: { foo: 123 }\n" +
+                    "}\n" +
+                    "with http mocked out\n" +
+                    "{\n" +
+                    "  request: {\n" +
+                    "    url: 'POST /',\n" +
+                    "    body: expect.it('when delayed a little bit', 'to equal', ...)\n" +
+                    "  },\n" +
+                    "  response: {\n" +
+                    "    statusCode: 200,\n" +
+                    "    headers: { 'Content-Type': 'text/html; charset=UTF-8' },\n" +
+                    "    body: '<!DOCTYPE html>\\n<html></html>'\n" +
+                    "  }\n" +
+                    "} to yield response {\n" +
+                    "  statusCode: 200,\n" +
+                    "  headers: { 'Content-Type': 'text/html; charset=UTF-8' },\n" +
+                    "  body: '<!DOCTYPE html>\\n<html></html>'\n" +
+                    "}\n" +
+                    "\n" +
+                    "POST / HTTP/1.1\n" +
+                    "Host: www.google.com\n" +
+                    "Content-Type: application/json\n" +
+                    "Connection: keep-alive\n" +
+                    "Transfer-Encoding: chunked\n" +
+                    "\n" +
+                    "expected { foo: 123 } when delayed a little bit to equal { foo: 456 }\n" +
+                    "\n" +
+                    "{\n" +
+                    "  foo: 123 // should equal 456\n" +
+                    "}\n" +
+                    "\n" +
+                    "HTTP/1.1 200 OK\n" +
+                    "Content-Type: text/html; charset=UTF-8\n" +
+                    "\n" +
+                    "<!DOCTYPE html>\n" +
+                    "<html></html>"
+            );
         });
     });
 
@@ -324,6 +427,68 @@ describe('unexpectedMitm', function () {
                 "//      // expected '' to match /bar/\n" + // Hmm, this is not ideal
                 '//\n' +
                 '// HTTP/1.1 200 OK'
+        );
+    });
+
+    it('should produce an error if a mocked request is not exercised and there are failing async expects', function () {
+        return expect(
+            expect({
+                url: 'POST http://www.google.com/foo',
+                body: { foo: 123 },
+            }, 'with http mocked out', [
+                {
+                    request: {
+                        url: 'POST /foo',
+                        body: expect.it('when delayed a little bit', 'to equal', { foo: 123 })
+                    },
+                    response: 200
+                },
+                {
+                    request: {
+                        url: 'GET /foo',
+                        headers: { Foo: expect.it('to match', /bar/) }
+                    },
+                    response: 200
+                }
+            ], 'to yield response', 200),
+            'when rejected',
+            'to have message',
+                "expected\n" +
+                "{\n" +
+                "  url: 'POST http://www.google.com/foo',\n" +
+                "  body: { foo: 123 }\n" +
+                "}\n" +
+                "with http mocked out\n" +
+                "[\n" +
+                "  {\n" +
+                "    request: {\n" +
+                "      url: 'POST /foo',\n" +
+                "      body: expect.it('when delayed a little bit', 'to equal', { foo: 123 })\n" +
+                "    },\n" +
+                "    response: 200\n" +
+                "  },\n" +
+                "  {\n" +
+                "    request: { url: 'GET /foo', headers: ... },\n" +
+                "    response: 200\n" +
+                "  }\n" +
+                "] to yield response 200\n" +
+                "\n" +
+                "POST /foo HTTP/1.1\n" +
+                "Host: www.google.com\n" +
+                "Content-Type: application/json\n" +
+                "Connection: keep-alive\n" +
+                "Transfer-Encoding: chunked\n" +
+                "\n" +
+                "{ foo: 123 }\n" +
+                "\n" +
+                "HTTP/1.1 200 OK\n" +
+                "\n" +
+                "// missing:\n" +
+                "// GET /foo\n" +
+                "// Foo: // should satisfy expect.it('to match', /bar/)\n" +
+                "//      // expected '' to match /bar/\n" +
+                "//\n" +
+                "// HTTP/1.1 200 OK"
         );
     });
 
