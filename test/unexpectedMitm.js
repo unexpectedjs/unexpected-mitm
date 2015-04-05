@@ -7,32 +7,24 @@ describe('unexpectedMitm', function () {
     var expect = require('unexpected')
         .installPlugin(require('../lib/unexpectedMitm'))
         .installPlugin(require('unexpected-http'))
+        .installPlugin(require('unexpected-promise'))
         .addAssertion('with expected http recording', function (expect, subject, expectedRecordedExchanges) { // ...
-            var cb = this.args.pop();
+            var that = this;
+            this.errorMode = 'nested';
             this.args.splice(1, 0, 'with http recorded');
-            this.args.push(function (err) {
-                var args = Array.prototype.slice.call(arguments),
-                    recordedExchanges = args.pop();
-                try {
-                    expect(recordedExchanges, 'to equal', expectedRecordedExchanges);
-                } catch (e) {
-                    args = [e];
-                }
-                setImmediate(function () {
-                    cb.apply(this, args);
-                });
+            return expect.promise(function () {
+                return that.shift(subject, 1);
+            }).then(function (recordedExchanges) {
+                expect(recordedExchanges, 'to equal', expectedRecordedExchanges);
             });
-            try {
-                this.shift(expect, subject, 1);
-            } catch (e) {
-                cb(e);
-            } finally {
-                this.args.pop(); // Prevent the wrapped callback from being inspected when the assertion fails.
-            }
+        })
+        .addAssertion('Error', 'to have message', function (expect, subject, value) {
+            this.errorMode = 'nested';
+            return expect(subject._isUnexpected ? subject.output.toString() : subject.message, 'to satisfy', value);
         });
 
-    it('should mock out a simple request', function (done) {
-        expect('http://www.google.com/', 'with http mocked out', {
+    it('should mock out a simple request', function () {
+        return expect('http://www.google.com/', 'with http mocked out', {
             request: 'GET /',
             response: {
                 statusCode: 200,
@@ -47,34 +39,33 @@ describe('unexpectedMitm', function () {
                 'Content-Type': 'text/html; charset=UTF-8'
             },
             body: '<!DOCTYPE html>\n<html></html>'
-        }, done);
+        });
     });
 
-    it('should not break when the assertion being delegated to throws synchronously', function (done) {
-        expect('http://www.google.com/', 'with http mocked out', [], 'to foobarquux', function (err) {
-            expect(err, 'to be an', Error);
-            expect(err.output.toString(), 'to match', /^Unknown assertion "to foobarquux"/);
-            done();
-        });
+    it('should not break when the assertion being delegated to throws synchronously', function () {
+        expect(function () {
+            expect('http://www.google.com/', 'with http mocked out', [], 'to foobarquux');
+        }, 'to throw', /^Unknown assertion "to foobarquux"/);
     });
 
     // Awaiting https://github.com/moll/node-mitm/issues/10
     describe('when mocking out an https request and asserting that the request is https', function () {
         describe('when https is specified as part of the request url', function () {
-            it('should succeed', function (done) {
-                expect('https://www.google.com/', 'with http mocked out', {
+            it('should succeed', function () {
+                return expect('https://www.google.com/', 'with http mocked out', {
                     request: 'GET https://www.google.com/',
                     response: 200
-                }, 'to yield response', 200, done);
+                }, 'to yield response', 200);
             });
 
-            it('should fail', function (done) {
-                expect('http://www.google.com/', 'with http mocked out', {
-                    request: 'GET https://www.google.com/',
-                    response: 200
-                }, 'to yield response', 200, function (err) {
-                    expect(err, 'to be an', Error);
-                    expect(err.output.toString(), 'to equal',
+            it('should fail', function () {
+                return expect(
+                    expect('http://www.google.com/', 'with http mocked out', {
+                        request: 'GET https://www.google.com/',
+                        response: 200
+                    }, 'to yield response', 200),
+                    'when rejected',
+                    'to have message',
                         "expected 'http://www.google.com/' with http mocked out\n" +
                         '{\n' +
                         "  request: 'GET https://www.google.com/',\n" +
@@ -86,27 +77,27 @@ describe('unexpectedMitm', function () {
                         'Connection: keep-alive\n' +
                         '// expected an encrypted request\n' +
                         '\n' +
-                        'HTTP/1.1 200 OK');
-                    done();
-                });
+                        'HTTP/1.1 200 OK'
+                );
             });
         });
 
         describe('when \"encrypted\" is specified as a standalone property', function () {
-            it('should succeed', function (done) {
-                expect('https://www.google.com/', 'with http mocked out', {
+            it('should succeed', function () {
+                return expect('https://www.google.com/', 'with http mocked out', {
                     request: { url: 'GET /', encrypted: true },
                     response: 200
-                }, 'to yield response', 200, done);
+                }, 'to yield response', 200);
             });
 
-            it('should fail', function (done) {
-                expect('http://www.google.com/', 'with http mocked out', {
-                    request: { url: 'GET /', encrypted: true },
-                    response: 200
-                }, 'to yield response', 200, function (err) {
-                    expect(err, 'to be an', Error);
-                    expect(err.output.toString(), 'to equal',
+            it('should fail', function () {
+                return expect(
+                    expect('http://www.google.com/', 'with http mocked out', {
+                        request: { url: 'GET /', encrypted: true },
+                        response: 200
+                    }, 'to yield response', 200),
+                    'when rejected',
+                    'to have message',
                         "expected 'http://www.google.com/' with http mocked out\n" +
                         '{\n' +
                         "  request: { url: 'GET /', encrypted: true },\n" +
@@ -118,28 +109,28 @@ describe('unexpectedMitm', function () {
                         'Connection: keep-alive\n' +
                         '// expected an encrypted request\n' +
                         '\n' +
-                        'HTTP/1.1 200 OK');
-                    done();
-                });
+                        'HTTP/1.1 200 OK'
+                );
             });
         });
     });
 
     describe('using a fully-qualified request url', function () {
-        it('should assert on the host name of the issued request', function (done) {
-            expect('http://www.google.com/', 'with http mocked out', {
+        it('should assert on the host name of the issued request', function () {
+            return expect('http://www.google.com/', 'with http mocked out', {
                 request: 'GET http://www.google.com/',
                 response: 200
-            }, 'to yield response', 200, done);
+            }, 'to yield response', 200);
         });
 
-        it('should fail', function (done) {
-            expect('http://www.google.com/', 'with http mocked out', {
-                request: 'POST http://www.example.com/',
-                response: 200
-            }, 'to yield response', 200, function (err) {
-                expect(err, 'to be an', Error);
-                expect(err.output.toString(), 'to equal',
+        it('should fail', function () {
+            return expect(
+                expect('http://www.google.com/', 'with http mocked out', {
+                    request: 'POST http://www.example.com/',
+                    response: 200
+                }, 'to yield response', 200),
+                'when rejected',
+                'to have message',
                     "expected 'http://www.google.com/' with http mocked out\n" +
                     '{\n' +
                     "  request: 'POST http://www.example.com/',\n" +
@@ -153,52 +144,53 @@ describe('unexpectedMitm', function () {
                     'Connection: keep-alive\n' +
                     '\n' +
                     'HTTP/1.1 200 OK'
-                );
-                done();
-            });
+            );
         });
     });
 
-    it('should support providing the response body as a stream', function (done) {
-        expect('http://www.google.com/', 'with http mocked out', {
+    it('should support providing the response body as a stream', function () {
+        return expect('http://www.google.com/', 'with http mocked out', {
             request: 'GET /',
             response: {
+                headers: {
+                    'Content-Type': 'text/plain; charset=UTF-8'
+                },
                 body: fs.createReadStream(pathModule.resolve(__dirname, '..', 'testdata', 'foo.txt'))
             }
         }, 'to yield response', {
             statusCode: 200,
             body: 'Contents of foo.txt\n'
-        }, done);
+        });
     });
 
-    it('should support mocking out the status code', function (done) {
-        expect('http://www.google.com/', 'with http mocked out', {
+    it('should support mocking out the status code', function () {
+        return expect('http://www.google.com/', 'with http mocked out', {
             request: 'GET /',
             response: 412
         }, 'to yield response', {
             statusCode: 412
-        }, done);
+        });
     });
 
-    it('should work fine without any assertions on the request', function (done) {
-        expect('http://www.google.com/', 'with http mocked out', {
+    it('should work fine without any assertions on the request', function () {
+        return expect('http://www.google.com/', 'with http mocked out', {
             response: 412
-        }, 'to yield response', 412, done);
+        }, 'to yield response', 412);
     });
 
-    it('should support providing the response as a stream', function (done) {
-        expect('http://www.google.com/', 'with http mocked out', {
+    it('should support providing the response as a stream', function () {
+        return expect('http://www.google.com/', 'with http mocked out', {
             request: 'GET /',
             response: fs.createReadStream(pathModule.resolve(__dirname, '..', 'testdata', 'foo.txt'))
         }, 'to yield response', {
             statusCode: 200,
-            body: 'Contents of foo.txt\n'
-        }, done);
+            body: new Buffer('Contents of foo.txt\n', 'utf-8')
+        });
     });
 
     describe('with the expected request body given as an object (shorthand for JSON)', function () {
-        it('should succeed the match', function (done) {
-            expect({
+        it('should succeed the match', function () {
+            return expect({
                 url: 'POST http://www.google.com/',
                 body: { foo: 123 }
             }, 'with http mocked out', {
@@ -207,22 +199,23 @@ describe('unexpectedMitm', function () {
                     body: { foo: 123 }
                 },
                 response: 200
-            }, 'to yield response', 200, done);
+            }, 'to yield response', 200);
         });
 
-        it('should fail with a diff', function (done) {
-            expect({
-                url: 'POST http://www.google.com/',
-                body: { foo: 123 }
-            }, 'with http mocked out', {
-                request: {
-                    url: 'POST /',
-                    body: { foo: 456 }
-                },
-                response: 200
-            }, 'to yield response', 200, function (err) {
-                expect(err, 'to be an', Error);
-                expect(err.output.toString(), 'to equal',
+        it('should fail with a diff', function () {
+            return expect(
+                expect({
+                    url: 'POST http://www.google.com/',
+                    body: { foo: 123 }
+                }, 'with http mocked out', {
+                    request: {
+                        url: 'POST /',
+                        body: { foo: 456 }
+                    },
+                    response: 200
+                }, 'to yield response', 200),
+                'when rejected',
+                'to have message',
                     'expected\n' +
                     '{\n' +
                     "  url: 'POST http://www.google.com/',\n" +
@@ -245,14 +238,12 @@ describe('unexpectedMitm', function () {
                     '}\n' +
                     '\n' +
                     'HTTP/1.1 200 OK'
-                );
-                done();
-            });
+            );
         });
     });
 
-    it('should produce a JSON response if the response body is given as an object', function (done) {
-        expect('http://www.google.com/', 'with http mocked out', {
+    it('should produce a JSON response if the response body is given as an object', function () {
+        return expect('http://www.google.com/', 'with http mocked out', {
             request: 'GET /',
             response: { body: { foo: 123 } }
         }, 'to yield response', {
@@ -261,11 +252,11 @@ describe('unexpectedMitm', function () {
                 'Content-Type': 'application/json'
             },
             body: {foo: 123}
-        }, done);
+        });
     });
 
-    it('should produce a JSON response if the response body is given as an array', function (done) {
-        expect('http://www.google.com/', 'with http mocked out', {
+    it('should produce a JSON response if the response body is given as an array', function () {
+        return expect('http://www.google.com/', 'with http mocked out', {
             request: 'GET /',
             response: { body: [ { foo: 123 } ] }
         }, 'to yield response', {
@@ -274,16 +265,17 @@ describe('unexpectedMitm', function () {
                 'Content-Type': 'application/json'
             },
             body: [ { foo: 123 } ]
-        }, done);
+        });
     });
 
-    it('should produce an error if the request conditions are not satisfied', function (done) {
-        expect('http://www.google.com/foo', 'with http mocked out', {
-            request: 'GET /bar',
-            response: 200
-        }, 'to yield response', 200, function (err) {
-            expect(err, 'to be an', Error);
-            expect(err.output.toString(), 'to equal',
+    it('should produce an error if the request conditions are not satisfied', function () {
+        return expect(
+            expect('http://www.google.com/foo', 'with http mocked out', {
+                request: 'GET /bar',
+                response: 200
+            }, 'to yield response', 200),
+            'when rejected',
+            'to have message',
                 "expected 'http://www.google.com/foo' with http mocked out { request: 'GET /bar', response: 200 } to yield response 200\n" +
                 '\n' +
                 'GET /foo HTTP/1.1 // should be GET /bar\n' +
@@ -291,26 +283,26 @@ describe('unexpectedMitm', function () {
                 'Connection: keep-alive\n' +
                 '\n' +
                 'HTTP/1.1 200 OK'
-            );
-            done();
-        });
+        );
     });
 
-    it('should produce an error if a mocked request is not exercised', function (done) {
-        expect('http://www.google.com/foo', 'with http mocked out', [
-            {
-                request: 'GET /foo',
-                response: 200
-            },
-            {
-                request: {
-                    url: 'GET /foo',
-                    headers: { Foo: expect.it("to match", /bar/) }
+    it('should produce an error if a mocked request is not exercised', function () {
+        return expect(
+            expect('http://www.google.com/foo', 'with http mocked out', [
+                {
+                    request: 'GET /foo',
+                    response: 200
                 },
-                response: 200
-            }
-        ], 'to yield response', 200, function (err) {
-            expect(err.output.toString(), 'to equal',
+                {
+                    request: {
+                        url: 'GET /foo',
+                        headers: { Foo: expect.it("to match", /bar/) }
+                    },
+                    response: 200
+                }
+            ], 'to yield response', 200),
+            'when rejected',
+            'to have message',
                 "expected 'http://www.google.com/foo' with http mocked out\n" +
                 '[\n' +
                 "  { request: 'GET /foo', response: 200 },\n" +
@@ -331,15 +323,15 @@ describe('unexpectedMitm', function () {
                 "// Foo: // should satisfy expect.it('to match', /bar/)\n" +
                 "//      // expected '' to match /bar/\n" + // Hmm, this is not ideal
                 '//\n' +
-                '// HTTP/1.1 200 OK');
-            done();
-        });
+                '// HTTP/1.1 200 OK'
+        );
     });
 
-    it('should produce an error if the test issues more requests than have been mocked', function (done) {
-        expect('http://www.google.com/foo', 'with http mocked out', [], 'to yield response', 200, function (err) {
-            expect(err, 'to be an', Error);
-            expect(err.output.toString(), 'to equal',
+    it('should produce an error if the test issues more requests than have been mocked', function () {
+        return expect(
+            expect('http://www.google.com/foo', 'with http mocked out', [], 'to yield response', 200),
+            'when rejected',
+            'to have message',
                 "expected 'http://www.google.com/foo' with http mocked out [] to yield response 200\n" +
                 '\n' +
                 '// should be removed:\n' +
@@ -347,34 +339,39 @@ describe('unexpectedMitm', function () {
                 '// Host: www.google.com\n' +
                 '// Connection: keep-alive\n' +
                 '//\n' +
-                '// <no response>');
-            done();
-        });
+                '// <no response>'
+        );
     });
 
-    it('should output the error if the assertion being delegated to fails', function (done) {
-        expect('http://www.google.com/foo', 'with http mocked out', {
-            request: 'GET /foo',
-            response: 200
-        }, 'to yield response', 412, function (err) {
-            expect(err, 'to be an', Error);
-            expect(err.output.toString('text').replace(/^Date:.*\n/m, ''), 'to equal',
-                "expected 'http://www.google.com/foo' to yield response 412\n" +
-                '\n' +
-                'GET /foo HTTP/1.1\n' +
-                'Host: www.google.com\n' +
-                '\n' +
-                'HTTP/1.1 200 OK // should be 412 Precondition Failed\n' +
-                'Connection: keep-alive\n' +
-                'Transfer-Encoding: chunked');
-            done();
-        });
+    it('should output the error if the assertion being delegated to fails', function () {
+        return expect(
+            expect('http://www.google.com/foo', 'with http mocked out', {
+                request: 'GET /foo',
+                response: 200
+            }, 'to yield response', 412),
+            'when rejected',
+            'to have message',
+            function (message) {
+                expect(
+                    message.replace(/^\s*Date:.*\n/m, ''), 'to equal',
+                    "expected 'http://www.google.com/foo' with http mocked out { request: 'GET /foo', response: 200 } to yield response 412\n" +
+                    "  expected 'http://www.google.com/foo' to yield response 412\n" +
+                    '\n' +
+                    '  GET /foo HTTP/1.1\n' +
+                    '  Host: www.google.com\n' +
+                    '\n' +
+                    '  HTTP/1.1 200 OK // should be 412 Precondition Failed\n' +
+                    '  Connection: keep-alive\n' +
+                    '  Transfer-Encoding: chunked'
+                );
+            }
+        );
     });
 
     describe('wíth a client certificate', function () {
         describe('when asserting on ca/cert/key', function () {
-            it('should succeed', function (done) {
-                expect({
+            it('should succeed', function () {
+                return expect({
                     url: 'https://www.google.com/foo',
                     cert: new Buffer([1]),
                     key: new Buffer([2]),
@@ -387,54 +384,61 @@ describe('unexpectedMitm', function () {
                         ca: new Buffer([3])
                     },
                     response: 200
-                }, 'to yield response', 200, done);
+                }, 'to yield response', 200);
             });
 
-            it('should fail with a meaningful error message', function (done) {
-                expect({
-                    url: 'https://www.google.com/foo',
-                    cert: new Buffer([1]),
-                    key: new Buffer([2]),
-                    ca: new Buffer([3])
-                }, 'with http mocked out', {
-                    request: {
-                        url: 'GET /foo',
+            it('should fail with a meaningful error message', function () {
+                return expect(
+                    expect({
+                        url: 'https://www.google.com/foo',
                         cert: new Buffer([1]),
-                        key: new Buffer([5]),
+                        key: new Buffer([2]),
                         ca: new Buffer([3])
-                    },
-                    response: 200
-                }, 'to yield response', 200, function (err) {
-                    expect(err, 'to be an', Error);
-                    expect(err.output.toString('text').replace(/^Date:.*\n/m, ''), 'to equal',
-                        'expected\n' +
-                        '{\n' +
-                        "  url: 'https://www.google.com/foo',\n" +
-                        '  cert: Buffer([0x01]),\n' +
-                        '  key: Buffer([0x02]),\n' +
-                        '  ca: Buffer([0x03])\n' +
-                        '}\n' +
-                        'with http mocked out\n' +
-                        '{\n' +
-                        '  request: {\n' +
-                        "    url: 'GET /foo',\n" +
-                        '    cert: Buffer([0x01]),\n' +
-                        '    key: Buffer([0x05]),\n' +
-                        '    ca: Buffer([0x03])\n' +
-                        '  },\n' +
-                        '  response: 200\n' +
-                        '} to yield response 200\n' +
-                        '\n' +
-                        'GET /foo HTTP/1.1\n' +
-                        'Host: www.google.com\n' +
-                        'Connection: keep-alive\n' +
-                        '// key: expected Buffer([0x02]) to satisfy Buffer([0x05])\n' +
-                        '//   -02                                               │.│\n' +
-                        '//   +05                                               │.│\n' +
-                        '\n' +
-                        'HTTP/1.1 200 OK');
-                    done();
-                });
+                    }, 'with http mocked out', {
+                        request: {
+                            url: 'GET /foo',
+                            cert: new Buffer([1]),
+                            key: new Buffer([5]),
+                            ca: new Buffer([3])
+                        },
+                        response: 200
+                    }, 'to yield response', 200),
+                    'when rejected',
+                    'to have message',
+                    function (message) {
+                        expect(
+                            message.replace(/^\s*Date:.*\n/m, ''),
+                            'to equal',
+                            'expected\n' +
+                            '{\n' +
+                            "  url: 'https://www.google.com/foo',\n" +
+                            '  cert: Buffer([0x01]),\n' +
+                            '  key: Buffer([0x02]),\n' +
+                            '  ca: Buffer([0x03])\n' +
+                            '}\n' +
+                            'with http mocked out\n' +
+                            '{\n' +
+                            '  request: {\n' +
+                            "    url: 'GET /foo',\n" +
+                            '    cert: Buffer([0x01]),\n' +
+                            '    key: Buffer([0x05]),\n' +
+                            '    ca: Buffer([0x03])\n' +
+                            '  },\n' +
+                            '  response: 200\n' +
+                            '} to yield response 200\n' +
+                            '\n' +
+                            'GET /foo HTTP/1.1\n' +
+                            'Host: www.google.com\n' +
+                            'Connection: keep-alive\n' +
+                            '// key: expected Buffer([0x02]) to satisfy Buffer([0x05])\n' +
+                            '//\n' +
+                            '// -02                                               │.│\n' +
+                            '// +05                                               │.│\n' +
+                            '\n' +
+                            'HTTP/1.1 200 OK'
+                        );
+                    }
+                );
             });
         });
     });
@@ -458,13 +462,13 @@ describe('unexpectedMitm', function () {
             server.close();
         });
 
-        it('should record', function (done) {
+        it('should record', function () {
             handleRequest = function (req, res) {
                 res.setHeader('Allow', 'GET, HEAD');
                 res.statusCode = 405;
                 res.end();
             };
-            expect({
+            return expect({
                 url: 'POST ' + serverUrl,
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
@@ -485,18 +489,18 @@ describe('unexpectedMitm', function () {
                         Allow: 'GET, HEAD'
                     }
                 }
-            }, 'to yield response', 405, done);
+            }, 'to yield response', 405);
         });
 
         // Figure out why this started failing
-        it('should record a client certificate', function (done) {
+        it('should record a client certificate', function () {
             handleRequest = function (req, res) {
                 res.setHeader('Allow', 'GET, HEAD');
                 res.statusCode = 405;
                 res.end();
             };
 
-            expect({
+            return expect({
                 url: 'POST ' + serverUrl,
                 cert: new Buffer([1]),
                 key: new Buffer([2]),
@@ -514,10 +518,10 @@ describe('unexpectedMitm', function () {
                         Allow: 'GET, HEAD'
                     }
                 }
-            }, 'to yield response', 405, done);
+            }, 'to yield response', 405);
         });
 
-        it('should record an error', function (done) {
+        it('should record an error', function () {
             var expectedError;
             // I do not know the exact version where this change was introduced. Hopefully this is enough to get
             // it working on Travis (0.10.36 presently):
@@ -529,13 +533,13 @@ describe('unexpectedMitm', function () {
                 expectedError.code = expectedError.errno = 'ENOTFOUND';
             }
             expectedError.syscall = 'getaddrinfo';
-            expect('http://www.icwqjecoiqwjecoiwqjecoiwqjceoiwq.com/', 'with expected http recording', {
+            return expect('http://www.icwqjecoiqwjecoiwqjecoiwqjceoiwq.com/', 'with expected http recording', {
                 request: {
                     url: 'GET /',
                     headers: { Host: 'www.icwqjecoiqwjecoiwqjecoiwqjceoiwq.com' }
                 },
                 response: expectedError
-            }, 'to yield response', expectedError, done);
+            }, 'to yield response', expectedError);
         });
     });
 });
