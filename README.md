@@ -15,8 +15,8 @@ var expect = require('unexpected')
     .installPlugin(require('unexpected-mitm'))
     .installPlugin(require('unexpected-http'));
 
-it('should GET a mocked response', function (done) {
-    expect('http://www.google.com/', 'with http mocked out', {
+it('should GET a mocked response', function () {
+    return expect('http://www.google.com/', 'with http mocked out', {
         request: 'GET /',
         response: {
             statusCode: 200,
@@ -27,7 +27,7 @@ it('should GET a mocked response', function (done) {
         }
     }, 'to yield response', {
         body: 'Hey there!'
-    }, done);
+    });
 });
 ```
 
