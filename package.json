@@ -10,7 +10,7 @@
     "coverage": "NODE_ENV=development istanbul cover _mocha -- --reporter dot && echo google-chrome coverage/lcov-report/index.html"
   },
   "peerDependencies": {
-    "unexpected-messy": "^3.0.0"
+    "unexpected-messy": "^3.0.1"
   },
   "devDependencies": {
     "coveralls": "2.11.2",
@@ -19,7 +19,7 @@
     "request": "2.53.0",
     "unexpected": "7.0.0",
     "unexpected-http": "3.0.0",
-    "unexpected-messy": "3.0.0",
+    "unexpected-messy": "3.0.1",
     "unexpected-promise": "1.1.1"
   },
   "dependencies": {
