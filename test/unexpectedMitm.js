@@ -27,6 +27,8 @@ describe('unexpectedMitm', function () {
             });
         });
 
+    expect.output.preferredWidth = 150;
+
     it('should mock out a simple request', function () {
         return expect('http://www.google.com/', 'with http mocked out', {
             request: 'GET /',
