@@ -2,7 +2,7 @@ unexpected-mitm
 ===============
 
 [![NPM version](https://badge.fury.io/js/unexpected-mitm.png)](http://badge.fury.io/js/unexpected-mitm)
-[![Build Status](https://travis-ci.org/unexpectedjs/unexpected-mitm.png)](https://travis-ci.org/unexpectedjs/unexpected-mitm)
+[![Build Status](https://travis-ci.org/unexpectedjs/unexpected-mitm.png?branch=master)](https://travis-ci.org/unexpectedjs/unexpected-mitm)
 [![Coverage Status](https://coveralls.io/repos/unexpectedjs/unexpected-mitm/badge.png)](https://coveralls.io/r/unexpectedjs/unexpected-mitm)
 [![Dependency Status](https://david-dm.org/unexpectedjs/unexpected-mitm.png)](https://david-dm.org/unexpectedjs/unexpected-mitm)
 
