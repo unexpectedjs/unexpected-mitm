@@ -1,0 +1,226 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/home/andreas/.nvm/versions/node/v0.12.0/bin/node',
+1 verbose cli   '/home/andreas/.nvm/versions/node/v0.12.0/bin/npm',
+1 verbose cli   '--userconfig',
+1 verbose cli   '/home/andreas/.npmrc-official',
+1 verbose cli   'install' ]
+2 info using npm@2.5.1
+3 info using node@v0.12.0
+4 warn package.json unexpected-mitm@5.0.2 No repository field.
+5 verbose install where, deps [ '/home/andreas/work/unexpected-mitm',
+5 verbose install   [ 'async',
+5 verbose install     'callsite',
+5 verbose install     'detect-indent',
+5 verbose install     'memoizesync',
+5 verbose install     'messy',
+5 verbose install     'mitm-papandreou',
+5 verbose install     'mocha',
+5 verbose install     'passerror',
+5 verbose install     'underscore',
+5 verbose install     'coveralls',
+5 verbose install     'istanbul',
+5 verbose install     'jshint',
+5 verbose install     'request',
+5 verbose install     'unexpected',
+5 verbose install     'unexpected-http',
+5 verbose install     'unexpected-messy',
+5 verbose install     'unexpected-promise' ] ]
+6 verbose install where, peers [ '/home/andreas/work/unexpected-mitm', [] ]
+7 info preinstall unexpected-mitm@5.0.2
+8 warn package.json callsite@1.0.0 No repository field.
+9 verbose already installed skipping coveralls@2.11.2 /home/andreas/work/unexpected-mitm
+10 verbose already installed skipping istanbul@0.3.5 /home/andreas/work/unexpected-mitm
+11 verbose already installed skipping jshint@2.6.0 /home/andreas/work/unexpected-mitm
+12 verbose already installed skipping request@2.53.0 /home/andreas/work/unexpected-mitm
+13 verbose already installed skipping unexpected@7.0.0 /home/andreas/work/unexpected-mitm
+14 verbose already installed skipping unexpected-http@3.0.1 /home/andreas/work/unexpected-mitm
+15 verbose already installed skipping unexpected-messy@3.0.1 /home/andreas/work/unexpected-mitm
+16 silly cache add args [ 'unexpected-promise@1.1.1', null ]
+17 verbose cache add spec unexpected-promise@1.1.1
+18 silly cache add parsed spec { raw: 'unexpected-promise@1.1.1',
+18 silly cache add   scope: null,
+18 silly cache add   name: 'unexpected-promise',
+18 silly cache add   rawSpec: '1.1.1',
+18 silly cache add   spec: '1.1.1',
+18 silly cache add   type: 'version' }
+19 verbose addNamed unexpected-promise@1.1.1
+20 silly addNamed semver.valid 1.1.1
+21 silly addNamed semver.validRange 1.1.1
+22 silly mapToRegistry name unexpected-promise
+23 silly mapToRegistry using default registry
+24 silly mapToRegistry registry https://registry.npmjs.org/
+25 silly mapToRegistry uri https://registry.npmjs.org/unexpected-promise
+26 verbose addNameVersion registry:https://registry.npmjs.org/unexpected-promise not in flight; fetching
+27 verbose already installed skipping async@0.9.0 /home/andreas/work/unexpected-mitm
+28 verbose already installed skipping callsite@1.0.0 /home/andreas/work/unexpected-mitm
+29 verbose request uri https://registry.npmjs.org/unexpected-promise
+30 verbose request no auth needed
+31 info attempt registry request try #1 at 1:47:02 AM
+32 verbose request id 095514df7503841e
+33 verbose etag "E4WLMV5R63H741RSZBBLW20SJ"
+34 http request GET https://registry.npmjs.org/unexpected-promise
+35 verbose already installed skipping detect-indent@3.0.0 /home/andreas/work/unexpected-mitm
+36 verbose already installed skipping memoizesync@0.5.0 /home/andreas/work/unexpected-mitm
+37 verbose already installed skipping messy@6.1.0 /home/andreas/work/unexpected-mitm
+38 verbose already installed skipping mitm-papandreou@1.0.3-patch1 /home/andreas/work/unexpected-mitm
+39 verbose already installed skipping mocha@2.1.0 /home/andreas/work/unexpected-mitm
+40 verbose already installed skipping passerror@1.1.0 /home/andreas/work/unexpected-mitm
+41 verbose already installed skipping underscore@1.7.0 /home/andreas/work/unexpected-mitm
+42 http 304 https://registry.npmjs.org/unexpected-promise
+43 silly get cb [ 304,
+43 silly get   { date: 'Fri, 17 Apr 2015 23:47:02 GMT',
+43 silly get     server: 'Apache',
+43 silly get     via: '1.1 varnish',
+43 silly get     'last-modified': 'Fri, 17 Apr 2015 23:47:03 GMT',
+43 silly get     'cache-control': 'max-age=60',
+43 silly get     etag: '"E4WLMV5R63H741RSZBBLW20SJ"',
+43 silly get     age: '0',
+43 silly get     'x-served-by': 'cache-ams4143-AMS',
+43 silly get     'x-cache': 'MISS',
+43 silly get     'x-cache-hits': '0',
+43 silly get     'x-timer': 'S1429314422.993138,VS0,VE102',
+43 silly get     vary: 'Accept',
+43 silly get     'content-length': '0',
+43 silly get     'keep-alive': 'timeout=10, max=50',
+43 silly get     connection: 'Keep-Alive' } ]
+44 verbose etag https://registry.npmjs.org/unexpected-promise from cache
+45 verbose get saving unexpected-promise to /home/andreas/.npm/registry.npmjs.org/unexpected-promise/.cache.json
+46 silly cache afterAdd unexpected-promise@1.1.1
+47 verbose afterAdd /home/andreas/.npm/unexpected-promise/1.1.1/package/package.json not in flight; writing
+48 verbose afterAdd /home/andreas/.npm/unexpected-promise/1.1.1/package/package.json written
+49 silly install resolved [ { name: 'unexpected-promise',
+49 silly install resolved     version: '1.1.1',
+49 silly install resolved     description: 'Plugin for the Unexpected assertion lib adding Promise support',
+49 silly install resolved     main: 'lib/unexpectedPromise.js',
+49 silly install resolved     directories: { test: 'test' },
+49 silly install resolved     scripts:
+49 silly install resolved      { lint: 'jshint .',
+49 silly install resolved        test: 'mocha && npm run lint',
+49 silly install resolved        travis: 'npm test && npm run coverage && <coverage/lcov.info coveralls',
+49 silly install resolved        coverage: 'NODE_ENV=development istanbul cover _mocha -- --reporter dot && echo google-chrome coverage/lcov-report/index.html' },
+49 silly install resolved     repository:
+49 silly install resolved      { type: 'git',
+49 silly install resolved        url: 'git://github.com/unexpectedjs/unexpected-promise.git' },
+49 silly install resolved     keywords: [ 'unexpected', 'test', 'assertion', 'promise', 'async' ],
+49 silly install resolved     author: { name: 'Andreas Lind', email: 'andreas@one.com' },
+49 silly install resolved     license: 'BSD',
+49 silly install resolved     bugs: { url: 'https://github.com/unexpectedjs/unexpected-promise/issues' },
+49 silly install resolved     homepage: 'https://github.com/unexpectedjs/unexpected-promise',
+49 silly install resolved     peerDependencies: { unexpected: '7' },
+49 silly install resolved     devDependencies:
+49 silly install resolved      { bluebird: '2.9.24',
+49 silly install resolved        coveralls: '2.11.2',
+49 silly install resolved        istanbul: '0.3.13',
+49 silly install resolved        jshint: '2.6.3',
+49 silly install resolved        mocha: '2.2.1',
+49 silly install resolved        unexpected: '7.0.0' },
+49 silly install resolved     gitHead: 'a8ab56385440f4ed502b7470f1a8e1125ed7aac4',
+49 silly install resolved     readme: 'unexpected-promise\n==================\n\nPlugin for the Unexpected assertion lib adding Promise support. Requires Unexpected 7 or above.\n\n[![NPM version](https://badge.fury.io/js/unexpected-promise.png)](http://badge.fury.io/js/unexpected-promise)\n[![Build Status](https://travis-ci.org/unexpectedjs/unexpected-promise.png)](https://travis-ci.org/unexpectedjs/unexpected-promise)\n[![Coverage Status](https://coveralls.io/repos/unexpectedjs/unexpected-promise/badge.png)](https://coveralls.io/r/unexpectedjs/unexpected-promise)\n[![Dependency Status](https://david-dm.org/unexpectedjs/unexpected-promise.png)](https://david-dm.org/unexpectedjs/unexpected-promise)\n\n```js\nvar expect = require(\'unexpected\').installPlugin(require(\'unexpected-promise\'));\n\nit(\'should DTRT\', function () {\n    return expect(myPromise, \'to be resolved with\', \'foobar\');\n});\n\nit(\'should fail\', function () {\n    return expect(myPromise, \'to be rejected with\', new Error(\'argh\'));\n});\n```\n\nAlternatively you can use the `when resolved` and `when rejected`\nassertions to replace the subject with the resolved value or rejection reason,\nthen apply another assertion to it:\n\n\n```js\nit(\'should DTRT\', function () {\n    return expect(myPromise, \'when resolved\', \'to equal\', \'foobar\');\n});\n\nit(\'should fail\', function () {\n    return expect(myPromise, \'when rejected\', \'to have property\', \'message\', \'argh\');\n});\n```\n\nLicense\n-------\n\nUnexpected-promise is licensed under a standard 3-clause BSD license -- see the `LICENSE` file for details.\n',
+49 silly install resolved     readmeFilename: 'README.md',
+49 silly install resolved     _id: 'unexpected-promise@1.1.1',
+49 silly install resolved     _shasum: 'bc6488bfde18ede55d306ee54838d68b57894a6b',
+49 silly install resolved     _from: 'unexpected-promise@1.1.1' } ]
+50 info install unexpected-promise@1.1.1 into /home/andreas/work/unexpected-mitm
+51 info installOne unexpected-promise@1.1.1
+52 verbose installOne of unexpected-promise to /home/andreas/work/unexpected-mitm not in flight; installing
+53 verbose lock using /home/andreas/.npm/_locks/unexpected-promise-989d16f7c47492c8.lock for /home/andreas/work/unexpected-mitm/node_modules/unexpected-promise
+54 silly install write writing unexpected-promise 1.1.1 to /home/andreas/work/unexpected-mitm/node_modules/unexpected-promise
+55 silly cache addNamed cb unexpected-promise@1.1.1
+56 verbose unbuild node_modules/unexpected-promise
+57 info preuninstall unexpected-promise@1.1.0
+58 info uninstall unexpected-promise@1.1.0
+59 verbose unbuild rmStuff unexpected-promise@1.1.0 from /home/andreas/work/unexpected-mitm/node_modules
+60 info postuninstall unexpected-promise@1.1.0
+61 verbose gentlyRm vacuuming /home/andreas/work/unexpected-mitm/node_modules/unexpected-promise
+62 silly gentlyRm purging /home/andreas/work/unexpected-mitm/node_modules/unexpected-promise
+63 silly gentlyRm quitting because other entries in /home/andreas/work/unexpected-mitm/node_modules
+64 verbose tar unpack /home/andreas/.npm/unexpected-promise/1.1.1/package.tgz
+65 verbose tar unpacking to /home/andreas/work/unexpected-mitm/node_modules/unexpected-promise
+66 verbose gentlyRm vacuuming /home/andreas/work/unexpected-mitm/node_modules/unexpected-promise
+67 silly gunzTarPerm modes [ '775', '664' ]
+68 silly gunzTarPerm extractEntry package.json
+69 silly gunzTarPerm extractEntry .npmignore
+70 silly gunzTarPerm extractEntry README.md
+71 silly gunzTarPerm extractEntry LICENSE
+72 silly gunzTarPerm extractEntry .travis.yml
+73 silly gunzTarPerm extractEntry .jshintignore
+74 silly gunzTarPerm extractEntry lib/unexpectedPromise.js
+75 silly gunzTarPerm extractEntry .jshintrc
+76 silly gunzTarPerm extractEntry test/unexpectedPromise.js
+77 silly gunzTarPerm extractEntry test/mocha.opts
+78 info preinstall unexpected-promise@1.1.1
+79 silly install resolved []
+80 verbose about to build /home/andreas/work/unexpected-mitm/node_modules/unexpected-promise
+81 info build /home/andreas/work/unexpected-mitm/node_modules/unexpected-promise
+82 verbose linkStuff [ false,
+82 verbose linkStuff   false,
+82 verbose linkStuff   false,
+82 verbose linkStuff   '/home/andreas/work/unexpected-mitm/node_modules' ]
+83 info linkStuff unexpected-promise@1.1.1
+84 verbose linkBins unexpected-promise@1.1.1
+85 verbose linkMans unexpected-promise@1.1.1
+86 verbose rebuildBundles unexpected-promise@1.1.1
+87 info install unexpected-promise@1.1.1
+88 info postinstall unexpected-promise@1.1.1
+89 verbose unlock done using /home/andreas/.npm/_locks/unexpected-promise-989d16f7c47492c8.lock for /home/andreas/work/unexpected-mitm/node_modules/unexpected-promise
+90 info build /home/andreas/work/unexpected-mitm
+91 verbose linkStuff [ false, false, false, '/home/andreas/work' ]
+92 info linkStuff unexpected-mitm@5.0.2
+93 verbose linkBins unexpected-mitm@5.0.2
+94 verbose linkMans unexpected-mitm@5.0.2
+95 verbose rebuildBundles unexpected-mitm@5.0.2
+96 verbose rebuildBundles [ '.bin',
+96 verbose rebuildBundles   'async',
+96 verbose rebuildBundles   'callsite',
+96 verbose rebuildBundles   'coveralls',
+96 verbose rebuildBundles   'detect-indent',
+96 verbose rebuildBundles   'istanbul',
+96 verbose rebuildBundles   'jshint',
+96 verbose rebuildBundles   'memoizesync',
+96 verbose rebuildBundles   'messy',
+96 verbose rebuildBundles   'mitm-papandreou',
+96 verbose rebuildBundles   'mocha',
+96 verbose rebuildBundles   'passerror',
+96 verbose rebuildBundles   'request',
+96 verbose rebuildBundles   'underscore',
+96 verbose rebuildBundles   'unexpected',
+96 verbose rebuildBundles   'unexpected-http',
+96 verbose rebuildBundles   'unexpected-messy',
+96 verbose rebuildBundles   'unexpected-promise' ]
+97 info install unexpected-mitm@5.0.2
+98 info postinstall unexpected-mitm@5.0.2
+99 info prepublish unexpected-mitm@5.0.2
+100 warn unmet dependency /home/andreas/work/unexpected-mitm/node_modules/unexpected/node_modules/browserify/node_modules/browser-pack/node_modules/through2 requires readable-stream@'~1.0.17' but will load
+100 warn unmet dependency /home/andreas/work/unexpected-mitm/node_modules/unexpected/node_modules/browserify/node_modules/readable-stream,
+100 warn unmet dependency which is version 1.0.27-1
+101 warn unmet dependency /home/andreas/work/unexpected-mitm/node_modules/unexpected/node_modules/browserify/node_modules/deps-sort/node_modules/through2 requires readable-stream@'~1.0.17' but will load
+101 warn unmet dependency /home/andreas/work/unexpected-mitm/node_modules/unexpected/node_modules/browserify/node_modules/readable-stream,
+101 warn unmet dependency which is version 1.0.27-1
+102 warn unmet dependency /home/andreas/work/unexpected-mitm/node_modules/unexpected/node_modules/browserify/node_modules/module-deps/node_modules/through2 requires readable-stream@'~1.0.17' but will load
+102 warn unmet dependency /home/andreas/work/unexpected-mitm/node_modules/unexpected/node_modules/browserify/node_modules/readable-stream,
+102 warn unmet dependency which is version 1.0.27-1
+103 warn unmet dependency /home/andreas/work/unexpected-mitm/node_modules/unexpected/node_modules/browserify/node_modules/module-deps/node_modules/stream-combiner2/node_modules/through2 requires readable-stream@'~1.0.17' but will load
+103 warn unmet dependency /home/andreas/work/unexpected-mitm/node_modules/unexpected/node_modules/browserify/node_modules/readable-stream,
+103 warn unmet dependency which is version 1.0.27-1
+104 warn unmet dependency /home/andreas/work/unexpected-mitm/node_modules/unexpected-http/node_modules/mocha/node_modules/jade requires commander@'0.6.1' but will load
+104 warn unmet dependency /home/andreas/work/unexpected-mitm/node_modules/unexpected-http/node_modules/mocha/node_modules/commander,
+104 warn unmet dependency which is version 2.0.0
+105 verbose stack Error: The package unexpected-messy does not satisfy its siblings' peerDependencies requirements!
+105 verbose stack     at /home/andreas/.nvm/versions/node/v0.12.0/lib/node_modules/npm/lib/install.js:103:32
+105 verbose stack     at /home/andreas/.nvm/versions/node/v0.12.0/lib/node_modules/npm/lib/install.js:225:5
+105 verbose stack     at /home/andreas/.nvm/versions/node/v0.12.0/lib/node_modules/npm/node_modules/read-installed/read-installed.js:138:5
+105 verbose stack     at /home/andreas/.nvm/versions/node/v0.12.0/lib/node_modules/npm/node_modules/read-installed/read-installed.js:251:14
+105 verbose stack     at cb (/home/andreas/.nvm/versions/node/v0.12.0/lib/node_modules/npm/node_modules/slide/lib/async-map.js:47:24)
+105 verbose stack     at /home/andreas/.nvm/versions/node/v0.12.0/lib/node_modules/npm/node_modules/read-installed/read-installed.js:251:14
+105 verbose stack     at cb (/home/andreas/.nvm/versions/node/v0.12.0/lib/node_modules/npm/node_modules/slide/lib/async-map.js:47:24)
+105 verbose stack     at /home/andreas/.nvm/versions/node/v0.12.0/lib/node_modules/npm/node_modules/read-installed/read-installed.js:251:14
+105 verbose stack     at cb (/home/andreas/.nvm/versions/node/v0.12.0/lib/node_modules/npm/node_modules/slide/lib/async-map.js:47:24)
+105 verbose stack     at /home/andreas/.nvm/versions/node/v0.12.0/lib/node_modules/npm/node_modules/read-installed/read-installed.js:251:14
+106 verbose cwd /home/andreas/work/unexpected-mitm
+107 error Linux 3.8.0-35-generic
+108 error argv "/home/andreas/.nvm/versions/node/v0.12.0/bin/node" "/home/andreas/.nvm/versions/node/v0.12.0/bin/npm" "--userconfig" "/home/andreas/.npmrc-official" "install"
+109 error node v0.12.0
+110 error npm  v2.5.1
+111 error code EPEERINVALID
+112 error peerinvalid The package unexpected-messy does not satisfy its siblings' peerDependencies requirements!
+113 verbose exit [ 1, true ]
