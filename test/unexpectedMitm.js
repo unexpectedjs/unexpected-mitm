@@ -1,4 +1,4 @@
-/*global describe, it, __dirname, setImmediate, beforeEach, afterEach*/
+/*global describe, it, __dirname, beforeEach, afterEach, setTimeout*/
 var pathModule = require('path'),
     fs = require('fs'),
     http = require('http');
@@ -391,7 +391,7 @@ describe('unexpectedMitm', function () {
         return expect(
             expect({
                 url: 'POST http://www.google.com/foo',
-                body: { foo: 123 },
+                body: { foo: 123 }
             }, 'with http mocked out', [
                 {
                     request: {
