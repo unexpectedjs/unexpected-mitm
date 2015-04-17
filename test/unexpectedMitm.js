@@ -25,10 +25,6 @@ describe('unexpectedMitm', function () {
                     return that.shift(expect, subject, 0);
                 }), 1);
             });
-        })
-        .addAssertion('Error', 'to have message', function (expect, subject, value) {
-            this.errorMode = 'nested';
-            return expect(subject._isUnexpected ? subject.output.toString() : subject.message, 'to satisfy', value);
         });
 
     it('should mock out a simple request', function () {
@@ -102,27 +98,11 @@ describe('unexpectedMitm', function () {
                 }),
                 'when rejected',
                 'to have message',
-                    "expected\n" +
+                    "expected { url: 'POST http://www.google.com/', body: { foo: 123 } } with http mocked out\n" +
                     "{\n" +
-                    "  url: 'POST http://www.google.com/',\n" +
-                    "  body: { foo: 123 }\n" +
-                    "}\n" +
-                    "with http mocked out\n" +
-                    "{\n" +
-                    "  request: {\n" +
-                    "    url: 'POST /',\n" +
-                    "    body: expect.it('when delayed a little bit', 'to equal', ...)\n" +
-                    "  },\n" +
-                    "  response: {\n" +
-                    "    statusCode: 200,\n" +
-                    "    headers: { 'Content-Type': 'text/html; charset=UTF-8' },\n" +
-                    "    body: '<!DOCTYPE html>\\n<html></html>'\n" +
-                    "  }\n" +
-                    "} to yield response {\n" +
-                    "  statusCode: 200,\n" +
-                    "  headers: { 'Content-Type': 'text/html; charset=UTF-8' },\n" +
-                    "  body: '<!DOCTYPE html>\\n<html></html>'\n" +
-                    "}\n" +
+                    "  request: { url: 'POST /', body: expect.it('when delayed a little bit', 'to equal', ...) },\n" +
+                    "  response: { statusCode: 200, headers: { 'Content-Type': 'text/html; charset=UTF-8' }, body: '<!DOCTYPE html>\\n<html></html>' }\n" +
+                    "} to yield response { statusCode: 200, headers: { 'Content-Type': 'text/html; charset=UTF-8' }, body: '<!DOCTYPE html>\\n<html></html>' }\n" +
                     "\n" +
                     "POST / HTTP/1.1\n" +
                     "Host: www.google.com\n" +
@@ -169,11 +149,8 @@ describe('unexpectedMitm', function () {
                     }, 'to yield response', 200),
                     'when rejected',
                     'to have message',
-                        "expected 'http://www.google.com/' with http mocked out\n" +
-                        '{\n' +
-                        "  request: 'GET https://www.google.com/',\n" +
-                        '  response: 200\n' +
-                        '} to yield response 200\n' +
+                        "expected 'http://www.google.com/'\n" +
+                        "with http mocked out { request: 'GET https://www.google.com/', response: 200 } to yield response 200\n" +
                         '\n' +
                         'GET / HTTP/1.1\n' +
                         'Host: www.google.com\n' +
@@ -201,11 +178,8 @@ describe('unexpectedMitm', function () {
                     }, 'to yield response', 200),
                     'when rejected',
                     'to have message',
-                        "expected 'http://www.google.com/' with http mocked out\n" +
-                        '{\n' +
-                        "  request: { url: 'GET /', encrypted: true },\n" +
-                        '  response: 200\n' +
-                        '} to yield response 200\n' +
+                        "expected 'http://www.google.com/'\n" +
+                        "with http mocked out { request: { url: 'GET /', encrypted: true }, response: 200 } to yield response 200\n" +
                         '\n' +
                         'GET / HTTP/1.1\n' +
                         'Host: www.google.com\n' +
@@ -234,11 +208,8 @@ describe('unexpectedMitm', function () {
                 }, 'to yield response', 200),
                 'when rejected',
                 'to have message',
-                    "expected 'http://www.google.com/' with http mocked out\n" +
-                    '{\n' +
-                    "  request: 'POST http://www.example.com/',\n" +
-                    '  response: 200\n' +
-                    '} to yield response 200\n' +
+                    "expected 'http://www.google.com/'\n" +
+                    "with http mocked out { request: 'POST http://www.example.com/', response: 200 } to yield response 200\n" +
                     '\n' +
                     'GET / HTTP/1.1 // should be POST /\n' +
                     'Host: www.google.com // should equal www.example.com\n' +
@@ -319,16 +290,8 @@ describe('unexpectedMitm', function () {
                 }, 'to yield response', 200),
                 'when rejected',
                 'to have message',
-                    'expected\n' +
-                    '{\n' +
-                    "  url: 'POST http://www.google.com/',\n" +
-                    '  body: { foo: 123 }\n' +
-                    '}\n' +
-                    'with http mocked out\n' +
-                    '{\n' +
-                    "  request: { url: 'POST /', body: { foo: 456 } },\n" +
-                    '  response: 200\n' +
-                    '} to yield response 200\n' +
+                    "expected { url: 'POST http://www.google.com/', body: { foo: 123 } }\n" +
+                    "with http mocked out { request: { url: 'POST /', body: { foo: 456 } }, response: 200 } to yield response 200\n" +
                     '\n' +
                     'POST / HTTP/1.1\n' +
                     'Host: www.google.com\n' +
@@ -406,14 +369,8 @@ describe('unexpectedMitm', function () {
             ], 'to yield response', 200),
             'when rejected',
             'to have message',
-                "expected 'http://www.google.com/foo' with http mocked out\n" +
-                '[\n' +
-                "  { request: 'GET /foo', response: 200 },\n" +
-                '  {\n' +
-                "    request: { url: 'GET /foo', headers: ... },\n" +
-                "    response: 200\n" +
-                '  }\n' +
-                '] to yield response 200\n' +
+                "expected 'http://www.google.com/foo'\n" +
+                "with http mocked out [ { request: 'GET /foo', response: 200 }, { request: { url: 'GET /foo', headers: ... }, response: 200 } ] to yield response 200\n" +
                 '\n' +
                 'GET /foo HTTP/1.1\n' +
                 'Host: www.google.com\n' +
@@ -453,24 +410,10 @@ describe('unexpectedMitm', function () {
             ], 'to yield response', 200),
             'when rejected',
             'to have message',
-                "expected\n" +
-                "{\n" +
-                "  url: 'POST http://www.google.com/foo',\n" +
-                "  body: { foo: 123 }\n" +
-                "}\n" +
-                "with http mocked out\n" +
+                "expected { url: 'POST http://www.google.com/foo', body: { foo: 123 } } with http mocked out\n" +
                 "[\n" +
-                "  {\n" +
-                "    request: {\n" +
-                "      url: 'POST /foo',\n" +
-                "      body: expect.it('when delayed a little bit', 'to equal', { foo: 123 })\n" +
-                "    },\n" +
-                "    response: 200\n" +
-                "  },\n" +
-                "  {\n" +
-                "    request: { url: 'GET /foo', headers: ... },\n" +
-                "    response: 200\n" +
-                "  }\n" +
+                "  { request: { url: 'POST /foo', body: expect.it('when delayed a little bit', 'to equal', { foo: 123 }) }, response: 200 },\n" +
+                "  { request: { url: 'GET /foo', headers: ... }, response: 200 }\n" +
                 "] to yield response 200\n" +
                 "\n" +
                 "POST /foo HTTP/1.1\n" +
@@ -574,23 +517,8 @@ describe('unexpectedMitm', function () {
                         expect(
                             message.replace(/^\s*Date:.*\n/m, ''),
                             'to equal',
-                            'expected\n' +
-                            '{\n' +
-                            "  url: 'https://www.google.com/foo',\n" +
-                            '  cert: Buffer([0x01]),\n' +
-                            '  key: Buffer([0x02]),\n' +
-                            '  ca: Buffer([0x03])\n' +
-                            '}\n' +
-                            'with http mocked out\n' +
-                            '{\n' +
-                            '  request: {\n' +
-                            "    url: 'GET /foo',\n" +
-                            '    cert: Buffer([0x01]),\n' +
-                            '    key: Buffer([0x05]),\n' +
-                            '    ca: Buffer([0x03])\n' +
-                            '  },\n' +
-                            '  response: 200\n' +
-                            '} to yield response 200\n' +
+                            "expected { url: 'https://www.google.com/foo', cert: Buffer([0x01]), key: Buffer([0x02]), ca: Buffer([0x03]) }\n" +
+                            "with http mocked out { request: { url: 'GET /foo', cert: Buffer([0x01]), key: Buffer([0x05]), ca: Buffer([0x03]) }, response: 200 } to yield response 200\n" +
                             '\n' +
                             'GET /foo HTTP/1.1\n' +
                             'Host: www.google.com\n' +
