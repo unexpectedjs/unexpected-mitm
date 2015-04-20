@@ -48,6 +48,36 @@ describe('unexpectedMitm', function () {
         });
     });
 
+
+    it('should mock out a request with a binary body', function () {
+        return expect('http://www.google.com/', 'with http mocked out', {
+            request: 'GET /',
+            response: {
+                statusCode: 200,
+                headers: {
+                    'Content-Type': 'application/octet-stream'
+                },
+                body: new Buffer([0x00, 0x01, 0xef, 0xff])
+            }
+        }, 'to yield response', {
+            statusCode: 200,
+            headers: {
+                'Content-Type': 'application/octet-stream'
+            },
+            body: new Buffer([0x00, 0x01, 0xef, 0xff])
+        });
+    });
+
+    it('should mock out a request with a binary body, short hand', function () {
+        return expect('http://www.google.com/', 'with http mocked out', {
+            request: 'GET /',
+            response: new Buffer([0x00, 0x01, 0xef, 0xff])
+        }, 'to yield response', {
+            statusCode: 200,
+            body: new Buffer([0x00, 0x01, 0xef, 0xff])
+        });
+    });
+
     describe('with async expects on the request', function () {
         it('should succeed', function () {
             return expect({
