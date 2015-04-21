@@ -19,7 +19,7 @@
     "request": "2.53.0",
     "unexpected": "7.0.0",
     "unexpected-http": "3.0.1",
-    "unexpected-messy": "3.0.1",
+    "unexpected-messy": "3.0.3",
     "unexpected-promise": "1.1.1"
   },
   "dependencies": {
