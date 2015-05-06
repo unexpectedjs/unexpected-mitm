@@ -1,4 +1,4 @@
-/*global describe, it, __dirname, beforeEach, afterEach, setTimeout*/
+/*global describe, it, __dirname, beforeEach, afterEach, setTimeout, setImmediate*/
 var pathModule = require('path'),
     fs = require('fs'),
     http = require('http'),
