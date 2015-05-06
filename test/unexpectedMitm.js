@@ -1,7 +1,8 @@
 /*global describe, it, __dirname, beforeEach, afterEach, setTimeout*/
 var pathModule = require('path'),
     fs = require('fs'),
-    http = require('http');
+    http = require('http'),
+    stream = require('stream');
 
 describe('unexpectedMitm', function () {
     var expect = require('unexpected')
@@ -47,7 +48,6 @@ describe('unexpectedMitm', function () {
             body: '<!DOCTYPE html>\n<html></html>'
         });
     });
-
 
     it('should mock out a request with a binary body', function () {
         return expect('http://www.google.com/', 'with http mocked out', {
@@ -308,6 +308,28 @@ describe('unexpectedMitm', function () {
         }, 'to yield response', {
             statusCode: 200,
             body: new Buffer('Contents of foo.txt\n', 'utf-8')
+        });
+    });
+
+    describe('with a response body provided as a stream', function () {
+        describe('that emits an error', function () {
+            it('should propagate the error to the mocked-out HTTP response', function () {
+                var erroringStream = new stream.Readable();
+                erroringStream._read = function (num, cb) {
+                    setImmediate(function () {
+                        erroringStream.emit('error', new Error('Fake error'));
+                    });
+                };
+                return expect('GET http://www.google.com/', 'with http mocked out', {
+                    request: 'GET http://www.google.com/',
+                    response: {
+                        headers: {
+                            'Content-Type': 'text/plain'
+                        },
+                        body: erroringStream
+                    }
+                }, 'to yield response', new Error('Fake error'));
+            });
         });
     });
 
