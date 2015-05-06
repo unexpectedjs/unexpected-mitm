@@ -17,7 +17,7 @@
     "istanbul": "0.3.5",
     "jshint": "2.6.0",
     "request": "2.53.0",
-    "unexpected": "7.0.0",
+    "unexpected": "7.0.5",
     "unexpected-http": "3.0.1",
     "unexpected-messy": "3.0.3",
     "unexpected-promise": "1.1.1"
