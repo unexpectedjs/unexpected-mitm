@@ -366,7 +366,7 @@ describe('unexpectedMitm', function () {
                                 'Content-Type': 'text/plain'
                             },
                             body: erroringStream
-                        },
+                        }
                     },
                     {
                         request: 'GET http://www.google.com/',
