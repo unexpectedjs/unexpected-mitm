@@ -26,6 +26,16 @@ describe('unexpectedMitm', function () {
                     return that.shift(expect, subject, 0);
                 }), 1);
             });
+        })
+        .addAssertion('to call the callback with no error', function (expect, subject) {
+            this.errorMode = 'nested';
+            return expect.promise(function (run) {
+                subject(run(function (err) {
+                    if (err) {
+                        throw err;
+                    }
+                }));
+            });
         });
 
     expect.output.preferredWidth = 150;
@@ -329,6 +339,45 @@ describe('unexpectedMitm', function () {
                         body: erroringStream
                     }
                 }, 'to yield response', new Error('Fake error'));
+            });
+
+            it('should recover from the error and replay the next request', function () {
+                var erroringStream = new stream.Readable();
+                erroringStream._read = function (num, cb) {
+                    setImmediate(function () {
+                        erroringStream.emit('error', new Error('Fake error'));
+                    });
+                };
+                return expect(function (cb) {
+                    http.get('http://www.google.com/').on('error', function (err) {
+                        http.get('http://www.google.com/').on('error', function (err) {
+                            expect.fail('request unexpectedly errored');
+                        }).on('response', function () {
+                            cb();
+                        }).end();
+                    }).on('response', function (response) {
+                        expect.fail('request unexpectedly got response');
+                    }).end();
+                }, 'with http mocked out', [
+                    {
+                        request: 'GET http://www.google.com/',
+                        response: {
+                            headers: {
+                                'Content-Type': 'text/plain'
+                            },
+                            body: erroringStream
+                        },
+                    },
+                    {
+                        request: 'GET http://www.google.com/',
+                        response: {
+                            headers: {
+                                'Content-Type': 'text/plain'
+                            },
+                            body: 'abcdef'
+                        }
+                    }
+                ], 'to call the callback with no error');
             });
         });
     });
