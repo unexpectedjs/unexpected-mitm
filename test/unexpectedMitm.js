@@ -2,7 +2,10 @@
 var pathModule = require('path'),
     fs = require('fs'),
     http = require('http'),
-    stream = require('stream');
+    https = require('https'),
+    pem = require('pem'),
+    stream = require('stream'),
+    passError = require('passerror');
 
 describe('unexpectedMitm', function () {
     var expect = require('unexpected')
@@ -656,7 +659,7 @@ describe('unexpectedMitm', function () {
         });
     });
 
-    describe('in recording mode against a local server', function () {
+    describe('in recording mode against a local HTTP server', function () {
         var handleRequest,
             server,
             serverAddress,
@@ -705,35 +708,6 @@ describe('unexpectedMitm', function () {
             }, 'to yield response', 405);
         });
 
-        // Figure out why this started failing
-        it('should record a client certificate', function () {
-            handleRequest = function (req, res) {
-                res.setHeader('Allow', 'GET, HEAD');
-                res.statusCode = 405;
-                res.end();
-            };
-
-            return expect({
-                url: 'POST ' + serverUrl,
-                cert: new Buffer([1]),
-                key: new Buffer([2]),
-                ca: new Buffer([3])
-            }, 'with expected http recording', {
-                request: {
-                    url: 'POST /',
-                    headers: {
-                        Host: serverAddress.address + ':' + serverAddress.port
-                    }
-                },
-                response: {
-                    statusCode: 405,
-                    headers: {
-                        Allow: 'GET, HEAD'
-                    }
-                }
-            }, 'to yield response', 405);
-        });
-
         it('should record an error', function () {
             var expectedError;
             // I do not know the exact version where this change was introduced. Hopefully this is enough to get
@@ -753,6 +727,77 @@ describe('unexpectedMitm', function () {
                 },
                 response: expectedError
             }, 'to yield response', expectedError);
+        });
+    });
+
+    describe('in recording mode against a local HTTPS server', function () {
+        var handleRequest,
+            server,
+            serverAddress,
+            serverUrl;
+
+        beforeEach(function (done) {
+            pem.createCertificate({days: 1, selfSigned: true}, passError(done, function (serverKeys) {
+                handleRequest = undefined;
+                server = https.createServer({
+                    cert: serverKeys.certificate,
+                    key: serverKeys.serviceKey
+                }).on('request', function (req, res) {
+                    res.sendDate = false;
+                    handleRequest(req, res);
+                }).listen(0);
+                serverAddress = server.address();
+                serverUrl = 'https://' + serverAddress.address + ':' + serverAddress.port + '/';
+                done();
+            }));
+        });
+
+        afterEach(function () {
+            server.close();
+        });
+
+        describe('with a client certificate', function () {
+            var clientKeys,
+                ca = new Buffer([1, 2, 3]); // Can apparently be bogus
+            beforeEach(function (done) {
+                pem.createCertificate({days: 1, selfSigned: true}, passError(done, function (keys) {
+                    clientKeys = keys;
+                    done();
+                }));
+            });
+
+            it('should record a client certificate', function () {
+                handleRequest = function (req, res) {
+                    res.setHeader('Allow', 'GET, HEAD');
+                    res.statusCode = 405;
+                    res.end();
+                };
+
+                return expect({
+                    url: 'POST ' + serverUrl,
+                    rejectUnauthorized: false,
+                    cert: clientKeys.certificate,
+                    key: clientKeys.serviceKey,
+                    ca: ca
+                }, 'with expected http recording', {
+                    request: {
+                        url: 'POST /',
+                        rejectUnauthorized: false,
+                        cert: clientKeys.certificate,
+                        key: clientKeys.serviceKey,
+                        ca: ca,
+                        headers: {
+                            Host: serverAddress.address + ':' + serverAddress.port
+                        }
+                    },
+                    response: {
+                        statusCode: 405,
+                        headers: {
+                            Allow: 'GET, HEAD'
+                        }
+                    }
+                }, 'to yield response', 405);
+            });
         });
     });
 });
