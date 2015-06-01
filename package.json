@@ -11,7 +11,7 @@
   },
   "peerDependencies": {
     "unexpected": "8",
-    "unexpected-messy": "4"
+    "unexpected-messy": "^4.1.0"
   },
   "devDependencies": {
     "coveralls": "2.11.2",
@@ -20,8 +20,8 @@
     "pem": "1.7.2",
     "request": "2.53.0",
     "unexpected": "8.0.0",
-    "unexpected-http": "4.0.0",
-    "unexpected-messy": "4.0.0",
+    "unexpected-http": "4.2.1",
+    "unexpected-messy": "4.1.0",
     "unexpected-promise": "1.2.0"
   },
   "dependencies": {
@@ -29,7 +29,7 @@
     "callsite": "1.0.0",
     "detect-indent": "3.0.0",
     "memoizesync": "0.5.0",
-    "messy": "6.1.0",
+    "messy": "6.3.0",
     "mitm": "1.1.0",
     "mocha": "2.1.0",
     "passerror": "1.1.0",

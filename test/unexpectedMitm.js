@@ -831,6 +831,8 @@ describe('unexpectedMitm', function () {
                 body: 'foo=bar'
             }, 'with expected http recording', {
                 request: {
+                    host: serverAddress.address,
+                    port: serverAddress.port,
                     url: 'POST /',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
@@ -861,6 +863,8 @@ describe('unexpectedMitm', function () {
             expectedError.syscall = 'getaddrinfo';
             return expect('http://www.icwqjecoiqwjecoiwqjecoiwqjceoiwq.com/', 'with expected http recording', {
                 request: {
+                    host: 'www.icwqjecoiqwjecoiwqjecoiwqjceoiwq.com',
+                    port: 80,
                     url: 'GET /',
                     headers: { Host: 'www.icwqjecoiqwjecoiwqjecoiwqjceoiwq.com' }
                 },
@@ -921,6 +925,8 @@ describe('unexpectedMitm', function () {
                 }, 'with expected http recording', {
                     request: {
                         url: 'POST /',
+                        host: serverAddress.address,
+                        port: serverAddress.port,
                         rejectUnauthorized: false,
                         cert: clientKeys.certificate,
                         key: clientKeys.serviceKey,
