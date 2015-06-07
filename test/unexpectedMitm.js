@@ -606,6 +606,65 @@ describe('unexpectedMitm', function () {
         );
     });
 
+    describe('with response function', function () {
+        it('should allow returning a response in callback', function  () {
+            var cannedResponse = {
+                statusCode: 404
+            };
+
+            return expect('/404', 'with http mocked out', {
+                request: {
+                    method: 'GET',
+                    url: '/404'
+                },
+                response: function (responseProperties, callback) {
+                    expect(responseProperties, 'to equal', {
+                        method: 'GET',
+                        path: '/404',
+                        protocolName: 'HTTP',
+                        protocolVersion: '1.1',
+                        headers: {
+                            host: 'localhost',
+                            'content-length': '0',
+                            connection: 'keep-alive'
+                        },
+                        encrypted: false,
+                        unchunkedBody: new Buffer([])
+                    });
+
+                    var response = (responseProperties.path === '/404' ? cannedResponse : {
+                        statusCode: 200
+                    });
+
+                    setImmediate(function () {
+                        callback(null, response);
+                    });
+                }
+            }, 'to yield response', cannedResponse);
+        });
+
+        it('should report if the response function returns an error', function  () {
+            var err = new Error('bailed');
+
+            return expect(
+                expect('/404', 'with http mocked out', {
+                    request: {
+                        method: 'GET',
+                        url: '/404'
+                    },
+                    response: function (responseProperties, callback) {
+                        setImmediate(function () {
+                            callback(err);
+                        });
+                    }
+                }, 'to yield response', 200),
+                'when rejected',
+                'to be',
+                err
+            );
+        });
+    });
+
     describe('wíth a client certificate', function () {
         describe('when asserting on ca/cert/key', function () {
             it('should succeed', function () {
