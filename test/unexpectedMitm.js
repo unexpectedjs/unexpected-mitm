@@ -169,8 +169,8 @@ describe('unexpectedMitm', function () {
                     "POST / HTTP/1.1\n" +
                     "Host: www.google.com\n" +
                     "Content-Type: application/json\n" +
+                    "Content-Length: 11\n" +
                     "Connection: keep-alive\n" +
-                    "Transfer-Encoding: chunked\n" +
                     "\n" +
                     "expected { foo: 123 } when delayed a little bit to equal { foo: 456 }\n" +
                     "\n" +
@@ -216,6 +216,7 @@ describe('unexpectedMitm', function () {
                         '\n' +
                         'GET / HTTP/1.1\n' +
                         'Host: www.google.com\n' +
+                        'Content-Length: 0\n' +
                         'Connection: keep-alive\n' +
                         '// expected an encrypted request\n' +
                         '\n' +
@@ -245,6 +246,7 @@ describe('unexpectedMitm', function () {
                         '\n' +
                         'GET / HTTP/1.1\n' +
                         'Host: www.google.com\n' +
+                        'Content-Length: 0\n' +
                         'Connection: keep-alive\n' +
                         '// expected an encrypted request\n' +
                         '\n' +
@@ -277,6 +279,7 @@ describe('unexpectedMitm', function () {
                     'Host: www.google.com // should equal www.example.com\n' +
                     '                     // -www.google.com\n' +
                     '                     // +www.example.com\n' +
+                    'Content-Length: 0\n' +
                     'Connection: keep-alive\n' +
                     '\n' +
                     'HTTP/1.1 200 OK'
@@ -419,8 +422,8 @@ describe('unexpectedMitm', function () {
                     'POST / HTTP/1.1\n' +
                     'Host: www.google.com\n' +
                     'Content-Type: application/json\n' +
+                    'Content-Length: 11\n' +
                     'Connection: keep-alive\n' +
-                    'Transfer-Encoding: chunked\n' +
                     '\n' +
                     '{\n' +
                     '  foo: 123 // should equal 456\n' +
@@ -469,6 +472,7 @@ describe('unexpectedMitm', function () {
                 '\n' +
                 'GET /foo HTTP/1.1 // should be GET /bar\n' +
                 'Host: www.google.com\n' +
+                'Content-Length: 0\n' +
                 'Connection: keep-alive\n' +
                 '\n' +
                 'HTTP/1.1 200 OK'
@@ -497,6 +501,7 @@ describe('unexpectedMitm', function () {
                 '\n' +
                 'GET /foo HTTP/1.1\n' +
                 'Host: www.google.com\n' +
+                'Content-Length: 0\n' +
                 'Connection: keep-alive\n' +
                 '\n' +
                 'HTTP/1.1 200 OK\n' +
@@ -542,8 +547,8 @@ describe('unexpectedMitm', function () {
                 "POST /foo HTTP/1.1\n" +
                 "Host: www.google.com\n" +
                 "Content-Type: application/json\n" +
+                "Content-Length: 11\n" +
                 "Connection: keep-alive\n" +
-                "Transfer-Encoding: chunked\n" +
                 "\n" +
                 "{ foo: 123 }\n" +
                 "\n" +
@@ -568,6 +573,7 @@ describe('unexpectedMitm', function () {
                 '// should be removed:\n' +
                 '// GET /foo HTTP/1.1\n' +
                 '// Host: www.google.com\n' +
+                '// Content-Length: 0\n' +
                 '// Connection: keep-alive\n' +
                 '//\n' +
                 '// <no response>'
@@ -590,6 +596,7 @@ describe('unexpectedMitm', function () {
                     '\n' +
                     '  GET /foo HTTP/1.1\n' +
                     '  Host: www.google.com\n' +
+                    '  Content-Length: 0\n' +
                     '\n' +
                     '  HTTP/1.1 200 OK // should be 412 Precondition Failed\n' +
                     '  Connection: keep-alive\n' +
@@ -645,6 +652,7 @@ describe('unexpectedMitm', function () {
                             '\n' +
                             'GET /foo HTTP/1.1\n' +
                             'Host: www.google.com\n' +
+                            'Content-Length: 0\n' +
                             'Connection: keep-alive\n' +
                             '// key: expected Buffer([0x02]) to satisfy Buffer([0x05])\n' +
                             '//\n' +
