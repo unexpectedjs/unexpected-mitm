@@ -81,16 +81,6 @@ describe('unexpectedMitm', function () {
         });
     });
 
-    it('should mock out a request with a binary body, shorthand', function () {
-        return expect('http://www.google.com/', 'with http mocked out', {
-            request: 'GET /',
-            response: new Buffer([0x00, 0x01, 0xef, 0xff])
-        }, 'to yield response', {
-            statusCode: 200,
-            body: new Buffer([0x00, 0x01, 0xef, 0xff])
-        });
-    });
-
     it('should mock out an application/json response with invalid JSON', function () {
         return expect('http://www.google.com/', 'with http mocked out', {
             request: 'GET /',
@@ -320,7 +310,7 @@ describe('unexpectedMitm', function () {
     it('should support providing the response as a stream', function () {
         return expect('http://www.google.com/', 'with http mocked out', {
             request: 'GET /',
-            response: fs.createReadStream(pathModule.resolve(__dirname, '..', 'testdata', 'foo.txt'))
+            response: { body: fs.createReadStream(pathModule.resolve(__dirname, '..', 'testdata', 'foo.txt')) }
         }, 'to yield response', {
             statusCode: 200,
             body: new Buffer('Contents of foo.txt\n', 'utf-8')
