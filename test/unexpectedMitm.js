@@ -617,28 +617,10 @@ describe('unexpectedMitm', function () {
                     method: 'GET',
                     url: '/404'
                 },
-                response: function (responseProperties, callback) {
-                    expect(responseProperties, 'to equal', {
-                        method: 'GET',
-                        path: '/404',
-                        protocolName: 'HTTP',
-                        protocolVersion: '1.1',
-                        headers: {
-                            host: 'localhost',
-                            'content-length': '0',
-                            connection: 'keep-alive'
-                        },
-                        encrypted: false,
-                        unchunkedBody: new Buffer([])
-                    });
+                response: function (req, res) {
+                    res.statusCode = req.url === '/404' ? cannedResponse.statusCode : 200;
 
-                    var response = (responseProperties.path === '/404' ? cannedResponse : {
-                        statusCode: 200
-                    });
-
-                    setImmediate(function () {
-                        callback(null, response);
-                    });
+                    res.end();
                 }
             }, 'to yield response', cannedResponse);
         });
@@ -652,10 +634,8 @@ describe('unexpectedMitm', function () {
                         method: 'GET',
                         url: '/404'
                     },
-                    response: function (responseProperties, callback) {
-                        setImmediate(function () {
-                            callback(err);
-                        });
+                    response: function (req, res) {
+                        throw err;
                     }
                 }, 'to yield response', 200),
                 'when rejected',
