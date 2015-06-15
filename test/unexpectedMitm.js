@@ -625,6 +625,28 @@ describe('unexpectedMitm', function () {
             }, 'to yield response', cannedResponse);
         });
 
+        it('should allow returning a response with a body', function  () {
+            var expectedBody = {
+                foo: 'bar'
+            };
+
+            return expect('/200', 'with http mocked out', {
+                request: {
+                    method: 'GET',
+                    url: '/200'
+                },
+                response: function (req, res) {
+                    res.writeHead(200, {
+                        'Content-Type': 'application/json'
+                    });
+
+                    res.end(new Buffer(JSON.stringify(expectedBody)));
+                }
+            }, 'to yield response', {
+                body: expectedBody
+            });
+        });
+
         it('should report if the response function returns an error', function  () {
             var err = new Error('bailed');
 
