@@ -637,7 +637,7 @@ describe('unexpectedMitm', function () {
                 },
                 response: function (req, res) {
                     res.writeHead(200, {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json; charset=utf8'
                     });
 
                     res.end(new Buffer(JSON.stringify(expectedBody)));
