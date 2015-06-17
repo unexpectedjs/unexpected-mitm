@@ -606,6 +606,103 @@ describe('unexpectedMitm', function () {
         );
     });
 
+    describe('with response function', function () {
+        it('should allow returning a response in callback', function  () {
+            var cannedResponse = {
+                statusCode: 404
+            };
+
+            return expect('/404', 'with http mocked out', {
+                request: {
+                    method: 'GET',
+                    url: '/404'
+                },
+                response: function (req, res) {
+                    res.statusCode = req.url === '/404' ? cannedResponse.statusCode : 200;
+
+                    res.end();
+                }
+            }, 'to yield response', cannedResponse);
+        });
+
+        it('should allow returning a response with a body Buffer', function  () {
+            var expectedBuffer = new Buffer([0xc3, 0xa6, 0xc3, 0xb8, 0xc3, 0xa5]);
+
+            return expect('/200', 'with http mocked out', {
+                request: {
+                    method: 'GET',
+                    url: '/200'
+                },
+                response: function (req, res) {
+                    res.end(expectedBuffer);
+                }
+            }, 'to yield response', {
+                body: expectedBuffer
+            });
+        });
+
+        it('should allow returning a response with a body Array', function  () {
+            var expectedArray = [null, {}, {foo: 'bar'}];
+
+            return expect('/200', 'with http mocked out', {
+                request: {
+                    method: 'GET',
+                    url: '/200'
+                },
+                response: function (req, res) {
+                    res.writeHead(200, {
+                        'Content-Type': 'application/json'
+                    });
+
+                    res.end(new Buffer(JSON.stringify(expectedArray)));
+                }
+            }, 'to yield response', {
+                body: expectedArray
+            });
+        });
+
+        it('should allow returning a response with a body object', function  () {
+            var expectedBody = {
+                foo: 'bar'
+            };
+
+            return expect('/200', 'with http mocked out', {
+                request: {
+                    method: 'GET',
+                    url: '/200'
+                },
+                response: function (req, res) {
+                    res.writeHead(200, {
+                        'Content-Type': 'application/json; charset=utf8'
+                    });
+
+                    res.end(new Buffer(JSON.stringify(expectedBody)));
+                }
+            }, 'to yield response', {
+                body: expectedBody
+            });
+        });
+
+        it('should report if the response function returns an error', function  () {
+            var err = new Error('bailed');
+
+            return expect(
+                expect('/404', 'with http mocked out', {
+                    request: {
+                        method: 'GET',
+                        url: '/404'
+                    },
+                    response: function (req, res) {
+                        throw err;
+                    }
+                }, 'to yield response', 200),
+                'when rejected',
+                'to be',
+                err
+            );
+        });
+    });
+
     describe('wíth a client certificate', function () {
         describe('when asserting on ca/cert/key', function () {
             it('should succeed', function () {
