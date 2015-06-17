@@ -612,11 +612,8 @@ describe('unexpectedMitm', function () {
                 statusCode: 404
             };
 
-            return expect('/404', 'with http mocked out', {
-                request: {
-                    method: 'GET',
-                    url: '/404'
-                },
+            return expect('GET /404', 'with http mocked out', {
+                request: 'GET /404',
                 response: function (req, res) {
                     res.statusCode = req.url === '/404' ? cannedResponse.statusCode : 200;
 
@@ -700,6 +697,43 @@ describe('unexpectedMitm', function () {
                 'to be',
                 err
             );
+        });
+
+        describe('with documentation response function', function () {
+            function documentationHandler(req, res) {
+                var myMessage;
+
+                if (req.url === '/thatOneExpectedThing') {
+                    myMessage = '<h1>to be expected</h1>';
+                } else {
+                    myMessage = '<h1>how very unexpected</h1>';
+                }
+
+                res.writeHead(200, {
+                    'Content-Type': 'text/plain'
+                });
+                res.end(myMessage);
+            }
+
+            it('should remark "to be expected" for GET /thatOneExpectedThing', function () {
+                return expect('/thatOneExpectedThing', 'with http mocked out', {
+                    request: '/thatOneExpectedThing',
+                    response: documentationHandler
+                }, 'to yield response', {
+                    statusCode: 200,
+                    body: '<h1>to be expected</h1>'
+                });
+            });
+
+            it('should remark "how very unexpected" for GET /somethingOtherThing', function () {
+                return expect('/somethingOtherThing', 'with http mocked out', {
+                    request: '/somethingOtherThing',
+                    response: documentationHandler
+                }, 'to yield response', {
+                    statusCode: 200,
+                    body: '<h1>how very unexpected</h1>'
+                });
+            });
         });
     });
 

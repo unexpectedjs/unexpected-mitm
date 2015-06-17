@@ -57,10 +57,13 @@ And what do you know, the test passes! But there's a couple of problems with it:
 * The test will break as soon as it rains in London
 * It doesn't obtain coverage of the "No" case
 
+Mock Responses
+--------------
+
 Unexpected-mitm solves these problems by allowing you to mock out the HTTP traffic:
 
 ```js
-expect.installPlugin(require('./lib/unexpectedMitm'));
+expect.installPlugin(require('unexpected-mitm'));
 
 describe('myApp', function () {
     it('should report that it does not currently rain', function () {
@@ -94,9 +97,58 @@ describe('myApp', function () {
 });
 ```
 
-Next step would be is to add another `it` that tests that an upstream JSON response with reports of rainy weather indeed results in an HTML response of `<h1>Yes</h1>`.
+The next step would be adding another `it` to test that an upstream JSON response with reports of rainy weather indeed results in an HTML response of `<h1>Yes</h1>`.
 
 You can also specify an `Error` instance as the mocked out response to simulate a TCP error happening while fetching the weather JSON. That allows you test the error handling code in the `request` callback.
+
+Response Functions
+------------------
+
+Mocking responses allows you to quickly specify the responses you desire, but suppose you already
+have code which generates the correct responses for particular requests?
+
+Response functions let you dynamically write responses based on the request. Standard req/res
+objects are provided to response function, and by conforming to the standard node API, it means
+any server code is compatible and can be leveraged:
+
+```js
+describe('with documentation response function', function () {
+    function documentationHandler(req, res) {
+        var myMessage;
+
+        if (req.url === '/thatOneExpectedThing') {
+            myMessage = '<h1>to be expected</h1>';
+        } else {
+            myMessage = '<h1>how very unexpected</h1>';
+        }
+
+        res.writeHead(200, {
+            'Content-Type': 'text/plain'
+        });
+        res.end(myMessage);
+    }
+
+    it('should remark "to be expected" for GET /thatOneExpectedThing', function () {
+        return expect('/thatOneExpectedThing', 'with http mocked out', {
+            request: '/thatOneExpectedThing',
+            response: documentationHandler
+        }, 'to yield response', {
+            statusCode: 200,
+            body: '<h1>to be expected</h1>'
+        });
+    });
+
+    it('should remark "how very unexpected" for GET /somethingOtherThing', function () {
+        return expect('/somethingOtherThing', 'with http mocked out', {
+            request: '/somethingOtherThing',
+            response: documentationHandler
+        }, 'to yield response', {
+            statusCode: 200,
+            body: '<h1>how very unexpected</h1>'
+        });
+    });
+});
+```
 
 License
 -------
