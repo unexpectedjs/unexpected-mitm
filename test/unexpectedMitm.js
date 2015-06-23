@@ -81,6 +81,13 @@ describe('unexpectedMitm', function () {
         });
     });
 
+    it('should mock out an erroring response', function () {
+        return expect('http://www.google.com/', 'with http mocked out', {
+            request: 'GET /',
+            response: new Error('foo')
+        }, 'to yield response', new Error('foo'));
+    });
+
     it('should mock out an application/json response with invalid JSON', function () {
         return expect('http://www.google.com/', 'with http mocked out', {
             request: 'GET /',
