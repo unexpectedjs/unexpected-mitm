@@ -11,7 +11,6 @@ describe('unexpectedMitm', function () {
     var expect = require('unexpected')
         .installPlugin(require('../lib/unexpectedMitm'))
         .installPlugin(require('unexpected-http'))
-        .installPlugin(require('unexpected-promise'))
         .addAssertion('with expected http recording', function (expect, subject, expectedRecordedExchanges) { // ...
             var that = this;
             this.errorMode = 'nested';
@@ -28,16 +27,6 @@ describe('unexpectedMitm', function () {
                 setTimeout(run(function () {
                     return that.shift(expect, subject, 0);
                 }), 1);
-            });
-        })
-        .addAssertion('to call the callback with no error', function (expect, subject) {
-            this.errorMode = 'nested';
-            return expect.promise(function (run) {
-                subject(run(function (err) {
-                    if (err) {
-                        throw err;
-                    }
-                }));
             });
         });
 
@@ -187,7 +176,7 @@ describe('unexpectedMitm', function () {
     it('should not break when the assertion being delegated to throws synchronously', function () {
         expect(function () {
             expect('http://www.google.com/', 'with http mocked out', [], 'to foobarquux');
-        }, 'to throw', /^Unknown assertion "to foobarquux"/);
+        }, 'to throw', /^Unknown assertion 'to foobarquux'/);
     });
 
     // Awaiting https://github.com/moll/node-mitm/issues/10
@@ -380,7 +369,7 @@ describe('unexpectedMitm', function () {
                             body: 'abcdef'
                         }
                     }
-                ], 'to call the callback with no error');
+                ], 'to call the callback without error');
             });
         });
     });
