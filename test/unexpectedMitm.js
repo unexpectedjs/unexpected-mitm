@@ -473,6 +473,37 @@ describe('unexpectedMitm', function () {
                     response: 200
                 },
                 {
+                    request: 'GET /foo',
+                    response: 200
+                }
+            ], 'to yield response', 200),
+            'when rejected',
+            'to have message',
+                "expected 'http://www.google.com/foo'\n" +
+                "with http mocked out [ { request: 'GET /foo', response: 200 }, { request: 'GET /foo', response: 200 } ] to yield response 200\n" +
+                '\n' +
+                'GET /foo HTTP/1.1\n' +
+                'Host: www.google.com\n' +
+                'Content-Length: 0\n' +
+                'Connection: keep-alive\n' +
+                '\n' +
+                'HTTP/1.1 200 OK\n' +
+                '\n' +
+                '// missing:\n' +
+                '// GET /foo\n' +
+                '//\n' +
+                '// HTTP/1.1 200 OK'
+        );
+    });
+
+    it('should produce an error if a mocked request is not exercised and there are non-trivial assertions on it', function () {
+        return expect(
+            expect('http://www.google.com/foo', 'with http mocked out', [
+                {
+                    request: 'GET /foo',
+                    response: 200
+                },
+                {
                     request: {
                         url: 'GET /foo',
                         headers: { Foo: expect.it("to match", /bar/) }
