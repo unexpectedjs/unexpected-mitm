@@ -962,4 +962,22 @@ describe('unexpectedMitm', function () {
             });
         });
     });
+
+    it('should not overwrite an explicitly defined Host header in the expected request properties', function () {
+        return expect({
+            url: 'GET http://localhost:123/',
+            port: 456,
+            headers: {
+                Host: 'foobar:567'
+            }
+        }, 'with http mocked out', {
+            request: {
+                url: 'http://localhost:123/',
+                headers: {
+                    Host: 'foobar:567'
+                }
+            },
+            response: 200
+        }, 'to yield response', 200)
+    });
 });
