@@ -77,6 +77,20 @@ describe('unexpectedMitm', function () {
         }, 'to yield response', new Error('foo'));
     });
 
+    it('should mock out an application/json response', function () {
+        return expect('http://www.google.com/', 'with http mocked out', {
+            request: 'GET /',
+            response: {
+                body: { abc: 123 }
+            }
+        }, 'to yield response', {
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: { abc: 123 }
+        });
+    });
+
     it('should mock out an application/json response with invalid JSON', function () {
         return expect('http://www.google.com/', 'with http mocked out', {
             request: 'GET /',
@@ -92,6 +106,31 @@ describe('unexpectedMitm', function () {
             },
             unchunkedBody: new Buffer('!==!=', 'utf-8')
         });
+    });
+
+    it.skip('should preserve the original serialization of JSON provided as a string', function () {
+        return expect(function (cb) {
+            http.get('http://www.examplestuff.com/')
+                .on('error', cb)
+                .on('response', function (response) {
+                    var chunks = [];
+                    response.on('data', function (chunk) {
+                        chunks.push(chunk);
+                    }).on('end', function () {
+                        expect(Buffer.concat(chunks).toString('utf-8'), 'to equal', '{"foo":\n123\n}');
+                        cb();
+                    });
+                }).end();
+        }, 'with http mocked out', [
+            {
+                response: {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: '{"foo":\n123\n}'
+                }
+            }
+        ], 'to call the callback without error');
     });
 
     describe('with async expects on the request', function () {
