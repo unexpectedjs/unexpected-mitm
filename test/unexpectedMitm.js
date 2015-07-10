@@ -978,6 +978,6 @@ describe('unexpectedMitm', function () {
                 }
             },
             response: 200
-        }, 'to yield response', 200)
+        }, 'to yield response', 200);
     });
 });
