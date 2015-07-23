@@ -108,7 +108,7 @@ describe('unexpectedMitm', function () {
         });
     });
 
-    it.skip('should preserve the original serialization of JSON provided as a string', function () {
+    it('should preserve the original serialization of JSON provided as a string', function () {
         return expect(function (cb) {
             http.get('http://www.examplestuff.com/')
                 .on('error', cb)
