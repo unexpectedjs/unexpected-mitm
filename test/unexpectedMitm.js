@@ -1008,14 +1008,14 @@ describe('unexpectedMitm', function () {
 
     it('should not overwrite an explicitly defined Host header in the expected request properties', function () {
         return expect({
-            url: 'GET http://localhost:123/',
+            url: 'GET http://localhost/',
             port: 456,
             headers: {
                 Host: 'foobar:567'
             }
         }, 'with http mocked out', {
             request: {
-                url: 'http://localhost:123/',
+                url: 'http://localhost/',
                 headers: {
                     Host: 'foobar:567'
                 }
