@@ -306,6 +306,10 @@ describe('unexpectedMitm', function () {
                     '                     // +www.example.com\n' +
                     'Content-Length: 0\n' +
                     'Connection: keep-alive\n' +
+                    "// host: expected 'www.google.com' to equal 'www.example.com'\n" +
+                    '//\n' +
+                    '// -www.google.com\n' +
+                    '// +www.example.com\n' +
                     '\n' +
                     'HTTP/1.1 200 OK'
             );
