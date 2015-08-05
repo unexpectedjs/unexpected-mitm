@@ -2,6 +2,7 @@
   "name": "unexpected-mitm",
   "version": "7.5.1",
   "description": "Unexpected plugin for the mitm library",
+  "author": "Andreas Lind <andreas@one.com>",
   "main": "lib/unexpectedMitm.js",
   "scripts": {
     "lint": "jshint .",
