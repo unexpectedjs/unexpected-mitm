@@ -16,7 +16,7 @@
   },
   "peerDependencies": {
     "unexpected": "^9.5.0",
-    "unexpected-messy": "^4.7.0"
+    "unexpected-messy": "^4.8.0"
   },
   "devDependencies": {
     "coveralls": "2.11.2",
@@ -38,6 +38,6 @@
     "mitm": "1.1.0",
     "passerror": "1.1.0",
     "underscore": "1.7.0",
-    "unexpected-messy": "^4.7.0"
+    "unexpected-messy": "^4.8.0"
   }
 }
