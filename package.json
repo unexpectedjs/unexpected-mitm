@@ -16,7 +16,7 @@
   },
   "peerDependencies": {
     "unexpected": "^9.2.0",
-    "unexpected-messy": "^4.6.0"
+    "unexpected-messy": "^4.7.0"
   },
   "devDependencies": {
     "coveralls": "2.11.2",
@@ -27,17 +27,17 @@
     "pem": "1.7.2",
     "request": "2.53.0",
     "unexpected": "9.2.0",
-    "unexpected-http": "4.6.1",
-    "unexpected-messy": "4.6.0"
+    "unexpected-http": "4.6.1"
   },
   "dependencies": {
     "async": "0.9.0",
     "callsite": "1.0.0",
     "detect-indent": "3.0.0",
     "memoizesync": "0.5.0",
-    "messy": "6.5.0",
+    "messy": "^6.6.1",
     "mitm": "1.1.0",
     "passerror": "1.1.0",
-    "underscore": "1.7.0"
+    "underscore": "1.7.0",
+    "unexpected-messy": "^4.7.0"
   }
 }
