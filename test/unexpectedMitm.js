@@ -236,8 +236,7 @@ describe('unexpectedMitm', function () {
                     }, 'to yield response', 200),
                     'when rejected',
                     'to have message',
-                        "expected 'http://www.google.com/'\n" +
-                        "with http mocked out { request: 'GET https://www.google.com/', response: 200 } to yield response 200\n" +
+                        "expected 'http://www.google.com/' with http mocked out { request: 'GET https://www.google.com/', response: 200 } to yield response 200\n" +
                         '\n' +
                         'GET / HTTP/1.1\n' +
                         'Host: www.google.com\n' +
@@ -266,8 +265,7 @@ describe('unexpectedMitm', function () {
                     }, 'to yield response', 200),
                     'when rejected',
                     'to have message',
-                        "expected 'http://www.google.com/'\n" +
-                        "with http mocked out { request: { url: 'GET /', encrypted: true }, response: 200 } to yield response 200\n" +
+                        "expected 'http://www.google.com/' with http mocked out { request: { url: 'GET /', encrypted: true }, response: 200 } to yield response 200\n" +
                         '\n' +
                         'GET / HTTP/1.1\n' +
                         'Host: www.google.com\n' +
@@ -297,8 +295,7 @@ describe('unexpectedMitm', function () {
                 }, 'to yield response', 200),
                 'when rejected',
                 'to have message',
-                    "expected 'http://www.google.com/'\n" +
-                    "with http mocked out { request: 'POST http://www.example.com/', response: 200 } to yield response 200\n" +
+                    "expected 'http://www.google.com/' with http mocked out { request: 'POST http://www.example.com/', response: 200 } to yield response 200\n" +
                     '\n' +
                     'GET / HTTP/1.1 // should be POST /\n' +
                     'Host: www.google.com // should equal www.example.com\n' +
