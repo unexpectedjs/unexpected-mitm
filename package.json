@@ -25,6 +25,7 @@
     "mocha": "2.2.5",
     "pem": "1.7.2",
     "request": "2.53.0",
+    "semver": "5.0.1",
     "unexpected": "9.6.0",
     "unexpected-http": "^4.8.0"
   },

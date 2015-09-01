@@ -5,7 +5,8 @@ var pathModule = require('path'),
     https = require('https'),
     pem = require('pem'),
     stream = require('stream'),
-    passError = require('passerror');
+    passError = require('passerror'),
+    semver = require('semver');
 
 describe('unexpectedMitm', function () {
     var expect = require('unexpected')
@@ -184,30 +185,32 @@ describe('unexpectedMitm', function () {
                     body: '<!DOCTYPE html>\n<html></html>'
                 }),
                 'when rejected',
-                'to have message',
-                    "expected { url: 'POST http://www.google.com/', body: { foo: 123 } } with http mocked out\n" +
-                    "{\n" +
-                    "  request: { url: 'POST /', body: expect.it('when delayed a little bit', 'to equal', ...) },\n" +
-                    "  response: { statusCode: 200, headers: { 'Content-Type': 'text/html; charset=UTF-8' }, body: '<!DOCTYPE html>\\n<html></html>' }\n" +
-                    "} to yield response { statusCode: 200, headers: { 'Content-Type': 'text/html; charset=UTF-8' }, body: '<!DOCTYPE html>\\n<html></html>' }\n" +
-                    "\n" +
-                    "POST / HTTP/1.1\n" +
-                    "Host: www.google.com\n" +
-                    "Content-Type: application/json\n" +
-                    "Content-Length: 11\n" +
-                    "Connection: keep-alive\n" +
-                    "\n" +
-                    "expected { foo: 123 } when delayed a little bit to equal { foo: 456 }\n" +
-                    "\n" +
-                    "{\n" +
-                    "  foo: 123 // should equal 456\n" +
-                    "}\n" +
-                    "\n" +
-                    "HTTP/1.1 200 OK\n" +
-                    "Content-Type: text/html; charset=UTF-8\n" +
-                    "\n" +
-                    "<!DOCTYPE html>\n" +
-                    "<html></html>"
+                'to have message', function (message) {
+                    expect(message.replace(/^Connection:.*\n/m, ''), 'to equal',
+                        "expected { url: 'POST http://www.google.com/', body: { foo: 123 } } with http mocked out\n" +
+                        "{\n" +
+                        "  request: { url: 'POST /', body: expect.it('when delayed a little bit', 'to equal', ...) },\n" +
+                        "  response: { statusCode: 200, headers: { 'Content-Type': 'text/html; charset=UTF-8' }, body: '<!DOCTYPE html>\\n<html></html>' }\n" +
+                        "} to yield response { statusCode: 200, headers: { 'Content-Type': 'text/html; charset=UTF-8' }, body: '<!DOCTYPE html>\\n<html></html>' }\n" +
+                        "\n" +
+                        "POST / HTTP/1.1\n" +
+                        "Host: www.google.com\n" +
+                        "Content-Type: application/json\n" +
+                        "Content-Length: 11\n" +
+                        "\n" +
+                        "expected { foo: 123 } when delayed a little bit to equal { foo: 456 }\n" +
+                        "\n" +
+                        "{\n" +
+                        "  foo: 123 // should equal 456\n" +
+                        "}\n" +
+                        "\n" +
+                        "HTTP/1.1 200 OK\n" +
+                        "Content-Type: text/html; charset=UTF-8\n" +
+                        "\n" +
+                        "<!DOCTYPE html>\n" +
+                        "<html></html>"
+                    );
+                }
             );
         });
     });
@@ -235,7 +238,7 @@ describe('unexpectedMitm', function () {
                         response: 200
                     }, 'to yield response', 200),
                     'when rejected',
-                    'to have message',
+                    'to have message', function (message) {
                         "expected 'http://www.google.com/' with http mocked out { request: 'GET https://www.google.com/', response: 200 } to yield response 200\n" +
                         '\n' +
                         'GET / HTTP/1.1\n' +
@@ -245,6 +248,7 @@ describe('unexpectedMitm', function () {
                         '// expected an encrypted request\n' +
                         '\n' +
                         'HTTP/1.1 200 OK'
+                    }
                 );
             });
         });
@@ -264,7 +268,7 @@ describe('unexpectedMitm', function () {
                         response: 200
                     }, 'to yield response', 200),
                     'when rejected',
-                    'to have message',
+                    'to have message', function (message) {
                         "expected 'http://www.google.com/' with http mocked out { request: { url: 'GET /', encrypted: true }, response: 200 } to yield response 200\n" +
                         '\n' +
                         'GET / HTTP/1.1\n' +
@@ -274,6 +278,7 @@ describe('unexpectedMitm', function () {
                         '// expected an encrypted request\n' +
                         '\n' +
                         'HTTP/1.1 200 OK'
+                    }
                 );
             });
         });
@@ -294,21 +299,24 @@ describe('unexpectedMitm', function () {
                     response: 200
                 }, 'to yield response', 200),
                 'when rejected',
-                'to have message',
-                    "expected 'http://www.google.com/' with http mocked out { request: 'POST http://www.example.com/', response: 200 } to yield response 200\n" +
-                    '\n' +
-                    'GET / HTTP/1.1 // should be POST /\n' +
-                    'Host: www.google.com // should equal www.example.com\n' +
-                    '                     // -www.google.com\n' +
-                    '                     // +www.example.com\n' +
-                    'Content-Length: 0\n' +
-                    'Connection: keep-alive\n' +
-                    "// host: expected 'www.google.com' to equal 'www.example.com'\n" +
-                    '//\n' +
-                    '// -www.google.com\n' +
-                    '// +www.example.com\n' +
-                    '\n' +
-                    'HTTP/1.1 200 OK'
+                'to have message', function (message) {
+                    expect(message.replace(/^Connection:.*\n/m, ''), 'to equal',
+                        "expected 'http://www.google.com/'\n" +
+                        "with http mocked out { request: 'POST http://www.example.com/', response: 200 } to yield response 200\n" +
+                        '\n' +
+                        'GET / HTTP/1.1 // should be POST /\n' +
+                        'Host: www.google.com // should equal www.example.com\n' +
+                        '                     // -www.google.com\n' +
+                        '                     // +www.example.com\n' +
+                        'Content-Length: 0\n' +
+                        "// host: expected 'www.google.com' to equal 'www.example.com'\n" +
+                        '//\n' +
+                        '// -www.google.com\n' +
+                        '// +www.example.com\n' +
+                        '\n' +
+                        'HTTP/1.1 200 OK'
+                    );
+                }
             );
         });
     });
@@ -441,21 +449,23 @@ describe('unexpectedMitm', function () {
                     response: 200
                 }, 'to yield response', 200),
                 'when rejected',
-                'to have message',
-                    "expected { url: 'POST http://www.google.com/', body: { foo: 123 } }\n" +
-                    "with http mocked out { request: { url: 'POST /', body: { foo: 456 } }, response: 200 } to yield response 200\n" +
-                    '\n' +
-                    'POST / HTTP/1.1\n' +
-                    'Host: www.google.com\n' +
-                    'Content-Type: application/json\n' +
-                    'Content-Length: 11\n' +
-                    'Connection: keep-alive\n' +
-                    '\n' +
-                    '{\n' +
-                    '  foo: 123 // should equal 456\n' +
-                    '}\n' +
-                    '\n' +
-                    'HTTP/1.1 200 OK'
+                'to have message', function (message) {
+                    expect(message.replace(/^Connection:.*\n/m, ''), 'to equal',
+                        "expected { url: 'POST http://www.google.com/', body: { foo: 123 } }\n" +
+                        "with http mocked out { request: { url: 'POST /', body: { foo: 456 } }, response: 200 } to yield response 200\n" +
+                        '\n' +
+                        'POST / HTTP/1.1\n' +
+                        'Host: www.google.com\n' +
+                        'Content-Type: application/json\n' +
+                        'Content-Length: 11\n' +
+                        '\n' +
+                        '{\n' +
+                        '  foo: 123 // should equal 456\n' +
+                        '}\n' +
+                        '\n' +
+                        'HTTP/1.1 200 OK'
+                    );
+                }
             );
         });
     });
@@ -493,15 +503,17 @@ describe('unexpectedMitm', function () {
                 response: 200
             }, 'to yield response', 200),
             'when rejected',
-            'to have message',
-                "expected 'http://www.google.com/foo' with http mocked out { request: 'GET /bar', response: 200 } to yield response 200\n" +
-                '\n' +
-                'GET /foo HTTP/1.1 // should be GET /bar\n' +
-                'Host: www.google.com\n' +
-                'Content-Length: 0\n' +
-                'Connection: keep-alive\n' +
-                '\n' +
-                'HTTP/1.1 200 OK'
+            'to have message', function (message) {
+                expect(message.replace(/^Connection:.*\n/m, ''), 'to equal',
+                    "expected 'http://www.google.com/foo' with http mocked out { request: 'GET /bar', response: 200 } to yield response 200\n" +
+                    '\n' +
+                    'GET /foo HTTP/1.1 // should be GET /bar\n' +
+                    'Host: www.google.com\n' +
+                    'Content-Length: 0\n' +
+                    '\n' +
+                    'HTTP/1.1 200 OK'
+                );
+            }
         );
     });
 
@@ -518,21 +530,23 @@ describe('unexpectedMitm', function () {
                 }
             ], 'to yield response', 200),
             'when rejected',
-            'to have message',
-                "expected 'http://www.google.com/foo'\n" +
-                "with http mocked out [ { request: 'GET /foo', response: 200 }, { request: 'GET /foo', response: 200 } ] to yield response 200\n" +
-                '\n' +
-                'GET /foo HTTP/1.1\n' +
-                'Host: www.google.com\n' +
-                'Content-Length: 0\n' +
-                'Connection: keep-alive\n' +
-                '\n' +
-                'HTTP/1.1 200 OK\n' +
-                '\n' +
-                '// missing:\n' +
-                '// GET /foo\n' +
-                '//\n' +
-                '// HTTP/1.1 200 OK'
+            'to have message', function (message) {
+                expect(message.replace(/^Connection:.*\n/m, ''), 'to equal',
+                    "expected 'http://www.google.com/foo'\n" +
+                    "with http mocked out [ { request: 'GET /foo', response: 200 }, { request: 'GET /foo', response: 200 } ] to yield response 200\n" +
+                    '\n' +
+                    'GET /foo HTTP/1.1\n' +
+                    'Host: www.google.com\n' +
+                    'Content-Length: 0\n' +
+                    '\n' +
+                    'HTTP/1.1 200 OK\n' +
+                    '\n' +
+                    '// missing:\n' +
+                    '// GET /foo\n' +
+                    '//\n' +
+                    '// HTTP/1.1 200 OK'
+                );
+            }
         );
     });
 
@@ -552,23 +566,25 @@ describe('unexpectedMitm', function () {
                 }
             ], 'to yield response', 200),
             'when rejected',
-            'to have message',
-                "expected 'http://www.google.com/foo'\n" +
-                "with http mocked out [ { request: 'GET /foo', response: 200 }, { request: { url: 'GET /foo', headers: ... }, response: 200 } ] to yield response 200\n" +
-                '\n' +
-                'GET /foo HTTP/1.1\n' +
-                'Host: www.google.com\n' +
-                'Content-Length: 0\n' +
-                'Connection: keep-alive\n' +
-                '\n' +
-                'HTTP/1.1 200 OK\n' +
-                '\n' +
-                '// missing:\n' +
-                '// GET /foo\n' +
-                "// Foo: // should satisfy expect.it('to match', /bar/)\n" +
-                "//      // expected '' to match /bar/\n" + // Hmm, this is not ideal
-                '//\n' +
-                '// HTTP/1.1 200 OK'
+            'to have message', function (message) {
+                expect(message.replace(/^Connection:.*\n/m, ''), 'to equal',
+                    "expected 'http://www.google.com/foo'\n" +
+                    "with http mocked out [ { request: 'GET /foo', response: 200 }, { request: { url: 'GET /foo', headers: ... }, response: 200 } ] to yield response 200\n" +
+                    '\n' +
+                    'GET /foo HTTP/1.1\n' +
+                    'Host: www.google.com\n' +
+                    'Content-Length: 0\n' +
+                    '\n' +
+                    'HTTP/1.1 200 OK\n' +
+                    '\n' +
+                    '// missing:\n' +
+                    '// GET /foo\n' +
+                    "// Foo: // should satisfy expect.it('to match', /bar/)\n" +
+                    "//      // expected '' to match /bar/\n" + // Hmm, this is not ideal
+                    '//\n' +
+                    '// HTTP/1.1 200 OK'
+                );
+            }
         );
     });
 
@@ -594,29 +610,31 @@ describe('unexpectedMitm', function () {
                 }
             ], 'to yield response', 200),
             'when rejected',
-            'to have message',
-                "expected { url: 'POST http://www.google.com/foo', body: { foo: 123 } } with http mocked out\n" +
-                "[\n" +
-                "  { request: { url: 'POST /foo', body: expect.it('when delayed a little bit', 'to equal', { foo: 123 }) }, response: 200 },\n" +
-                "  { request: { url: 'GET /foo', headers: ... }, response: 200 }\n" +
-                "] to yield response 200\n" +
-                "\n" +
-                "POST /foo HTTP/1.1\n" +
-                "Host: www.google.com\n" +
-                "Content-Type: application/json\n" +
-                "Content-Length: 11\n" +
-                "Connection: keep-alive\n" +
-                "\n" +
-                "{ foo: 123 }\n" +
-                "\n" +
-                "HTTP/1.1 200 OK\n" +
-                "\n" +
-                "// missing:\n" +
-                "// GET /foo\n" +
-                "// Foo: // should satisfy expect.it('to match', /bar/)\n" +
-                "//      // expected '' to match /bar/\n" +
-                "//\n" +
-                "// HTTP/1.1 200 OK"
+            'to have message', function (message) {
+                expect(message.replace(/^Connection:.*\n/m, ''), 'to equal',
+                    "expected { url: 'POST http://www.google.com/foo', body: { foo: 123 } } with http mocked out\n" +
+                    "[\n" +
+                    "  { request: { url: 'POST /foo', body: expect.it('when delayed a little bit', 'to equal', { foo: 123 }) }, response: 200 },\n" +
+                    "  { request: { url: 'GET /foo', headers: ... }, response: 200 }\n" +
+                    "] to yield response 200\n" +
+                    "\n" +
+                    "POST /foo HTTP/1.1\n" +
+                    "Host: www.google.com\n" +
+                    "Content-Type: application/json\n" +
+                    "Content-Length: 11\n" +
+                    "\n" +
+                    "{ foo: 123 }\n" +
+                    "\n" +
+                    "HTTP/1.1 200 OK\n" +
+                    "\n" +
+                    "// missing:\n" +
+                    "// GET /foo\n" +
+                    "// Foo: // should satisfy expect.it('to match', /bar/)\n" +
+                    "//      // expected '' to match /bar/\n" +
+                    "//\n" +
+                    "// HTTP/1.1 200 OK"
+                );
+            }
         );
     });
 
@@ -624,16 +642,18 @@ describe('unexpectedMitm', function () {
         return expect(
             expect('http://www.google.com/foo', 'with http mocked out', [], 'to yield response', 200),
             'when rejected',
-            'to have message',
-                "expected 'http://www.google.com/foo' with http mocked out [] to yield response 200\n" +
-                '\n' +
-                '// should be removed:\n' +
-                '// GET /foo HTTP/1.1\n' +
-                '// Host: www.google.com\n' +
-                '// Content-Length: 0\n' +
-                '// Connection: keep-alive\n' +
-                '//\n' +
-                '// <no response>'
+            'to have message', function (message) {
+                expect(message.replace(/^\/\/ Connection:.*\n/m, ''), 'to equal',
+                    "expected 'http://www.google.com/foo' with http mocked out [] to yield response 200\n" +
+                    '\n' +
+                    '// should be removed:\n' +
+                    '// GET /foo HTTP/1.1\n' +
+                    '// Host: www.google.com\n' +
+                    '// Content-Length: 0\n' +
+                    '//\n' +
+                    '// <no response>'
+                )
+            }
         );
     });
 
@@ -644,10 +664,9 @@ describe('unexpectedMitm', function () {
                 response: 200
             }, 'to yield response', 412),
             'when rejected',
-            'to have message',
-            function (message) {
+            'to have message', function (message) {
                 expect(
-                    message.replace(/^\s*Date:.*\n/m, ''), 'to equal',
+                    message.replace(/^\s*Date:.*\n/m, '').replace(/^\s*Connection:.*\n/m, '').replace(/\n\s*Transfer-Encoding:.*$/g, ''), 'to equal',
                     "expected 'http://www.google.com/foo' with http mocked out { request: 'GET /foo', response: 200 } to yield response 412\n" +
                     "  expected 'http://www.google.com/foo' to yield response 412\n" +
                     '\n' +
@@ -655,9 +674,7 @@ describe('unexpectedMitm', function () {
                     '  Host: www.google.com\n' +
                     '  Content-Length: 0\n' +
                     '\n' +
-                    '  HTTP/1.1 200 OK // should be 412 Precondition Failed\n' +
-                    '  Connection: keep-alive\n' +
-                    '  Transfer-Encoding: chunked'
+                    '  HTTP/1.1 200 OK // should be 412 Precondition Failed'
                 );
             }
         );
@@ -833,7 +850,7 @@ describe('unexpectedMitm', function () {
                     'to have message',
                     function (message) {
                         expect(
-                            message.replace(/^\s*Date:.*\n/m, ''),
+                            message.replace(/^\s*Date:.*\n/m, '').replace(/^Connection:.*\n/m, ''),
                             'to equal',
                             "expected { url: 'https://www.google.com/foo', cert: Buffer([0x01]), key: Buffer([0x02]), ca: Buffer([0x03]) }\n" +
                             "with http mocked out { request: { url: 'GET /foo', cert: Buffer([0x01]), key: Buffer([0x05]), ca: Buffer([0x03]) }, response: 200 } to yield response 200\n" +
@@ -841,7 +858,6 @@ describe('unexpectedMitm', function () {
                             'GET /foo HTTP/1.1\n' +
                             'Host: www.google.com\n' +
                             'Content-Length: 0\n' +
-                            'Connection: keep-alive\n' +
                             '// key: expected Buffer([0x02]) to satisfy Buffer([0x05])\n' +
                             '//\n' +
                             '// -02                                               │.│\n' +
@@ -859,6 +875,7 @@ describe('unexpectedMitm', function () {
         var handleRequest,
             server,
             serverAddress,
+            serverHostname,
             serverUrl;
         beforeEach(function () {
             handleRequest = undefined;
@@ -867,7 +884,8 @@ describe('unexpectedMitm', function () {
                 handleRequest(req, res);
             }).listen(0);
             serverAddress = server.address();
-            serverUrl = 'http://' + serverAddress.address + ':' + serverAddress.port + '/';
+            serverHostname = serverAddress.address === '::' ? 'localhost' : serverAddress.address;
+            serverUrl = 'http://' + serverHostname + ':' + serverAddress.port + '/';
         });
 
         afterEach(function () {
@@ -888,12 +906,12 @@ describe('unexpectedMitm', function () {
                 body: 'foo=bar'
             }, 'with expected http recording', {
                 request: {
-                    host: serverAddress.address,
+                    host: serverHostname,
                     port: serverAddress.port,
                     url: 'POST /',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
-                        Host: serverAddress.address + ':' + serverAddress.port
+                        Host: serverHostname + ':' + serverAddress.port
                     },
                     body: 'foo=bar'
                 },
@@ -910,9 +928,14 @@ describe('unexpectedMitm', function () {
             var expectedError;
             // I do not know the exact version where this change was introduced. Hopefully this is enough to get
             // it working on Travis (0.10.36 presently):
-            if (process.version === 'v0.10.29') {
+            var nodeJsVersion = process.version.replace(/^v/, '');
+            if (nodeJsVersion === '0.10.29') {
                 expectedError = new Error('getaddrinfo EADDRINFO');
                 expectedError.code = expectedError.errno = 'EADDRINFO';
+            } else if (semver.satisfies(nodeJsVersion, '>=0.12.0')) {
+                expectedError = new Error('getaddrinfo ENOENT');
+                expectedError.code = expectedError.errno = 'ENOENT';
+                expectedError.hostname = 'www.icwqjecoiqwjecoiwqjecoiwqjceoiwq.com';
             } else {
                 expectedError = new Error('getaddrinfo ENOTFOUND');
                 expectedError.code = expectedError.errno = 'ENOTFOUND';
@@ -934,6 +957,7 @@ describe('unexpectedMitm', function () {
         var handleRequest,
             server,
             serverAddress,
+            serverHostname,
             serverUrl;
 
         beforeEach(function (done) {
@@ -947,7 +971,8 @@ describe('unexpectedMitm', function () {
                     handleRequest(req, res);
                 }).listen(0);
                 serverAddress = server.address();
-                serverUrl = 'https://' + serverAddress.address + ':' + serverAddress.port + '/';
+                serverHostname = serverAddress.address === '::' ? 'localhost' : serverAddress.address;
+                serverUrl = 'https://' + serverHostname + ':' + serverAddress.port + '/';
                 done();
             }));
         });
@@ -982,14 +1007,14 @@ describe('unexpectedMitm', function () {
                 }, 'with expected http recording', {
                     request: {
                         url: 'POST /',
-                        host: serverAddress.address,
+                        host: serverHostname,
                         port: serverAddress.port,
                         rejectUnauthorized: false,
                         cert: clientKeys.certificate,
                         key: clientKeys.serviceKey,
                         ca: ca,
                         headers: {
-                            Host: serverAddress.address + ':' + serverAddress.port
+                            Host: serverHostname + ':' + serverAddress.port
                         }
                     },
                     response: {
