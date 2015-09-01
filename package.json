@@ -34,7 +34,7 @@
     "detect-indent": "3.0.0",
     "memoizesync": "0.5.0",
     "messy": "^6.6.1",
-    "mitm": "1.1.0",
+    "mitm": "1.2.0",
     "passerror": "1.1.0",
     "underscore": "1.7.0",
     "unexpected-messy": "^4.8.0"
