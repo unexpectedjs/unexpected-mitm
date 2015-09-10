@@ -238,7 +238,7 @@ describe('unexpectedMitm', function () {
                         response: 200
                     }, 'to yield response', 200),
                     'when rejected',
-                    'to have message', function (message) {
+                    'to have message',
                         "expected 'http://www.google.com/' with http mocked out { request: 'GET https://www.google.com/', response: 200 } to yield response 200\n" +
                         '\n' +
                         'GET / HTTP/1.1\n' +
@@ -248,7 +248,6 @@ describe('unexpectedMitm', function () {
                         '// expected an encrypted request\n' +
                         '\n' +
                         'HTTP/1.1 200 OK'
-                    }
                 );
             });
         });
@@ -268,7 +267,7 @@ describe('unexpectedMitm', function () {
                         response: 200
                     }, 'to yield response', 200),
                     'when rejected',
-                    'to have message', function (message) {
+                    'to have message',
                         "expected 'http://www.google.com/' with http mocked out { request: { url: 'GET /', encrypted: true }, response: 200 } to yield response 200\n" +
                         '\n' +
                         'GET / HTTP/1.1\n' +
@@ -278,7 +277,6 @@ describe('unexpectedMitm', function () {
                         '// expected an encrypted request\n' +
                         '\n' +
                         'HTTP/1.1 200 OK'
-                    }
                 );
             });
         });
@@ -651,7 +649,7 @@ describe('unexpectedMitm', function () {
                     '// Content-Length: 0\n' +
                     '//\n' +
                     '// <no response>'
-                )
+                );
             }
         );
     });
