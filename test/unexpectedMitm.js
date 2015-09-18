@@ -667,13 +667,12 @@ describe('unexpectedMitm', function () {
             'when rejected',
             'to have message', function (message) {
                 expect(
-                    message.replace(/^\s*Date:.*\n/m, '').replace(/^\s*Connection:.*\n/m, '').replace(/\n\s*Transfer-Encoding:.*$/g, ''), 'to equal',
+                    message.replace(/\n\s*Content-Length:.*$|^\s*Content-Length:.*\n/gm, '').replace(/^\s*Date:.*\n/m, '').replace(/^\s*Connection:.*\n|\n\s*Connection:.*$/mg, '').replace(/\n\s*Transfer-Encoding:.*$/g, ''), 'to equal',
                     "expected 'http://www.google.com/foo' with http mocked out { request: 'GET /foo', response: 200 } to yield response 412\n" +
                     "  expected 'http://www.google.com/foo' to yield response 412\n" +
                     '\n' +
                     '  GET /foo HTTP/1.1\n' +
                     '  Host: www.google.com\n' +
-                    '  Content-Length: 0\n' +
                     '\n' +
                     '  HTTP/1.1 200 OK // should be 412 Precondition Failed'
                 );
@@ -935,6 +934,11 @@ describe('unexpectedMitm', function () {
                 expectedError.code = expectedError.errno = 'EADDRINFO';
             } else if (semver.satisfies(nodeJsVersion, '>=0.12.0')) {
                 expectedError = new Error('getaddrinfo ENOTFOUND www.icwqjecoiqwjecoiwqjecoiwqjceoiwq.com');
+                if (semver.satisfies(nodeJsVersion, '>=2.0.0')) {
+                    expectedError.message += ' www.icwqjecoiqwjecoiwqjecoiwqjceoiwq.com:80';
+                    expectedError.host = 'www.icwqjecoiqwjecoiwqjecoiwqjceoiwq.com';
+                    expectedError.port = 80;
+                }
                 expectedError.code = expectedError.errno = 'ENOTFOUND';
                 expectedError.hostname = 'www.icwqjecoiqwjecoiwqjecoiwqjceoiwq.com';
             } else {
