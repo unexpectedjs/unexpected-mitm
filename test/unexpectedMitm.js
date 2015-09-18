@@ -238,16 +238,18 @@ describe('unexpectedMitm', function () {
                         response: 200
                     }, 'to yield response', 200),
                     'when rejected',
-                    'to have message',
-                        "expected 'http://www.google.com/' with http mocked out { request: 'GET https://www.google.com/', response: 200 } to yield response 200\n" +
-                        '\n' +
-                        'GET / HTTP/1.1\n' +
-                        'Host: www.google.com\n' +
-                        'Content-Length: 0\n' +
-                        'Connection: keep-alive\n' +
-                        '// expected an encrypted request\n' +
-                        '\n' +
-                        'HTTP/1.1 200 OK'
+                    'to have message', function (message) {
+                        expect(message.replace(/^Connection:.*\n/m, ''), 'to equal',
+                            "expected 'http://www.google.com/' with http mocked out { request: 'GET https://www.google.com/', response: 200 } to yield response 200\n" +
+                            '\n' +
+                            'GET / HTTP/1.1\n' +
+                            'Host: www.google.com\n' +
+                            'Content-Length: 0\n' +
+                            '// expected an encrypted request\n' +
+                            '\n' +
+                            'HTTP/1.1 200 OK'
+                        );
+                    }
                 );
             });
         });
@@ -267,16 +269,18 @@ describe('unexpectedMitm', function () {
                         response: 200
                     }, 'to yield response', 200),
                     'when rejected',
-                    'to have message',
-                        "expected 'http://www.google.com/' with http mocked out { request: { url: 'GET /', encrypted: true }, response: 200 } to yield response 200\n" +
-                        '\n' +
-                        'GET / HTTP/1.1\n' +
-                        'Host: www.google.com\n' +
-                        'Content-Length: 0\n' +
-                        'Connection: keep-alive\n' +
-                        '// expected an encrypted request\n' +
-                        '\n' +
-                        'HTTP/1.1 200 OK'
+                    'to have message', function (message) {
+                        expect(message.replace(/^Connection:.*\n/m, ''), 'to equal',
+                            "expected 'http://www.google.com/' with http mocked out { request: { url: 'GET /', encrypted: true }, response: 200 } to yield response 200\n" +
+                            '\n' +
+                            'GET / HTTP/1.1\n' +
+                            'Host: www.google.com\n' +
+                            'Content-Length: 0\n' +
+                            '// expected an encrypted request\n' +
+                            '\n' +
+                            'HTTP/1.1 200 OK'
+                        );
+                    }
                 );
             });
         });
@@ -930,8 +934,8 @@ describe('unexpectedMitm', function () {
                 expectedError = new Error('getaddrinfo EADDRINFO');
                 expectedError.code = expectedError.errno = 'EADDRINFO';
             } else if (semver.satisfies(nodeJsVersion, '>=0.12.0')) {
-                expectedError = new Error('getaddrinfo ENOENT');
-                expectedError.code = expectedError.errno = 'ENOENT';
+                expectedError = new Error('getaddrinfo ENOTFOUND www.icwqjecoiqwjecoiwqjecoiwqjceoiwq.com');
+                expectedError.code = expectedError.errno = 'ENOTFOUND';
                 expectedError.hostname = 'www.icwqjecoiqwjecoiwqjecoiwqjceoiwq.com';
             } else {
                 expectedError = new Error('getaddrinfo ENOTFOUND');
