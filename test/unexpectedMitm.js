@@ -615,7 +615,7 @@ describe('unexpectedMitm', function () {
                 expect(message.replace(/^Connection:.*\n/m, ''), 'to equal',
                     "expected { url: 'POST http://www.google.com/foo', body: { foo: 123 } } with http mocked out\n" +
                     "[\n" +
-                    "  { request: { url: 'POST /foo', body: expect.it('when delayed a little bit', 'to equal', { foo: 123 }) }, response: 200 },\n" +
+                    "  { request: { url: 'POST /foo', body: expect.it('when delayed a little bit', 'to equal', ...) }, response: 200 },\n" +
                     "  { request: { url: 'GET /foo', headers: ... }, response: 200 }\n" +
                     "] to yield response 200\n" +
                     "\n" +
