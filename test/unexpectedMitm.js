@@ -858,7 +858,7 @@ describe('unexpectedMitm', function () {
                             'GET /foo HTTP/1.1\n' +
                             'Host: www.google.com\n' +
                             'Content-Length: 0\n' +
-                            '// key: expected Buffer([0x02]) to satisfy Buffer([0x05])\n' +
+                            '// key: expected Buffer([0x02]) to equal Buffer([0x05])\n' +
                             '//\n' +
                             '// -02                                               │.│\n' +
                             '// +05                                               │.│\n' +
