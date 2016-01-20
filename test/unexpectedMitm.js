@@ -6,12 +6,14 @@ var pathModule = require('path'),
     pem = require('pem'),
     stream = require('stream'),
     passError = require('passerror'),
-    semver = require('semver');
+    semver = require('semver'),
+    sinon = require('sinon');
 
 describe('unexpectedMitm', function () {
     var expect = require('unexpected')
-        .installPlugin(require('../lib/unexpectedMitm'))
-        .installPlugin(require('unexpected-http'))
+        .use(require('../lib/unexpectedMitm'))
+        .use(require('unexpected-http'))
+        .use(require('unexpected-sinon'))
         .addAssertion('with expected http recording', function (expect, subject, expectedRecordedExchanges) { // ...
             var that = this;
             this.errorMode = 'nested';
@@ -383,6 +385,9 @@ describe('unexpectedMitm', function () {
             });
 
             it('should recover from the error and replay the next request', function () {
+                var responseSpy = sinon.spy(function (response) {
+                    response.resume();
+                });
                 var erroringStream = new stream.Readable();
                 erroringStream._read = function (num, cb) {
                     setImmediate(function () {
@@ -394,11 +399,16 @@ describe('unexpectedMitm', function () {
                         http.get('http://www.google.com/').on('error', function (err) {
                             expect.fail('request unexpectedly errored');
                         }).on('response', function () {
+                            expect(responseSpy, 'to have calls satisfying', function () {
+                                responseSpy({
+                                    headers: {
+                                        'content-type': 'text/plain'
+                                    }
+                                });
+                            });
                             cb();
                         }).end();
-                    }).on('response', function (response) {
-                        expect.fail('request unexpectedly got response');
-                    }).end();
+                    }).on('response', responseSpy).end();
                 }, 'with http mocked out', [
                     {
                         request: 'GET http://www.google.com/',
@@ -1049,5 +1059,29 @@ describe('unexpectedMitm', function () {
             },
             response: 200
         }, 'to yield response', 200);
+    });
+
+    it('should support a response body stream that emits some data, then errors out', function () {
+        var responseBodyStream = new stream.Readable();
+        responseBodyStream._read = function (num, cb) {
+            responseBodyStream._read = function () {};
+            setImmediate(function () {
+                responseBodyStream.push('foobarquux');
+                responseBodyStream.emit('error', new Error('Fake error'));
+            });
+        };
+
+        return expect('GET http://localhost/', 'with http mocked out', {
+            request: 'GET http://localhost/',
+            response: {
+                headers: {
+                    'Content-Type': 'text/plain'
+                },
+                body: responseBodyStream
+            }
+        }, 'to yield response', {
+            body: 'foobarquux'/*,
+            error: new Error('Fake error')*/
+        });
     });
 });
