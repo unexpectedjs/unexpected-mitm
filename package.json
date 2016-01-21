@@ -28,7 +28,7 @@
     "semver": "5.0.1",
     "sinon": "1.17.2",
     "unexpected": "10.5.1",
-    "unexpected-http": "^5.0.0",
+    "unexpected-http": "^5.1.0",
     "unexpected-sinon": "^9.1.0"
   },
   "dependencies": {
