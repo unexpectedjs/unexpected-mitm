@@ -1089,8 +1089,8 @@ describe('unexpectedMitm', function () {
                 body: responseBodyStream
             }
         }, 'to yield response', {
-            body: 'foobarquux'/*,
-            error: new Error('Fake error')*/
+            body: 'foobarquux',
+            error: new Error('Fake error')
         });
     });
 });
