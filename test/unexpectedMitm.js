@@ -308,6 +308,9 @@ describe('unexpectedMitm', function () {
                         "expected 'http://www.google.com/' with http mocked out { request: 'POST http://www.example.com/', response: 200 } to yield response 200\n" +
                         '\n' +
                         'GET / HTTP/1.1 // should be POST /\n' +
+                        '               //\n' +
+                        '               // -GET / HTTP/1.1\n' +
+                        '               // +POST / HTTP/1.1\n' +
                         'Host: www.google.com // should equal www.example.com\n' +
                         '                     // -www.google.com\n' +
                         '                     // +www.example.com\n' +
@@ -519,6 +522,9 @@ describe('unexpectedMitm', function () {
                     "expected 'http://www.google.com/foo' with http mocked out { request: 'GET /bar', response: 200 } to yield response 200\n" +
                     '\n' +
                     'GET /foo HTTP/1.1 // should be GET /bar\n' +
+                    '                  //\n' +
+                    '                  // -GET /foo HTTP/1.1\n' +
+                    '                  // +GET /bar HTTP/1.1\n' +
                     'Host: www.google.com\n' +
                     'Content-Length: 0\n' +
                     '\n' +
@@ -684,8 +690,11 @@ describe('unexpectedMitm', function () {
                     '  GET /foo HTTP/1.1\n' +
                     '  Host: www.google.com\n' +
                     '\n' +
-                    '  HTTP/1.1 200 OK // should be 412 Precondition Failed'
-                );
+                    '  HTTP/1.1 200 OK // should be 412 Precondition Failed\n' +
+                    '                  //\n' +
+                    '                  // -HTTP/1.1 200 OK\n' +
+                    '                  // +HTTP/1.1 412 Precondition Failed'
+            );
             }
         );
     });
