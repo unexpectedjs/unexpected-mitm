@@ -370,8 +370,6 @@ describe('unexpectedMitm', function () {
     describe('with a response body provided as a stream', function () {
         describe('that emits an error', function () {
             it('should propagate the error to the mocked-out HTTP response', function () {
-                var expectedError = new Error('socket hang up');
-                expectedError.code = 'ECONNRESET';
                 var erroringStream = new stream.Readable();
                 erroringStream._read = function (num, cb) {
                     setImmediate(function () {
@@ -386,7 +384,7 @@ describe('unexpectedMitm', function () {
                         },
                         body: erroringStream
                     }
-                }, 'to yield response', expectedError);
+                }, 'to yield response', new Error('Fake error'));
             });
 
             it('should recover from the error and replay the next request', function () {
