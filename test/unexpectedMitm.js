@@ -1091,4 +1091,22 @@ describe('unexpectedMitm', function () {
             error: new Error('Fake error')
         });
     });
+
+    it('should interpret a response body provided as a non-Buffer object as JSON even though the message has a non-JSON Content-Type', function () {
+        return expect('http://www.google.com/', 'with http mocked out', {
+            request: 'GET /',
+            response: {
+                statusCode: 200,
+                headers: {
+                    'Content-Type': 'application/octet-stream'
+                },
+                body: { foo: 'bar' }
+            }
+        }, 'to yield response', {
+            headers: {
+                'Content-Type': 'application/octet-stream'
+            },
+            body: new Buffer('{"foo":"bar"}', 'utf-8')
+        });
+    });
 });
