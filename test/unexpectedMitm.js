@@ -1,5 +1,6 @@
 /*global describe, it, __dirname, beforeEach, afterEach, setTimeout, setImmediate*/
 var pathModule = require('path'),
+    execFileSync = require('child_process').execFileSync,
     fs = require('fs'),
     http = require('http'),
     https = require('https'),
@@ -23,6 +24,46 @@ describe('unexpectedMitm', function () {
             }).then(function (recordedExchanges) {
                 expect(recordedExchanges, 'to equal', expectedRecordedExchanges);
             });
+        })
+        .addAssertion('when injected becomes', function (expect, subject, expectedFileName) {
+            var basePath = pathModule.join(__dirname, '..');
+            var testPath = pathModule.join(basePath, 'testdata');
+
+            var commandPath = pathModule.join(basePath, 'node_modules', '.bin', 'mocha');
+            var inputFilePath = pathModule.join(testPath, subject + '.js');
+            var expectedFilePath = pathModule.join(testPath, expectedFileName + '.js');
+            var outputFilePath = pathModule.join(testPath, '.' + subject + '.js');
+
+            function cleanUp(err) {
+                return expect.promise(function (resolve, reject) {
+                    // swallow any unlink error
+                    expect.promise(function () {
+                        fs.unlinkSync(outputFilePath);
+                    });
+
+                    // ensure we send any error passed to us upwards
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve();
+                    }
+                });
+            }
+
+            return expect.promise(function () {
+                // create a temporary output file
+                fs.writeFileSync(outputFilePath, fs.readFileSync(inputFilePath));
+
+                // execute the mocha test file which will cause injection
+                execFileSync(commandPath, [outputFilePath], {
+                    cwd: basePath
+                });
+
+                var inputFileData = fs.readFileSync(outputFilePath).toString();
+                var outputFileData = fs.readFileSync(expectedFilePath).toString();
+
+                expect(inputFileData, 'to equal', outputFileData);
+            }).caught(cleanUp).then(cleanUp);
         })
         .addAssertion('when delayed a little bit', function (expect, subject) {
             var that = this;
@@ -972,6 +1013,12 @@ describe('unexpectedMitm', function () {
                 },
                 response: expectedError
             }, 'to yield response', expectedError);
+        });
+    });
+
+    describe('in injecting mode against a local HTTP server', function () {
+        it('should record and inject', function () {
+            expect('testfile', 'when injected becomes', 'testfile-injected');
         });
     });
 
