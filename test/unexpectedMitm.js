@@ -1,6 +1,6 @@
 /*global describe, it, __dirname, beforeEach, afterEach, setTimeout, setImmediate*/
 var pathModule = require('path'),
-    execFileSync = require('child_process').execFileSync || require('runsync').execFile,
+    childProcess = require('child_process'),
     fs = require('fs'),
     http = require('http'),
     https = require('https'),
@@ -27,7 +27,7 @@ describe('unexpectedMitm', function () {
                 expect(recordedExchanges, 'to equal', expectedRecordedExchanges);
             });
         })
-        .addAssertion('when injected becomes', function (expect, subject, expectedFileName) {
+        .addAssertion('<string> when injected becomes <string>', function (expect, subject, expectedFileName) {
             var basePath = pathModule.join(__dirname, '..');
             var testPath = pathModule.join(basePath, 'testdata');
 
@@ -36,36 +36,26 @@ describe('unexpectedMitm', function () {
             var expectedFilePath = pathModule.join(testPath, expectedFileName + '.js');
             var outputFilePath = pathModule.join(testPath, '.' + subject + '.js');
 
-            function cleanUp(err) {
-                return expect.promise(function (resolve, reject) {
-                    // swallow any unlink error
-                    expect.promise(function () {
-                        fs.unlinkSync(outputFilePath);
-                    });
-
-                    // ensure we send any error passed to us upwards
-                    if (err) {
-                        reject(err);
-                    } else {
-                        resolve();
-                    }
-                });
-            }
-
-            return expect.promise(function () {
+            return expect.promise(function (run) {
                 // create a temporary output file
                 fs.writeFileSync(outputFilePath, fs.readFileSync(inputFilePath));
 
                 // execute the mocha test file which will cause injection
-                execFileSync(commandPath, [outputFilePath], {
+                childProcess.execFile(commandPath, [outputFilePath], {
                     cwd: basePath
-                });
+                }, run(function (err) {
+                    expect(err, 'to be falsy');
+                    var inputFileData = fs.readFileSync(outputFilePath).toString();
+                    var outputFileData = fs.readFileSync(expectedFilePath).toString();
 
-                var inputFileData = fs.readFileSync(outputFilePath).toString();
-                var outputFileData = fs.readFileSync(expectedFilePath).toString();
-
-                expect(inputFileData, 'to equal', outputFileData);
-            }).caught(cleanUp).then(cleanUp);
+                    expect(inputFileData, 'to equal', outputFileData);
+                }));
+            }).finally(function () {
+                try {
+                    // swallow any unlink error
+                    fs.unlinkSync(outputFilePath);
+                } catch (e) {}
+            });
         })
         .addAssertion('when delayed a little bit', function (expect, subject) {
             var that = this;
@@ -1020,7 +1010,7 @@ describe('unexpectedMitm', function () {
 
     describe('in injecting mode against a local HTTP server', function () {
         it('should record and inject', function () {
-            expect('testfile', 'when injected becomes', isNodeZeroTen ? 'testfile-injected-v0_10' : 'testfile-injected');
+            return expect('testfile', 'when injected becomes', isNodeZeroTen ? 'testfile-injected-v0_10' : 'testfile-injected');
         });
     });
 
