@@ -1,6 +1,6 @@
 /*global describe, it, __dirname, beforeEach, afterEach, setTimeout, setImmediate*/
 var pathModule = require('path'),
-    execFileSync = require('child_process').execFileSync,
+    execFileSync = require('child_process').execFileSync || require('runsync').execFile,
     fs = require('fs'),
     http = require('http'),
     https = require('https'),
@@ -9,6 +9,8 @@ var pathModule = require('path'),
     passError = require('passerror'),
     semver = require('semver'),
     sinon = require('sinon');
+
+var isNodeZeroTen = !!process.version.match(/v0.10/);
 
 describe('unexpectedMitm', function () {
     var expect = require('unexpected')
@@ -1018,7 +1020,7 @@ describe('unexpectedMitm', function () {
 
     describe('in injecting mode against a local HTTP server', function () {
         it('should record and inject', function () {
-            expect('testfile', 'when injected becomes', 'testfile-injected');
+            expect('testfile', 'when injected becomes', isNodeZeroTen ? 'testfile-injected-v0_10' : 'testfile-injected');
         });
     });
 

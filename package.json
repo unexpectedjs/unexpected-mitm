@@ -29,6 +29,7 @@
     "mocha": "2.2.5",
     "pem": "1.7.2",
     "request": "2.53.0",
+    "runsync": "0.1.8",
     "semver": "5.0.1",
     "sinon": "1.17.2",
     "unexpected": "10.8.2",
