@@ -17,12 +17,11 @@ describe('unexpectedMitm', function () {
         .use(require('../lib/unexpectedMitm'))
         .use(require('unexpected-http'))
         .use(require('unexpected-sinon'))
-        .addAssertion('with expected http recording', function (expect, subject, expectedRecordedExchanges) { // ...
-            var that = this;
-            this.errorMode = 'nested';
-            this.args.splice(1, 0, 'with http recorded');
+        .addAssertion('<any> with expected http recording <object> <assertion>', function (expect, subject, expectedRecordedExchanges) { // ...
+            expect.errorMode = 'nested';
+            expect.args.splice(1, 0, 'with http recorded');
             return expect.promise(function () {
-                return that.shift(subject, 1);
+                return expect.shift();
             }).then(function (recordedExchanges) {
                 expect(recordedExchanges, 'to equal', expectedRecordedExchanges);
             });
@@ -57,11 +56,10 @@ describe('unexpectedMitm', function () {
                 } catch (e) {}
             });
         })
-        .addAssertion('when delayed a little bit', function (expect, subject) {
-            var that = this;
+        .addAssertion('<any> when delayed a little bit <assertion>', function (expect, subject) {
             return expect.promise(function (run) {
                 setTimeout(run(function () {
-                    return that.shift(expect, subject, 0);
+                    return expect.shift();
                 }), 1);
             });
         });
