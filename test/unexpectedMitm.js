@@ -16,6 +16,7 @@ function trimDiff(message) {
     message = message.replace(/^[\\ ]*Date:.*\n/gm, '');
     message = message.replace(/^[\\ ]*Connection:.*\n/gm, '');
     message = message.replace(/^[\\ ]*Transfer-Encoding:.*\n?/gm, '');
+    message = message.replace(/^[\\ ]*Content-Length: 0\n?/gm, '');
     message = message.replace(/HTTP\/1.1 200 OK\n$/, 'HTTP/1.1 200 OK');
 
     return message;
@@ -286,7 +287,6 @@ describe('unexpectedMitm', function () {
                             '\n' +
                             'GET / HTTP/1.1\n' +
                             'Host: www.google.com\n' +
-                            'Content-Length: 0\n' +
                             '// expected an encrypted request\n' +
                             '\n' +
                             'HTTP/1.1 200 OK'
@@ -317,7 +317,6 @@ describe('unexpectedMitm', function () {
                             '\n' +
                             'GET / HTTP/1.1\n' +
                             'Host: www.google.com\n' +
-                            'Content-Length: 0\n' +
                             '// expected an encrypted request\n' +
                             '\n' +
                             'HTTP/1.1 200 OK'
@@ -354,7 +353,6 @@ describe('unexpectedMitm', function () {
                         'Host: www.google.com // should equal www.example.com\n' +
                         '                     // -www.google.com\n' +
                         '                     // +www.example.com\n' +
-                        'Content-Length: 0\n' +
                         "// host: expected 'www.google.com' to equal 'www.example.com'\n" +
                         '//\n' +
                         '// -www.google.com\n' +
@@ -564,7 +562,6 @@ describe('unexpectedMitm', function () {
                     '                  // -GET /foo HTTP/1.1\n' +
                     '                  // +GET /bar HTTP/1.1\n' +
                     'Host: www.google.com\n' +
-                    'Content-Length: 0\n' +
                     '\n' +
                     'HTTP/1.1 200 OK'
                 );
@@ -592,7 +589,6 @@ describe('unexpectedMitm', function () {
                     '\n' +
                     'GET /foo HTTP/1.1\n' +
                     'Host: www.google.com\n' +
-                    'Content-Length: 0\n' +
                     '\n' +
                     'HTTP/1.1 200 OK\n' +
                     '\n' +
@@ -628,7 +624,6 @@ describe('unexpectedMitm', function () {
                     '\n' +
                     'GET /foo HTTP/1.1\n' +
                     'Host: www.google.com\n' +
-                    'Content-Length: 0\n' +
                     '\n' +
                     'HTTP/1.1 200 OK\n' +
                     '\n' +
@@ -726,7 +721,6 @@ describe('unexpectedMitm', function () {
                     '\n' +
                     '  GET /foo HTTP/1.1\n' +
                     '  Host: www.google.com\n' +
-                    '  Content-Length: 0\n' +
                     '\n' +
                     '  HTTP/1.1 200 OK // should be 412 Precondition Failed\n' +
                     '                  //\n' +
@@ -912,7 +906,6 @@ describe('unexpectedMitm', function () {
                             '\n' +
                             'GET /foo HTTP/1.1\n' +
                             'Host: www.google.com\n' +
-                            'Content-Length: 0\n' +
                             '// key: expected Buffer([0x02]) to equal Buffer([0x05])\n' +
                             '//\n' +
                             '// -02                                               │.│\n' +
