@@ -50,8 +50,8 @@
     "unexpected-messy": "^5.0.0"
   },
   "nyc": {
-    "exclude": [
-      "testdata/.testfile.js"
+    "include": [
+      "lib/**"
     ]
   }
 }
