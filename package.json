@@ -31,7 +31,7 @@
     "request": "2.53.0",
     "semver": "5.0.1",
     "sinon": "1.17.2",
-    "unexpected": "10.8.2",
+    "unexpected": "10.10.8",
     "unexpected-documentation-site-generator": "4.0.0",
     "unexpected-express": "8.1.0",
     "unexpected-http": "5.2.0",
