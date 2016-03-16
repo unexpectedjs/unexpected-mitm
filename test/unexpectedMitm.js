@@ -365,21 +365,6 @@ describe('unexpectedMitm', function () {
         });
     });
 
-    it('should support providing the response body as a stream', function () {
-        return expect('http://www.google.com/', 'with http mocked out', {
-            request: 'GET /',
-            response: {
-                headers: {
-                    'Content-Type': 'text/plain; charset=UTF-8'
-                },
-                body: fs.createReadStream(pathModule.resolve(__dirname, '..', 'testdata', 'foo.txt'))
-            }
-        }, 'to yield response', {
-            statusCode: 200,
-            body: 'Contents of foo.txt\n'
-        });
-    });
-
     it('should support mocking out the status code', function () {
         return expect('http://www.google.com/', 'with http mocked out', {
             request: 'GET /',
@@ -395,17 +380,34 @@ describe('unexpectedMitm', function () {
         }, 'to yield response', 412);
     });
 
-    it('should support providing the response as a stream', function () {
-        return expect('http://www.google.com/', 'with http mocked out', {
-            request: 'GET /',
-            response: { body: fs.createReadStream(pathModule.resolve(__dirname, '..', 'testdata', 'foo.txt')) }
-        }, 'to yield response', {
-            statusCode: 200,
-            body: new Buffer('Contents of foo.txt\n', 'utf-8')
-        });
-    });
-
     describe('with a response body provided as a stream', function () {
+        it('should support providing such a response', function () {
+            return expect('http://www.google.com/', 'with http mocked out', {
+                request: 'GET /',
+                response: {
+                    body: fs.createReadStream(pathModule.resolve(__dirname, '..', 'testdata', 'foo.txt'))
+                }
+            }, 'to yield response', {
+                statusCode: 200,
+                body: new Buffer('Contents of foo.txt\n', 'utf-8')
+            });
+        });
+
+        it('should decode the stream as a string', function () {
+            return expect('http://www.google.com/', 'with http mocked out', {
+                request: 'GET /',
+                response: {
+                    headers: {
+                        'Content-Type': 'text/plain; charset=UTF-8'
+                    },
+                    body: fs.createReadStream(pathModule.resolve(__dirname, '..', 'testdata', 'foo.txt'))
+                }
+            }, 'to yield response', {
+                statusCode: 200,
+                body: 'Contents of foo.txt\n'
+            });
+        });
+
         describe('that emits an error', function () {
             it('should propagate the error to the mocked-out HTTP response', function () {
                 var erroringStream = new stream.Readable();
