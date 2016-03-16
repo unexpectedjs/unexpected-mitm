@@ -453,6 +453,30 @@ describe('unexpectedMitm', function () {
                 }, 'to yield response', new Error('Fake error'));
             });
 
+            it('should support a stream that emits some data, then errors out', function () {
+                var responseBodyStream = new stream.Readable();
+                responseBodyStream._read = function (num, cb) {
+                    responseBodyStream._read = function () {};
+                    setImmediate(function () {
+                        responseBodyStream.push('foobarquux');
+                        responseBodyStream.emit('error', new Error('Fake error'));
+                    });
+                };
+
+                return expect('GET http://localhost/', 'with http mocked out', {
+                    request: 'GET http://localhost/',
+                    response: {
+                        headers: {
+                            'Content-Type': 'text/plain'
+                        },
+                        body: responseBodyStream
+                    }
+                }, 'to yield response', {
+                    body: 'foobarquux',
+                    error: new Error('Fake error')
+                });
+            });
+
             it('should recover from the error and replay the next request', function () {
                 var erroringStream = new stream.Readable();
                 erroringStream._read = function (num) {
@@ -1175,30 +1199,6 @@ describe('unexpectedMitm', function () {
             },
             response: 200
         }, 'to yield response', 200);
-    });
-
-    it('should support a response body stream that emits some data, then errors out', function () {
-        var responseBodyStream = new stream.Readable();
-        responseBodyStream._read = function (num, cb) {
-            responseBodyStream._read = function () {};
-            setImmediate(function () {
-                responseBodyStream.push('foobarquux');
-                responseBodyStream.emit('error', new Error('Fake error'));
-            });
-        };
-
-        return expect('GET http://localhost/', 'with http mocked out', {
-            request: 'GET http://localhost/',
-            response: {
-                headers: {
-                    'Content-Type': 'text/plain'
-                },
-                body: responseBodyStream
-            }
-        }, 'to yield response', {
-            body: 'foobarquux',
-            error: new Error('Fake error')
-        });
     });
 
     it('should interpret a response body provided as a non-Buffer object as JSON even though the message has a non-JSON Content-Type', function () {
