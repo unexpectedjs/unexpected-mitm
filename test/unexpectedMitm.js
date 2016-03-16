@@ -351,6 +351,7 @@ describe('unexpectedMitm', function () {
                         '               // -GET / HTTP/1.1\n' +
                         '               // +POST / HTTP/1.1\n' +
                         'Host: www.google.com // should equal www.example.com\n' +
+                        '                     //\n' +
                         '                     // -www.google.com\n' +
                         '                     // +www.example.com\n' +
                         "// host: expected 'www.google.com' to equal 'www.example.com'\n" +
@@ -691,7 +692,7 @@ describe('unexpectedMitm', function () {
                     '//\n' +
                     '// HTTP/1.1 200 OK\n' +
                     '//\n' +
-                    "// { type: 'Buffer', data: [ 102, 111, 111, 98, 97, 114, 113, 117, 117, 120 ] }"
+                    "// Buffer([0x66, 0x6F, 0x6F, 0x62, 0x61, 0x72, 0x71, 0x75, 0x75, 0x78])"
                 );
             }
         );
@@ -726,6 +727,7 @@ describe('unexpectedMitm', function () {
                     '// missing:\n' +
                     '// GET /foo\n' +
                     "// Foo: // should satisfy expect.it('to match', /bar/)\n" +
+                    "//      //\n" +
                     "//      // expected '' to match /bar/\n" + // Hmm, this is not ideal
                     '//\n' +
                     '// HTTP/1.1 200 OK'
@@ -776,6 +778,7 @@ describe('unexpectedMitm', function () {
                     "// missing:\n" +
                     "// GET /foo\n" +
                     "// Foo: // should satisfy expect.it('to match', /bar/)\n" +
+                    "//      //\n" +
                     "//      // expected '' to match /bar/\n" +
                     "//\n" +
                     "// HTTP/1.1 200 OK"
