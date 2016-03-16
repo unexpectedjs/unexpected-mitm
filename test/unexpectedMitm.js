@@ -408,6 +408,32 @@ describe('unexpectedMitm', function () {
             });
         });
 
+        it('should decode the stream as JSON', function () {
+            var responseBodyStream = new stream.Readable();
+            responseBodyStream._read = function (num, cb) {
+                responseBodyStream._read = function () {};
+                setImmediate(function () {
+                    responseBodyStream.push(JSON.stringify({"foo":"bar"}));
+                    responseBodyStream.push(null);
+                });
+            };
+
+            return expect('http://www.google.com/', 'with http mocked out', {
+                request: 'GET /',
+                response: {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: responseBodyStream
+                }
+            }, 'to yield response', {
+                statusCode: 200,
+                body: {
+                    foo: 'bar'
+                }
+            });
+        });
+
         describe('that emits an error', function () {
             it('should propagate the error to the mocked-out HTTP response', function () {
                 var erroringStream = new stream.Readable();
