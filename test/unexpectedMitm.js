@@ -601,6 +601,50 @@ describe('unexpectedMitm', function () {
         );
     });
 
+    it('should produce an error if a mocked request is not exercised and the second mock has a stream', function () {
+        var responseBodyStream = new stream.Readable();
+        responseBodyStream._read = function (num, cb) {
+            responseBodyStream._read = function () {};
+            setImmediate(function () {
+                responseBodyStream.push('foobarquux');
+                responseBodyStream.push(null);
+            });
+        };
+        return expect(
+            expect('http://www.google.com/foo', 'with http mocked out', [
+                {
+                    request: 'GET /foo',
+                    response: 200
+                },
+                {
+                    request: 'GET /foo',
+                    response: {
+                        body: responseBodyStream
+                    }
+                }
+            ], 'to yield response', 200),
+            'when rejected',
+            'to have message', function (message) {
+                expect(trimDiff(message), 'to equal',
+                    "expected 'http://www.google.com/foo'\n" +
+                    "with http mocked out [ { request: 'GET /foo', response: 200 }, { request: 'GET /foo', response: { body: ... } } ] to yield response 200\n" +
+                    '\n' +
+                    'GET /foo HTTP/1.1\n' +
+                    'Host: www.google.com\n' +
+                    '\n' +
+                    'HTTP/1.1 200 OK\n' +
+                    '\n' +
+                    '// missing:\n' +
+                    '// GET /foo\n' +
+                    '//\n' +
+                    '// HTTP/1.1 200 OK\n' +
+                    '//\n' +
+                    "// { type: 'Buffer', data: [ 102, 111, 111, 98, 97, 114, 113, 117, 117, 120 ] }"
+                );
+            }
+        );
+    });
+
     it('should produce an error if a mocked request is not exercised and there are non-trivial assertions on it', function () {
         return expect(
             expect('http://www.google.com/foo', 'with http mocked out', [
