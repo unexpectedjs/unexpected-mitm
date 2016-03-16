@@ -35,7 +35,7 @@
     "unexpected": "10.10.8",
     "unexpected-documentation-site-generator": "4.0.0",
     "unexpected-express": "8.1.0",
-    "unexpected-http": "5.2.0",
+    "unexpected-http": "5.2.1",
     "unexpected-markdown": "1.3.1",
     "unexpected-sinon": "10.1.1"
   },
