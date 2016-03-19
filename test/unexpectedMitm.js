@@ -6,7 +6,6 @@ var pathModule = require('path'),
     https = require('https'),
     pem = require('pem'),
     stream = require('stream'),
-    passError = require('passerror'),
     semver = require('semver'),
     sinon = require('sinon');
 
@@ -75,6 +74,18 @@ describe('unexpectedMitm', function () {
         });
 
     expect.output.preferredWidth = 150;
+
+    function createPemCertificate(certOptions) {
+        return expect.promise(function (resolve, reject) {
+            pem.createCertificate(function (err, certificateKeys) {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(certificateKeys)
+                }
+            });
+        });
+    }
 
     it('should mock out a simple request', function () {
         return expect('http://www.google.com/', 'with http mocked out', {
@@ -1118,8 +1129,8 @@ describe('unexpectedMitm', function () {
             serverHostname,
             serverUrl;
 
-        beforeEach(function (done) {
-            pem.createCertificate({days: 1, selfSigned: true}, passError(done, function (serverKeys) {
+        beforeEach(function () {
+            return createPemCertificate({days: 1, selfSigned: true}).then(function (serverKeys) {
                 handleRequest = undefined;
                 server = https.createServer({
                     cert: serverKeys.certificate,
@@ -1131,8 +1142,7 @@ describe('unexpectedMitm', function () {
                 serverAddress = server.address();
                 serverHostname = serverAddress.address === '::' ? 'localhost' : serverAddress.address;
                 serverUrl = 'https://' + serverHostname + ':' + serverAddress.port + '/';
-                done();
-            }));
+            });
         });
 
         afterEach(function () {
@@ -1142,11 +1152,11 @@ describe('unexpectedMitm', function () {
         describe('with a client certificate', function () {
             var clientKeys,
                 ca = new Buffer([1, 2, 3]); // Can apparently be bogus
-            beforeEach(function (done) {
-                pem.createCertificate({days: 1, selfSigned: true}, passError(done, function (keys) {
+
+            beforeEach(function () {
+                return createPemCertificate({days: 1, selfSigned: true}).then(function (keys) {
                     clientKeys = keys;
-                    done();
-                }));
+                });
             });
 
             it('should record a client certificate', function () {
