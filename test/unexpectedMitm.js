@@ -536,6 +536,23 @@ describe('unexpectedMitm', function () {
         });
     });
 
+    it('should error if the request body provided for verification was a stream', function () {
+        return expect(
+            expect('http://www.google.com/', 'with http mocked out', {
+                request: {
+                    url: 'GET /',
+                    body: fs.createReadStream(pathModule.resolve(__dirname, '..', 'testdata', 'foo.txt'))
+                },
+                response: 200
+            }, 'to yield response', {
+                statusCode: 200
+            }),
+            'when rejected',
+            'to have message',
+            'unexpected-mitm: a stream cannot be used to verify the request body, please specify the buffer instead.'
+        );
+    });
+
     describe('with the expected request body given as an object (shorthand for JSON)', function () {
         it('should succeed the match', function () {
             return expect({
