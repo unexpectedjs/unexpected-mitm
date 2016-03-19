@@ -4,6 +4,7 @@ var pathModule = require('path'),
     fs = require('fs'),
     http = require('http'),
     https = require('https'),
+    messy = require('messy'),
     pem = require('pem'),
     stream = require('stream'),
     semver = require('semver'),
@@ -1230,5 +1231,19 @@ describe('unexpectedMitm', function () {
             },
             body: new Buffer('{"foo":"bar"}', 'utf-8')
         });
+    });
+
+    it('should resolve with the compared exchanges', function () {
+        return expect(
+            expect('GET /', 'with http mocked out', {
+                request: 'GET /',
+                response: 200
+            }, 'to yield response', 200),
+            'when fulfilled',
+            'to satisfy', [
+                new messy.HttpExchange(),
+                expect.it('to be an object')
+            ]
+        );
     });
 });
