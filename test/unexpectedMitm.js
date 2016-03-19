@@ -81,7 +81,7 @@ describe('unexpectedMitm', function () {
                 if (err) {
                     reject(err);
                 } else {
-                    resolve(certificateKeys)
+                    resolve(certificateKeys);
                 }
             });
         });
