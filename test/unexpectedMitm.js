@@ -504,7 +504,7 @@ describe('unexpectedMitm', function () {
                     return expect.promise(function (run) {
                         http.get('http://www.google.com/').on('error', run(function (err) {
                             expect(firstResponseSpy, 'to have calls satisfying', function () {
-                                firstResponseSpy({ headers: { 'content-type': 'text/plain' } } );
+                                firstResponseSpy({ headers: { 'content-type': 'text/plain' } });
                             });
                             http.get('http://www.google.com/').on('error', function (err) {
                                 expect.fail('request unexpectedly errored');
