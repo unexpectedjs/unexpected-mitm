@@ -916,6 +916,23 @@ describe('unexpectedMitm', function () {
             });
         });
 
+        it('should allow the use of pipe() internally', function  () {
+            return expect({
+                url: 'GET /stream',
+                body: new Buffer('foobar', 'utf-8')
+            }, 'with http mocked out', {
+                request: {
+                    url: '/stream',
+                    body: new Buffer('foobar', 'utf-8')
+                },
+                response: function (req, res) {
+                    req.pipe(res);
+                }
+            }, 'to yield response', {
+                body: new Buffer('foobar', 'utf-8')
+            });
+        });
+
         it('should report if the response function returns an error', function  () {
             var err = new Error('bailed');
 
