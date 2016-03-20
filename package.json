@@ -9,7 +9,7 @@
   },
   "main": "lib/unexpectedMitm.js",
   "scripts": {
-    "lint": "jshint .",
+    "lint": "eslint .",
     "test": "mocha --compilers md:unexpected-markdown test/*.js `find documentation -name '*.md'` && npm run lint",
     "travis": "npm test && npm run coverage && (<coverage/lcov.info coveralls || true)",
     "coverage": "NODE_ENV=development nyc --reporter=lcov --reporter=text --all -- mocha --compilers md:unexpected-markdown test/*.js `find documentation -name '*.md'` && echo google-chrome coverage/lcov-report/index.html",
@@ -23,8 +23,9 @@
   },
   "devDependencies": {
     "coveralls": "2.11.2",
+    "eslint": "2.4.0",
+    "eslint-config-onelint": "1.0.2",
     "express": "4.13.4",
-    "jshint": "2.6.0",
     "mocha": "2.2.5",
     "nyc": "6.1.1",
     "pem": "1.7.2",
