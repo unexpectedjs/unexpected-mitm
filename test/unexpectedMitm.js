@@ -1516,4 +1516,47 @@ describe('unexpectedMitm', function () {
             expect(value, 'to equal', 2);
         });
     });
+
+    describe('when verifying', function () {
+        var handleRequest,
+            server,
+            serverAddress,
+            serverHostname,
+            serverUrl;
+        beforeEach(function () {
+            handleRequest = undefined;
+            server = http.createServer(function (req, res) {
+                res.sendDate = false;
+                handleRequest(req, res);
+            }).listen(0);
+            serverAddress = server.address();
+            serverHostname = serverAddress.address === '::' ? 'localhost' : serverAddress.address;
+            serverUrl = 'http://' + serverHostname + ':' + serverAddress.port + '/';
+        });
+
+        afterEach(function () {
+            server.close();
+        });
+
+        it('should verify and resolve with the exchanges', function () {
+            handleRequest = function (req, res) {
+                res.statusCode = 405;
+                res.end();
+            };
+
+            return expect(
+                expect({
+                    url: 'GET ' + serverUrl
+                }, 'with http mocked out and verified', {
+                    response: 405
+                }, 'to yield response', 405),
+                'when fulfilled',
+                'to satisfy', [
+                    expect.it('to be an object'),
+                    new messy.HttpExchange(),
+                    expect.it('to be an object')
+                ]
+            );
+        });
+    });
 });
