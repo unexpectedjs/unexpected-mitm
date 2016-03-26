@@ -935,6 +935,25 @@ describe('unexpectedMitm', function () {
             );
         });
 
+        it.skip('should allow consuming the request body', function () {
+            return expect({
+                url: 'POST /',
+                body: {
+                    foo: 'bar'
+                }
+            }, 'with http mocked out', {
+                response: require('express')()
+                    .use(require('body-parser').json())
+                    .use(function (req, res, next) {
+                        res.send(req.body);
+                    })
+            }, 'to yield response', {
+                body: {
+                    foo: 'bar'
+                }
+            });
+        });
+
         describe('with documentation response function', function () {
             function documentationHandler(req, res) {
                 var myMessage;
