@@ -952,7 +952,7 @@ describe('unexpectedMitm', function () {
             );
         });
 
-        it.skip('should allow consuming the request body', function () {
+        it('should allow consuming the request body', function () {
             return expect({
                 url: 'POST /',
                 body: {
