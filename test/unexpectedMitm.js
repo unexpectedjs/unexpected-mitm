@@ -1151,6 +1151,29 @@ describe('unexpectedMitm', function () {
                 response: expectedError
             }, 'to yield response', expectedError);
         });
+
+        it('should record a socket disconnect', function () {
+            handleRequest = function (req, res) {
+                res.destroy();
+            };
+
+            var expectedError = new Error('socket hang up');
+            expectedError.code = 'ECONNRESET';
+
+            return expect({
+                url: 'GET ' + serverUrl
+            }, 'with expected http recording', {
+                request: {
+                    url: 'GET /',
+                    host: serverHostname,
+                    port: serverAddress.port,
+                    headers: {
+                        Host: serverHostname + ':' + serverAddress.port
+                    }
+                },
+                response: expectedError
+            }, 'to yield response', expectedError);
+        });
     });
 
     describe('in injecting mode against a local HTTP server', function () {
