@@ -276,7 +276,6 @@ describe('unexpectedMitm', function () {
         }, 'to throw', /^Unknown assertion 'to foobarquux'/);
     });
 
-    // Awaiting https://github.com/moll/node-mitm/issues/10
     describe('when mocking out an https request and asserting that the request is https', function () {
         describe('when https is specified as part of the request url', function () {
             it('should succeed', function () {
