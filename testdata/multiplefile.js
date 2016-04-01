@@ -46,4 +46,12 @@ describe('example with http recorded and injected file', function () {
             url: 'GET ' + serverUrl
         }, 'with http recorded and injected', 'to yield response', 406);
     });
+
+    it('should record a 407', function () {
+        handleRequest = function (req, res) {
+            res.statusCode = 407;
+            res.end();
+        };
+        return expect('GET ' + serverUrl, 'with http recorded and injected', 'to yield response', 407);
+    });
 });

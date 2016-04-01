@@ -58,4 +58,18 @@ describe('example with http recorded and injected file', function () {
             response: 406
         }, 'to yield response', 406);
     });
+
+    it('should record a 407', function () {
+        handleRequest = function (req, res) {
+            res.statusCode = 407;
+            res.end();
+        };
+        return expect('GET ' + serverUrl, 'with http mocked out', {
+            request: {
+                url: 'GET /', headers: { Host: '0.0.0.0:59891' }, host: '0.0.0.0',
+                port: 59891
+            },
+            response: 407
+        }, 'to yield response', 407);
+    });
 });
