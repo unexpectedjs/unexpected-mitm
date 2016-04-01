@@ -1,0 +1,201 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0">
+    <link rel="stylesheet" href="../../../static/normalize.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../../../static/main.css" type="text/css" media="screen" />
+    <link rel="shortcut icon" type="image/vnd.microsoft.icon" href="../../../static/bug-icon-black.ico">
+    <title>any - with http mocked out</title>
+</head>
+<body class="sidebar-hidden has-sidebar">
+    <header>
+        <div class="logo-icon"></div>
+        <nav>
+            <ul>
+                <li class="menu-toggle-item">
+                    <button class="menu-toggle" onclick="toggleSidebar()"></button>
+                </li>
+                
+                <li class=""><a href="../../..">unexpected-mitm</a></li>
+                
+                
+                <li class="active"><a href="">Assertions</a></li>
+                
+                
+                
+            </ul>
+        </nav>
+        <div class="search" style="visibility: hidden">
+            <input id="search" placeholder="Search..." value="">
+            <div id="searchDropDown" class="dropDown">
+                <ul id="searchResults"></ul>
+            </div>
+        </div>
+    </header>
+
+<section id="assertions">
+    <nav id="assertion-menu" class="sidebar js-remember-scroll-position">
+    
+        <h3 class=""><a href="..">any</a></h3>
+        <ul>
+            
+            <li class="active">
+                <a href="">with http mocked out</a>
+            </li>
+            
+            <li class="">
+                <a href="../with-http-recorded">with http recorded</a>
+            </li>
+            
+        </ul>
+    
+</nav>
+
+    <div class="main" tabindex="-1">
+        <div class="content">
+            <h1>with http mocked out</h1>
+            
+                <ul class="declarations">
+                
+                    <li>&lt;any&gt; with http mocked out &lt;array|object&gt; &lt;assertion&gt;</li>
+                
+                </ul>
+            
+            <p>Mock out the node.js <code>http</code> module, then delegate to another assertion,
+asserting that exactly the specified HTTP traffic is taking place during the
+other assertion.</p>
+<p>Imagine that you&#39;ve developed a nice web server that&#39;ll tell you whether it rains in London:</p>
+<div class="code lang-javascript">
+  <div><span style="color: #a71d5d">var</span>&nbsp;express&nbsp;<span style="color: #a71d5d">=</span>&nbsp;<span style="color: #000000">require</span><span style="color: #000000">(</span><span style="color: #df5000">'express'</span><span style="color: #000000">),</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;request&nbsp;<span style="color: #a71d5d">=</span>&nbsp;<span style="color: #000000">require</span><span style="color: #000000">(</span><span style="color: #df5000">'request'</span><span style="color: #000000">);</span></div>
+  <div>&nbsp;</div>
+  <div><span style="color: #a71d5d">var</span>&nbsp;myApp&nbsp;<span style="color: #a71d5d">=</span>&nbsp;<span style="color: #000000">express</span><span style="color: #000000">().</span><span style="color: #a71d5d">get</span><span style="color: #000000">(</span><span style="color: #df5000">'/doesItRainInLondon'</span><span style="color: #000000">,</span>&nbsp;<span style="color: #a71d5d">function</span>&nbsp;<span style="color: #000000">(</span>req<span style="color: #000000">,</span>&nbsp;res<span style="color: #000000">,</span>&nbsp;next<span style="color: #000000">)</span>&nbsp;<span style="color: #000000">{</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">request</span><span style="color: #000000">({</span>url<span style="color: #000000">:</span>&nbsp;<span style="color: #df5000">'http://api.openweathermap.org/data/2.5/weather?q=London,uk'</span><span style="color: #000000">,</span>&nbsp;json<span style="color: #000000">:</span>&nbsp;<span style="color: #0086b3">true</span><span style="color: #000000">},</span>&nbsp;<span style="color: #a71d5d">function</span>&nbsp;<span style="color: #000000">(</span>err<span style="color: #000000">,</span>&nbsp;response<span style="color: #000000">,</span>&nbsp;body<span style="color: #000000">)</span>&nbsp;<span style="color: #000000">{</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #a71d5d">if</span>&nbsp;<span style="color: #000000">(</span>err<span style="color: #000000">)</span>&nbsp;<span style="color: #000000">{</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #a71d5d">return</span>&nbsp;res<span style="color: #000000">.</span><span style="color: #000000">send</span><span style="color: #000000">(</span><span style="color: #df5000">'&lt;h1&gt;Dunno&lt;/h1&gt;'</span><span style="color: #000000">);</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">}</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #a71d5d">var</span>&nbsp;result&nbsp;<span style="color: #a71d5d">=</span>&nbsp;body<span style="color: #000000">.</span>weather<span style="color: #000000">.</span><span style="color: #000000">some</span><span style="color: #000000">(</span><span style="color: #a71d5d">function</span>&nbsp;<span style="color: #000000">(</span>weather<span style="color: #000000">)</span>&nbsp;<span style="color: #000000">{</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #a71d5d">return</span>&nbsp;<span style="color: #183691">/rain/i</span><span style="color: #000000">.</span><span style="color: #000000">test</span><span style="color: #000000">(</span>weather<span style="color: #000000">.</span>main<span style="color: #000000">);</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">});</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;res<span style="color: #000000">.</span><span style="color: #000000">send</span><span style="color: #000000">(</span><span style="color: #df5000">'&lt;h1&gt;'</span>&nbsp;<span style="color: #a71d5d">+</span>&nbsp;<span style="color: #000000">(</span>result&nbsp;<span style="color: #a71d5d">?</span>&nbsp;<span style="color: #df5000">'Yes'</span>&nbsp;<span style="color: #000000">:</span>&nbsp;<span style="color: #df5000">'No'</span><span style="color: #000000">)</span>&nbsp;<span style="color: #a71d5d">+</span>&nbsp;<span style="color: #df5000">'&lt;/h1&gt;'</span><span style="color: #000000">);</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">});</span></div>
+  <div><span style="color: #000000">});</span></div>
+</div><p>Of course, the first thing you want to do is to create a test for it using <a href="https://unexpectedjs.github.io">unexpected</a> and <a href="https://github.com/unexpectedjs/unexpected-express/">unexpected-express</a>:</p>
+<div class="code lang-javascript">
+  <div>expect<span style="color: #000000">.</span><span style="color: #000000">installPlugin</span><span style="color: #000000">(</span><span style="color: #000000">require</span><span style="color: #000000">(</span><span style="color: #df5000">'unexpected-express'</span><span style="color: #000000">));</span></div>
+</div><div class="code lang-javascript">
+  <div><span style="color: #000000">describe</span><span style="color: #000000">(</span><span style="color: #df5000">'myApp'</span><span style="color: #000000">,</span>&nbsp;<span style="color: #a71d5d">function</span>&nbsp;<span style="color: #000000">()</span>&nbsp;<span style="color: #000000">{</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">it</span><span style="color: #000000">(</span><span style="color: #df5000">'should&nbsp;report&nbsp;that&nbsp;it&nbsp;does&nbsp;not&nbsp;currently&nbsp;rain'</span><span style="color: #000000">,</span>&nbsp;<span style="color: #a71d5d">function</span>&nbsp;<span style="color: #000000">()</span>&nbsp;<span style="color: #000000">{</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #a71d5d">return</span>&nbsp;<span style="color: #000000">expect</span><span style="color: #000000">(</span>myApp<span style="color: #000000">,</span>&nbsp;<span style="color: #df5000">'to&nbsp;yield&nbsp;exchange'</span><span style="color: #000000">,</span>&nbsp;<span style="color: #000000">{</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;request<span style="color: #000000">:</span>&nbsp;<span style="color: #df5000">'GET&nbsp;/doesItRainInLondon'</span><span style="color: #000000">,</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;response<span style="color: #000000">:</span>&nbsp;<span style="color: #000000">{</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;headers<span style="color: #000000">:</span>&nbsp;<span style="color: #000000">{</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #df5000">'Content-Type'</span><span style="color: #000000">:</span>&nbsp;<span style="color: #183691">/^text\/html/</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">},</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;body<span style="color: #000000">:</span>&nbsp;<span style="color: #df5000">'&lt;h1&gt;No&lt;/h1&gt;'</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">}</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">});</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">});</span></div>
+  <div><span style="color: #000000">});</span></div>
+</div><p>And what do you know, the test passes! But there&#39;s a couple of problems with it:</p>
+<ul>
+<li>It&#39;s slow because it needs to connect to an external server each time it is run</li>
+<li>It&#39;s potentially unreliable because it requires said server to be up</li>
+<li>It requires Internet access</li>
+<li>The test will break as soon as it rains in London</li>
+<li>It doesn&#39;t obtain coverage of the &quot;No&quot; case</li>
+</ul>
+<h2 id="mock-responses">Mock Responses</h2>
+<p>Unexpected-mitm solves these problems by allowing you to mock out the HTTP traffic:</p>
+<div class="code lang-javascript">
+  <div><span style="color: #000000">describe</span><span style="color: #000000">(</span><span style="color: #df5000">'myApp'</span><span style="color: #000000">,</span>&nbsp;<span style="color: #a71d5d">function</span>&nbsp;<span style="color: #000000">()</span>&nbsp;<span style="color: #000000">{</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">it</span><span style="color: #000000">(</span><span style="color: #df5000">'should&nbsp;report&nbsp;that&nbsp;it&nbsp;does&nbsp;not&nbsp;currently&nbsp;rain'</span><span style="color: #000000">,</span>&nbsp;<span style="color: #a71d5d">function</span>&nbsp;<span style="color: #000000">()</span>&nbsp;<span style="color: #000000">{</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #a71d5d">return</span>&nbsp;<span style="color: #000000">expect</span><span style="color: #000000">(</span>myApp<span style="color: #000000">,</span>&nbsp;<span style="color: #df5000">'with&nbsp;http&nbsp;mocked&nbsp;out'</span><span style="color: #000000">,</span>&nbsp;<span style="color: #000000">{</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;request<span style="color: #000000">:</span>&nbsp;<span style="color: #df5000">'GET&nbsp;http://api.openweathermap.org/data/2.5/weather?q=London,uk'</span><span style="color: #000000">,</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;response<span style="color: #000000">:</span>&nbsp;<span style="color: #000000">{</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;body<span style="color: #000000">:</span>&nbsp;<span style="color: #000000">{</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;coord<span style="color: #000000">:</span>&nbsp;<span style="color: #000000">{</span>&nbsp;lon<span style="color: #000000">:</span>&nbsp;<span style="color: #a71d5d">-</span><span style="color: #0086b3">0.13</span><span style="color: #000000">,</span>&nbsp;lat<span style="color: #000000">:</span>&nbsp;<span style="color: #0086b3">51.51</span>&nbsp;<span style="color: #000000">},</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sys<span style="color: #000000">:</span>&nbsp;<span style="color: #000000">{</span>&nbsp;message<span style="color: #000000">:</span>&nbsp;<span style="color: #0086b3">0.258</span><span style="color: #000000">,</span>&nbsp;country<span style="color: #000000">:</span><span style="color: #df5000">'GB'</span><span style="color: #000000">,</span>&nbsp;sunrise<span style="color: #000000">:</span><span style="color: #0086b3">1429764429</span><span style="color: #000000">,</span>&nbsp;sunset<span style="color: #000000">:</span><span style="color: #0086b3">1429816225</span>&nbsp;<span style="color: #000000">},</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;weather<span style="color: #000000">:</span>&nbsp;<span style="color: #000000">[</span>&nbsp;<span style="color: #000000">{</span>&nbsp;id<span style="color: #000000">:</span>&nbsp;<span style="color: #0086b3">800</span><span style="color: #000000">,</span>&nbsp;main<span style="color: #000000">:</span>&nbsp;<span style="color: #df5000">'Clear'</span><span style="color: #000000">,</span>&nbsp;description<span style="color: #000000">:</span>&nbsp;<span style="color: #df5000">'sky&nbsp;is&nbsp;clear'</span><span style="color: #000000">,</span>&nbsp;icon<span style="color: #000000">:</span>&nbsp;<span style="color: #df5000">'02n'</span>&nbsp;<span style="color: #000000">}</span>&nbsp;<span style="color: #000000">],</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;base<span style="color: #000000">:</span>&nbsp;<span style="color: #df5000">'stations'</span><span style="color: #000000">,</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;main<span style="color: #000000">:</span>&nbsp;<span style="color: #000000">{</span>&nbsp;temp<span style="color: #000000">:</span>&nbsp;<span style="color: #0086b3">282.39</span><span style="color: #000000">,</span>&nbsp;temp_min<span style="color: #000000">:</span>&nbsp;<span style="color: #0086b3">282.39</span><span style="color: #000000">,</span>&nbsp;temp_max<span style="color: #000000">:</span>&nbsp;<span style="color: #0086b3">282.39</span><span style="color: #000000">,</span>&nbsp;pressure<span style="color: #000000">:</span>&nbsp;<span style="color: #0086b3">1021.63</span><span style="color: #000000">,</span>&nbsp;sea_level<span style="color: #000000">:</span>&nbsp;<span style="color: #0086b3">1029.65</span><span style="color: #000000">,</span>&nbsp;grnd_level<span style="color: #000000">:</span>&nbsp;<span style="color: #0086b3">1021.63</span><span style="color: #000000">,</span>&nbsp;humidity<span style="color: #000000">:</span>&nbsp;<span style="color: #0086b3">71</span>&nbsp;<span style="color: #000000">},</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;wind<span style="color: #000000">:</span>&nbsp;<span style="color: #000000">{</span>&nbsp;speed<span style="color: #000000">:</span>&nbsp;<span style="color: #0086b3">2.58</span><span style="color: #000000">,</span>&nbsp;deg<span style="color: #000000">:</span>&nbsp;<span style="color: #0086b3">119.007</span>&nbsp;<span style="color: #000000">},</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;clouds<span style="color: #000000">:</span>&nbsp;<span style="color: #000000">{</span>&nbsp;all<span style="color: #000000">:</span>&nbsp;<span style="color: #0086b3">8</span>&nbsp;<span style="color: #000000">},</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dt<span style="color: #000000">:</span>&nbsp;<span style="color: #0086b3">1429821249</span><span style="color: #000000">,</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;id<span style="color: #000000">:</span>&nbsp;<span style="color: #0086b3">2643743</span><span style="color: #000000">,</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;name<span style="color: #000000">:</span>&nbsp;<span style="color: #df5000">'London'</span><span style="color: #000000">,</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cod<span style="color: #000000">:</span>&nbsp;<span style="color: #0086b3">200</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">}</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">}</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">},</span>&nbsp;<span style="color: #df5000">'to&nbsp;yield&nbsp;exchange'</span><span style="color: #000000">,</span>&nbsp;<span style="color: #000000">{</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;request<span style="color: #000000">:</span>&nbsp;<span style="color: #df5000">'GET&nbsp;/doesItRainInLondon'</span><span style="color: #000000">,</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;response<span style="color: #000000">:</span>&nbsp;<span style="color: #000000">{</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;headers<span style="color: #000000">:</span>&nbsp;<span style="color: #000000">{</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #df5000">'Content-Type'</span><span style="color: #000000">:</span>&nbsp;<span style="color: #183691">/^text\/html/</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">},</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;body<span style="color: #000000">:</span>&nbsp;<span style="color: #df5000">'&lt;h1&gt;No&lt;/h1&gt;'</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">}</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">});</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">});</span></div>
+  <div><span style="color: #000000">});</span></div>
+</div><p>The next step would be adding another <code>it</code> to test that an upstream JSON response with reports of rainy weather indeed results in an HTML response of <code>&lt;h1&gt;Yes&lt;/h1&gt;</code>.</p>
+<p>You can also specify an <code>Error</code> instance as the mocked out response to simulate a TCP error happening while fetching the weather JSON. That allows you test the error handling code in the <code>request</code> callback.</p>
+<h2 id="response-functions">Response Functions</h2>
+<p>Mocking responses allows you to quickly specify the responses you desire, but suppose you already
+have code which generates the correct responses for particular requests?</p>
+<p>Response functions let you dynamically write responses based on the request. Standard req/res
+objects are provided to response function, and by conforming to the standard node API, it means
+any server code is compatible and can be leveraged:</p>
+<div class="code lang-javascript">
+  <div><span style="color: #000000">describe</span><span style="color: #000000">(</span><span style="color: #df5000">'with&nbsp;documentation&nbsp;response&nbsp;function'</span><span style="color: #000000">,</span>&nbsp;<span style="color: #a71d5d">function</span>&nbsp;<span style="color: #000000">()</span>&nbsp;<span style="color: #000000">{</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #a71d5d">function</span>&nbsp;<span style="color: #000000">documentationHandler</span><span style="color: #000000">(</span>req<span style="color: #000000">,</span>&nbsp;res<span style="color: #000000">)</span>&nbsp;<span style="color: #000000">{</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #a71d5d">var</span>&nbsp;myMessage<span style="color: #000000">;</span></div>
+  <div>&nbsp;</div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #a71d5d">if</span>&nbsp;<span style="color: #000000">(</span>req<span style="color: #000000">.</span>url&nbsp;<span style="color: #a71d5d">===</span>&nbsp;<span style="color: #df5000">'/thatOneExpectedThing'</span><span style="color: #000000">)</span>&nbsp;<span style="color: #000000">{</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;myMessage&nbsp;<span style="color: #a71d5d">=</span>&nbsp;<span style="color: #df5000">'&lt;h1&gt;to&nbsp;be&nbsp;expected&lt;/h1&gt;'</span><span style="color: #000000">;</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">}</span>&nbsp;<span style="color: #a71d5d">else</span>&nbsp;<span style="color: #000000">{</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;myMessage&nbsp;<span style="color: #a71d5d">=</span>&nbsp;<span style="color: #df5000">'&lt;h1&gt;how&nbsp;very&nbsp;unexpected&lt;/h1&gt;'</span><span style="color: #000000">;</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">}</span></div>
+  <div>&nbsp;</div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;res<span style="color: #000000">.</span><span style="color: #000000">writeHead</span><span style="color: #000000">(</span><span style="color: #0086b3">200</span><span style="color: #000000">,</span>&nbsp;<span style="color: #000000">{</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #df5000">'Content-Type'</span><span style="color: #000000">:</span>&nbsp;<span style="color: #df5000">'text/plain'</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">});</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;res<span style="color: #000000">.</span><span style="color: #000000">end</span><span style="color: #000000">(</span>myMessage<span style="color: #000000">);</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">}</span></div>
+  <div>&nbsp;</div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">it</span><span style="color: #000000">(</span><span style="color: #df5000">'should&nbsp;remark&nbsp;&quot;to&nbsp;be&nbsp;expected&quot;&nbsp;for&nbsp;GET&nbsp;/thatOneExpectedThing'</span><span style="color: #000000">,</span>&nbsp;<span style="color: #a71d5d">function</span>&nbsp;<span style="color: #000000">()</span>&nbsp;<span style="color: #000000">{</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #a71d5d">return</span>&nbsp;<span style="color: #000000">expect</span><span style="color: #000000">(</span><span style="color: #df5000">'/thatOneExpectedThing'</span><span style="color: #000000">,</span>&nbsp;<span style="color: #df5000">'with&nbsp;http&nbsp;mocked&nbsp;out'</span><span style="color: #000000">,</span>&nbsp;<span style="color: #000000">{</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;request<span style="color: #000000">:</span>&nbsp;<span style="color: #df5000">'/thatOneExpectedThing'</span><span style="color: #000000">,</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;response<span style="color: #000000">:</span>&nbsp;documentationHandler</div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">},</span>&nbsp;<span style="color: #df5000">'to&nbsp;yield&nbsp;response'</span><span style="color: #000000">,</span>&nbsp;<span style="color: #000000">{</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;statusCode<span style="color: #000000">:</span>&nbsp;<span style="color: #0086b3">200</span><span style="color: #000000">,</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;body<span style="color: #000000">:</span>&nbsp;<span style="color: #df5000">'&lt;h1&gt;to&nbsp;be&nbsp;expected&lt;/h1&gt;'</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">});</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">});</span></div>
+  <div>&nbsp;</div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">it</span><span style="color: #000000">(</span><span style="color: #df5000">'should&nbsp;remark&nbsp;&quot;how&nbsp;very&nbsp;unexpected&quot;&nbsp;for&nbsp;GET&nbsp;/somethingOtherThing'</span><span style="color: #000000">,</span>&nbsp;<span style="color: #a71d5d">function</span>&nbsp;<span style="color: #000000">()</span>&nbsp;<span style="color: #000000">{</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #a71d5d">return</span>&nbsp;<span style="color: #000000">expect</span><span style="color: #000000">(</span><span style="color: #df5000">'/somethingOtherThing'</span><span style="color: #000000">,</span>&nbsp;<span style="color: #df5000">'with&nbsp;http&nbsp;mocked&nbsp;out'</span><span style="color: #000000">,</span>&nbsp;<span style="color: #000000">{</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;request<span style="color: #000000">:</span>&nbsp;<span style="color: #df5000">'/somethingOtherThing'</span><span style="color: #000000">,</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;response<span style="color: #000000">:</span>&nbsp;documentationHandler</div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">},</span>&nbsp;<span style="color: #df5000">'to&nbsp;yield&nbsp;response'</span><span style="color: #000000">,</span>&nbsp;<span style="color: #000000">{</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;statusCode<span style="color: #000000">:</span>&nbsp;<span style="color: #0086b3">200</span><span style="color: #000000">,</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;body<span style="color: #000000">:</span>&nbsp;<span style="color: #df5000">'&lt;h1&gt;how&nbsp;very&nbsp;unexpected&lt;/h1&gt;'</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">});</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">});</span></div>
+  <div><span style="color: #000000">});</span></div>
+</div>
+        </div>
+    </div>
+</section>
+<script type="text/javascript">
+    baseUrl = '../../..';
+</script>
+<script type="text/javascript" src="../../../static/toggleSidebar.js"></script>
+<script type="text/javascript" src="../../../static/rememberScrollPosition.js"></script>
+<script type="text/javascript" src="../../../static/focusMain.js"></script>
+<script type="text/javascript" src="../../../static/search.js"></script>
+</body>
+</html>
+

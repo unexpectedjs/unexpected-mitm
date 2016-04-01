@@ -1,0 +1,10 @@
+[
+  {
+    "label": "with http mocked out (any)",
+    "url": "/assertions/any/with-http-mocked-out/"
+  },
+  {
+    "label": "with http recorded (any)",
+    "url": "/assertions/any/with-http-recorded/"
+  }
+]

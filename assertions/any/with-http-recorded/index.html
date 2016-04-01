@@ -1,0 +1,136 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0">
+    <link rel="stylesheet" href="../../../static/normalize.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../../../static/main.css" type="text/css" media="screen" />
+    <link rel="shortcut icon" type="image/vnd.microsoft.icon" href="../../../static/bug-icon-black.ico">
+    <title>any - with http recorded</title>
+</head>
+<body class="sidebar-hidden has-sidebar">
+    <header>
+        <div class="logo-icon"></div>
+        <nav>
+            <ul>
+                <li class="menu-toggle-item">
+                    <button class="menu-toggle" onclick="toggleSidebar()"></button>
+                </li>
+                
+                <li class=""><a href="../../..">unexpected-mitm</a></li>
+                
+                
+                <li class="active"><a href="../with-http-mocked-out">Assertions</a></li>
+                
+                
+                
+            </ul>
+        </nav>
+        <div class="search" style="visibility: hidden">
+            <input id="search" placeholder="Search..." value="">
+            <div id="searchDropDown" class="dropDown">
+                <ul id="searchResults"></ul>
+            </div>
+        </div>
+    </header>
+
+<section id="assertions">
+    <nav id="assertion-menu" class="sidebar js-remember-scroll-position">
+    
+        <h3 class=""><a href="..">any</a></h3>
+        <ul>
+            
+            <li class="">
+                <a href="../with-http-mocked-out">with http mocked out</a>
+            </li>
+            
+            <li class="active">
+                <a href="">with http recorded</a>
+            </li>
+            
+        </ul>
+    
+</nav>
+
+    <div class="main" tabindex="-1">
+        <div class="content">
+            <h1>with http recorded</h1>
+            
+                <ul class="declarations">
+                
+                    <li>&lt;any&gt; with http recorded [and injected] &lt;assertion&gt;</li>
+                
+                </ul>
+            
+            <p>Enables recording of responses from a real server for the specified request.</p>
+<p>For example, you wish to test for a header returned on when you GET a certain
+popular web search service:</p>
+<div class="code lang-javascript">
+  <div>expect<span style="color: #000000">.</span><span style="color: #000000">installPlugin</span><span style="color: #000000">(</span><span style="color: #000000">require</span><span style="color: #000000">(</span><span style="color: #df5000">'unexpected-http'</span><span style="color: #000000">));</span></div>
+  <div>&nbsp;</div>
+  <div><span style="color: #000000">describe</span><span style="color: #000000">(</span><span style="color: #df5000">'requests&nbsp;to&nbsp;a&nbsp;popular&nbsp;web&nbsp;search&nbsp;service'</span><span style="color: #000000">,</span>&nbsp;<span style="color: #a71d5d">function</span>&nbsp;<span style="color: #000000">()</span>&nbsp;<span style="color: #000000">{</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">it</span><span style="color: #000000">(</span><span style="color: #df5000">'should&nbsp;have&nbsp;a&nbsp;Content-Type'</span><span style="color: #000000">,</span>&nbsp;<span style="color: #a71d5d">function</span>&nbsp;<span style="color: #000000">()</span>&nbsp;<span style="color: #000000">{</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #a71d5d">return</span>&nbsp;<span style="color: #000000">expect</span><span style="color: #000000">({</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;url<span style="color: #000000">:</span>&nbsp;<span style="color: #df5000">'GET&nbsp;https://www.google.co.uk'</span><span style="color: #000000">,</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">},</span>&nbsp;<span style="color: #df5000">'with&nbsp;http&nbsp;recorded'</span><span style="color: #000000">,</span>&nbsp;<span style="color: #df5000">'to&nbsp;yield&nbsp;response'</span><span style="color: #000000">,</span>&nbsp;<span style="color: #0086b3">200</span><span style="color: #000000">).</span><span style="color: #000000">then</span><span style="color: #000000">(</span><span style="color: #a71d5d">function</span>&nbsp;<span style="color: #000000">(</span>exchange<span style="color: #000000">)</span>&nbsp;<span style="color: #000000">{</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">expect</span><span style="color: #000000">(</span>exchange<span style="color: #000000">.</span>response<span style="color: #000000">.</span>headers<span style="color: #000000">,</span>&nbsp;<span style="color: #df5000">'to&nbsp;have&nbsp;property'</span><span style="color: #000000">,</span>&nbsp;<span style="color: #df5000">'Content-Type'</span><span style="color: #000000">);</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">});</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">});</span></div>
+  <div><span style="color: #000000">});</span></div>
+</div><h2 id="-and-injected-">&quot;and injected&quot;</h2>
+<p>Of course, always checking against the real server does not a unit-test make!
+Since we have the recorded descriptions, what if we could we store these and
+arrive at an offline test?</p>
+<p>Modifying the assertion to read &quot;with http recorded and injected&quot; will cause
+the injection of the recording into the tests, so:</p>
+<div class="code lang-javascript">
+  <div><span style="color: #000000">describe</span><span style="color: #000000">(</span><span style="color: #df5000">'requests&nbsp;to&nbsp;a&nbsp;popular&nbsp;web&nbsp;search&nbsp;service'</span><span style="color: #000000">,</span>&nbsp;<span style="color: #a71d5d">function</span>&nbsp;<span style="color: #000000">()</span>&nbsp;<span style="color: #000000">{</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">it</span><span style="color: #000000">(</span><span style="color: #df5000">'should&nbsp;return&nbsp;something'</span><span style="color: #000000">,</span>&nbsp;<span style="color: #a71d5d">function</span>&nbsp;<span style="color: #000000">()</span>&nbsp;<span style="color: #000000">{</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #a71d5d">return</span>&nbsp;<span style="color: #000000">expect</span><span style="color: #000000">(</span><span style="color: #df5000">'GET&nbsp;https://www.google.co.uk'</span><span style="color: #000000">,</span>&nbsp;<span style="color: #df5000">'with&nbsp;http&nbsp;recorded&nbsp;and&nbsp;injected'</span><span style="color: #000000">,</span>&nbsp;<span style="color: #df5000">'to&nbsp;yield&nbsp;response'</span><span style="color: #000000">,</span>&nbsp;<span style="color: #0086b3">200</span><span style="color: #000000">);</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">});</span></div>
+  <div><span style="color: #000000">});</span></div>
+</div><p>would become (something like the following):</p>
+<div class="code lang-javascript">
+  <div><span style="color: #000000">describe</span><span style="color: #000000">(</span><span style="color: #df5000">'requests&nbsp;to&nbsp;a&nbsp;popular&nbsp;web&nbsp;search&nbsp;service'</span><span style="color: #000000">,</span>&nbsp;<span style="color: #a71d5d">function</span>&nbsp;<span style="color: #000000">()</span>&nbsp;<span style="color: #000000">{</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">it</span><span style="color: #000000">(</span><span style="color: #df5000">'should&nbsp;return&nbsp;something'</span><span style="color: #000000">,</span>&nbsp;<span style="color: #a71d5d">function</span>&nbsp;<span style="color: #000000">()</span>&nbsp;<span style="color: #000000">{</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #a71d5d">return</span>&nbsp;<span style="color: #000000">expect</span><span style="color: #000000">(</span><span style="color: #df5000">'GET&nbsp;https://www.google.co.uk'</span><span style="color: #000000">,</span>&nbsp;<span style="color: #df5000">'with&nbsp;http&nbsp;mocked&nbsp;out'</span><span style="color: #000000">,</span>&nbsp;<span style="color: #000000">{</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;request<span style="color: #000000">:</span>&nbsp;<span style="color: #000000">{</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;url<span style="color: #000000">:</span>&nbsp;<span style="color: #df5000">'GET&nbsp;/'</span><span style="color: #000000">,</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;headers<span style="color: #000000">:</span>&nbsp;<span style="color: #000000">{</span>&nbsp;Host<span style="color: #000000">:</span>&nbsp;<span style="color: #df5000">'www.google.co.uk'</span>&nbsp;<span style="color: #000000">},</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;host<span style="color: #000000">:</span>&nbsp;<span style="color: #df5000">'www.google.co.uk'</span><span style="color: #000000">,</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;port<span style="color: #000000">:</span>&nbsp;<span style="color: #0086b3">443</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">},</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;response<span style="color: #000000">:</span>&nbsp;<span style="color: #000000">{</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;headers<span style="color: #000000">:</span>&nbsp;<span style="color: #000000">{</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Expires<span style="color: #000000">:</span>&nbsp;<span style="color: #df5000">'-1'</span><span style="color: #000000">,</span>&nbsp;<span style="color: #df5000">'Cache-Control'</span><span style="color: #000000">:</span>&nbsp;<span style="color: #df5000">'private,&nbsp;max-age=0'</span><span style="color: #000000">,</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #df5000">'Content-Type'</span><span style="color: #000000">:</span>&nbsp;<span style="color: #df5000">'text/html;&nbsp;charset=ISO-8859-1'</span><span style="color: #000000">,</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;P3P<span style="color: #000000">:</span>&nbsp;<span style="color: #df5000">'CP=&quot;This&nbsp;is&nbsp;not&nbsp;a&nbsp;P3P&nbsp;policy!&nbsp;See&nbsp;https://www.google.com/support/accounts/answer/151657?hl=en&nbsp;for&nbsp;more&nbsp;info.&quot;'</span><span style="color: #000000">,</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Server<span style="color: #000000">:</span>&nbsp;<span style="color: #df5000">'gws'</span><span style="color: #000000">,</span>&nbsp;<span style="color: #df5000">'X-XSS-Protection'</span><span style="color: #000000">:</span>&nbsp;<span style="color: #df5000">'1;&nbsp;mode=block'</span><span style="color: #000000">,</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #df5000">'X-Frame-Options'</span><span style="color: #000000">:</span>&nbsp;<span style="color: #df5000">'SAMEORIGIN'</span><span style="color: #000000">,</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #df5000">'Set-Cookie'</span><span style="color: #000000">:</span>&nbsp;<span style="color: #000000">[</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #df5000">'NID=78=mZqEB3EtfjX5JfLwIBfmHMrz9y4MyoGeqJDoMPGI8GB3PbHeZBYufWkGadBE3gnNKsWhW-tPyAbAl5KpEwcdqiH_aYEJQQDHjA9M1PSmnMWQCTMp-PKKOGt0gwPsaeJ8;&nbsp;expires=Sat,&nbsp;01-Oct-2016&nbsp;12:52:30&nbsp;GMT;&nbsp;path=/;&nbsp;domain=.google.co.uk;&nbsp;HttpOnly'</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">],</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #df5000">'Accept-Ranges'</span><span style="color: #000000">:</span>&nbsp;<span style="color: #df5000">'none'</span><span style="color: #000000">,</span>&nbsp;Vary<span style="color: #000000">:</span>&nbsp;<span style="color: #df5000">'Accept-Encoding'</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">},</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;body<span style="color: #000000">:</span>&nbsp;<span style="color: #000000">Buffer</span><span style="color: #000000">([</span><span style="color: #0086b3">0x3C</span><span style="color: #000000">,</span>&nbsp;<span style="color: #0086b3">0x21</span><span style="color: #000000">,</span>&nbsp;<span style="color: #0086b3">0x64</span><span style="color: #000000">,</span>&nbsp;<span style="color: #0086b3">0x6F</span><span style="color: #000000">,</span>&nbsp;<span style="color: #0086b3">0x63</span><span style="color: #000000">,</span>&nbsp;<span style="color: #0086b3">0x74</span><span style="color: #000000">,</span>&nbsp;<span style="color: #0086b3">0x79</span><span style="color: #000000">,</span>&nbsp;<span style="color: #0086b3">0x70</span><span style="color: #000000">,</span>&nbsp;<span style="color: #0086b3">0x65</span><span style="color: #000000">,</span>&nbsp;<span style="color: #0086b3">0x20</span><span style="color: #000000">,</span>&nbsp;<span style="color: #0086b3">0x68</span><span style="color: #000000">,</span>&nbsp;<span style="color: #0086b3">0x74</span><span style="color: #000000">,</span>&nbsp;<span style="color: #0086b3">0x6D</span><span style="color: #000000">,</span>&nbsp;<span style="color: #0086b3">0x6C</span><span style="color: #000000">,</span>&nbsp;<span style="color: #0086b3">0x3E</span><span style="color: #000000">,</span>&nbsp;<span style="color: #0086b3">0x3C</span>&nbsp;<span style="color: #969896">/*&nbsp;53980&nbsp;more&nbsp;*/</span>&nbsp;<span style="color: #000000">])</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">}</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">},</span>&nbsp;<span style="color: #df5000">'to&nbsp;yield&nbsp;response'</span><span style="color: #000000">,</span>&nbsp;<span style="color: #0086b3">200</span><span style="color: #000000">);</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">});</span></div>
+  <div><span style="color: #000000">});</span></div>
+</div><p>Note that in the above body was shortened for onscreen brevity and the cookie
+value will change each time a request is made.</p>
+
+        </div>
+    </div>
+</section>
+<script type="text/javascript">
+    baseUrl = '../../..';
+</script>
+<script type="text/javascript" src="../../../static/toggleSidebar.js"></script>
+<script type="text/javascript" src="../../../static/rememberScrollPosition.js"></script>
+<script type="text/javascript" src="../../../static/focusMain.js"></script>
+<script type="text/javascript" src="../../../static/search.js"></script>
+</body>
+</html>
+
