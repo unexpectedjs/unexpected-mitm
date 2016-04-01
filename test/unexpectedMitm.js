@@ -1179,6 +1179,10 @@ describe('unexpectedMitm', function () {
         it('should record and inject', function () {
             return expect('testfile', 'when injected becomes', isNodeZeroTen ? 'testfile-injected-v0_10' : 'testfile-injected');
         });
+
+        it('should correctly handle multiple injections', function () {
+            return expect('multiplefile', 'when injected becomes', isNodeZeroTen ? 'multiplefile-injected-v0_10' : 'multiplefile-injected');
+        });
     });
 
     describe('in recording mode against a local HTTPS server', function () {
