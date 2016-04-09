@@ -536,6 +536,23 @@ describe('unexpectedMitm', function () {
         });
     });
 
+    it('should error if the request body provided for verification was a stream', function () {
+        return expect(
+            expect('http://www.google.com/', 'with http mocked out', {
+                request: {
+                    url: 'GET /',
+                    body: fs.createReadStream(pathModule.resolve(__dirname, '..', 'testdata', 'foo.txt'))
+                },
+                response: 200
+            }, 'to yield response', {
+                statusCode: 200
+            }),
+            'when rejected',
+            'to have message',
+            'unexpected-mitm: a stream cannot be used to verify the request body, please specify the buffer instead.'
+        );
+    });
+
     describe('with the expected request body given as an object (shorthand for JSON)', function () {
         it('should succeed the match', function () {
             return expect({
@@ -706,6 +723,34 @@ describe('unexpectedMitm', function () {
                     "// Buffer([0x66, 0x6F, 0x6F, 0x62, 0x61, 0x72, 0x71, 0x75, 0x75, 0x78])"
                 );
             }
+        );
+    });
+
+    it('should produce an error if a mocked request is not exercised with an expected request stream', function () {
+        var requestBodyStream = new stream.Readable();
+        requestBodyStream._read = function (num, cb) {
+            requestBodyStream._read = function () {};
+            setImmediate(function () {
+                requestBodyStream.push('foobarquux');
+                requestBodyStream.push(null);
+            });
+        };
+        return expect(
+            expect('http://www.google.com/foo', 'with http mocked out', [
+                {
+                    request: 'GET /foo',
+                    response: 200
+                },
+                {
+                    request: {
+                        body: requestBodyStream
+                    },
+                    response: 200
+                }
+            ], 'to yield response', 200),
+            'when rejected',
+            'to have message',
+            'unexpected-mitm: a stream cannot be used to verify the request body, please specify the buffer instead.'
         );
     });
 
