@@ -726,6 +726,34 @@ describe('unexpectedMitm', function () {
         );
     });
 
+    it('should produce an error if a mocked request is not exercised with an expected request stream', function () {
+        var requestBodyStream = new stream.Readable();
+        requestBodyStream._read = function (num, cb) {
+            requestBodyStream._read = function () {};
+            setImmediate(function () {
+                requestBodyStream.push('foobarquux');
+                requestBodyStream.push(null);
+            });
+        };
+        return expect(
+            expect('http://www.google.com/foo', 'with http mocked out', [
+                {
+                    request: 'GET /foo',
+                    response: 200
+                },
+                {
+                    request: {
+                        body: requestBodyStream
+                    },
+                    response: 200
+                }
+            ], 'to yield response', 200),
+            'when rejected',
+            'to have message',
+            'unexpected-mitm: a stream cannot be used to verify the request body, please specify the buffer instead.'
+        );
+    });
+
     it('should produce an error if a mocked request is not exercised and there are non-trivial assertions on it', function () {
         return expect(
             expect('http://www.google.com/foo', 'with http mocked out', [
