@@ -33,7 +33,7 @@
     "request": "2.53.0",
     "semver": "5.0.1",
     "sinon": "1.17.2",
-    "unexpected": "10.10.8",
+    "unexpected": "10.13.0",
     "unexpected-documentation-site-generator": "^4.0.0",
     "unexpected-express": "8.2.0",
     "unexpected-http": "5.4.0",
