@@ -862,6 +862,13 @@ describe('unexpectedMitm', function () {
         );
     });
 
+    it('should not mangle the requestDescriptions array', function () {
+        var requestDescriptions = [ { request: 'GET /', response: 200 } ];
+        return expect('http://www.google.com/', 'with http mocked out', requestDescriptions, 'to yield response', 200).then(function () {
+            expect(requestDescriptions, 'to have length', 1);
+        });
+    });
+
     it('should output the error if the assertion being delegated to fails', function () {
         return expect(
             expect('http://www.google.com/foo', 'with http mocked out', {
