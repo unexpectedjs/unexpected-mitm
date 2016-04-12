@@ -888,7 +888,8 @@ describe('unexpectedMitm', function () {
                         "//\n" +
                         "// <no response>"
                     );
-            });
+                }
+            );
         });
     });
 
