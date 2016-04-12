@@ -843,23 +843,53 @@ describe('unexpectedMitm', function () {
         );
     });
 
-    it('should produce an error if the test issues more requests than have been mocked', function () {
-        return expect(
-            expect('http://www.google.com/foo', 'with http mocked out', [], 'to yield response', 200),
-            'when rejected',
-            'to have message', function (message) {
-                expect(message.replace(/^\/\/ Connection:.*\n/m, ''), 'to equal',
-                    "expected 'http://www.google.com/foo' with http mocked out [] to yield response 200\n" +
-                    '\n' +
-                    '// should be removed:\n' +
-                    '// GET /foo HTTP/1.1\n' +
-                    '// Host: www.google.com\n' +
-                    '// Content-Length: 0\n' +
-                    '//\n' +
-                    '// <no response>'
-                );
-            }
-        );
+    describe('when the test suite issues more requests than have been mocked out', function () {
+        it('should produce an error', function () {
+            return expect(
+                expect('http://www.google.com/foo', 'with http mocked out', [], 'to yield response', 200),
+                'when rejected',
+                'to have message', function (message) {
+                    expect(message.replace(/^\/\/ Connection:.*\n/m, ''), 'to equal',
+                        "expected 'http://www.google.com/foo' with http mocked out [] to yield response 200\n" +
+                        '\n' +
+                        '// should be removed:\n' +
+                        '// GET /foo HTTP/1.1\n' +
+                        '// Host: www.google.com\n' +
+                        '// Content-Length: 0\n' +
+                        '//\n' +
+                        '// <no response>'
+                    );
+                }
+            );
+        });
+
+        it('should produce an error as soon as the first request is issued, even when the test issues more requests later', function () {
+            return expect(
+                expect(function () {
+                    return expect('http://www.google.com/foo', 'to yield response', 200).then(function () {
+                        return expect('http://www.google.com/foo', 'to yield response', 200);
+                    });
+                }, 'with http mocked out', [], 'not to error'),
+                'when rejected',
+                'to have message', function (message) {
+                    expect(message.replace(/^\/\/ Connection:.*\n/m, ''), 'to equal',
+                        "expected\n" +
+                        "function () {\n" +
+                        "  return expect('http://www.google.com/foo', 'to yield response', 200).then(function () {\n" +
+                        "    return expect('http://www.google.com/foo', 'to yield response', 200);\n" +
+                        "  });\n" +
+                        "}\n" +
+                        "with http mocked out [] not to error\n" +
+                        "\n" +
+                        "// should be removed:\n" +
+                        "// GET /foo HTTP/1.1\n" +
+                        "// Host: www.google.com\n" +
+                        "// Content-Length: 0\n" +
+                        "//\n" +
+                        "// <no response>"
+                    );
+            });
+        });
     });
 
     it('should not mangle the requestDescriptions array', function () {
