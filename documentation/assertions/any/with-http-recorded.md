@@ -27,7 +27,7 @@ arrive at an offline test?
 Modifying the assertion to read "with http recorded and injected" will cause
 the injection of the recording into the tests, so:
 
-```js
+```js#evaluate:false
 describe('requests to a popular web search service', function () {
     it('should return something', function () {
         return expect('GET https://www.google.co.uk', 'with http recorded and injected', 'to yield response', 200);
