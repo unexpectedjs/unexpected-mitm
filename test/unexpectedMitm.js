@@ -4,6 +4,7 @@ var pathModule = require('path'),
     fs = require('fs'),
     http = require('http'),
     https = require('https'),
+    messy = require('messy'),
     pem = require('pem'),
     stream = require('stream'),
     semver = require('semver'),
@@ -1378,6 +1379,23 @@ describe('unexpectedMitm', function () {
                 'Content-Type': 'application/octet-stream'
             },
             body: new Buffer('{"foo":"bar"}', 'utf-8')
+        });
+    });
+
+    describe('with the "with extra info" flag', function () {
+        it('should resolve with the compared exchanges', function () {
+            return expect(
+                expect('GET /', 'with http mocked out with extra info', {
+                    request: 'GET /',
+                    response: 200
+                }, 'to yield response', 200),
+                'when fulfilled',
+                'to satisfy', [
+                    new messy.HttpExchange(),
+                    expect.it('to be an object'),
+                    expect.it('to be an object')
+                ]
+            );
         });
     });
 
