@@ -8,6 +8,9 @@
     "url": "git://github.com/unexpectedjs/unexpected-mitm.git"
   },
   "main": "lib/unexpectedMitm.js",
+  "files": [
+    "lib"  
+  ],
   "scripts": {
     "lint": "eslint .",
     "test": "mocha --compilers md:unexpected-markdown test/*.js `find documentation -name '*.md'` && npm run lint",
