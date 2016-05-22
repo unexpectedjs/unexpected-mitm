@@ -1559,6 +1559,28 @@ describe('unexpectedMitm', function () {
             );
         });
 
+        it('should allow excluding headers from verification', function () {
+            handleRequest = function (req, res) {
+                res.statusCode = 405;
+                res.setHeader('X-Is-Test', 'yes');
+                res.end();
+            };
+
+            return expect(
+                expect({
+                    url: 'GET ' + serverUrl
+                }, 'with http mocked out and verified', {
+                    response: 405,
+                    verify: {
+                        response: {
+                            ignoreHeaders: ['x-is-test']
+                        }
+                    }
+                }, 'to yield response', 405),
+                'to be fulfilled'
+            );
+        });
+
         it('should fail with a diff', function () {
             handleRequest = function (req, res) {
                 res.statusCode = 406;
