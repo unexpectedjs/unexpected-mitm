@@ -141,3 +141,67 @@ describe('with documentation response function', function () {
     });
 });
 ```
+
+Verification
+------------
+
+When issuing calls against mocks we are able to check the behaviour of server code against the
+expected responses from services. However, this approach creates an inherent risk that while we
+we be confident our server code reacts correctly in those cases, the real service may change
+meaning it no longer matches our recording and our assurances fail in practice.
+
+Given our test definition includes the requests we wish to issue, it is feasible to arrange
+performing requests against the real services and validate our recordings proactively. For this
+behaviour we provide "with http mocked out and verified".
+
+```js
+
+var http = require('http');
+
+describe('with something of a real service', function () {
+    var server;
+    var serverUrl;
+
+    before(function () {
+        server = http.createServer(function (req, res) {
+            res.statusCode = 405;
+            res.setHeader('X-My-Important-Header', 'on');
+            res.setHeader('X-Is-Test', 'yes');
+            res.end();
+        }).listen(59891);
+
+        var serverAddress = server.address();
+        var serverHostname = serverAddress.address === '::' ? 'localhost' : serverAddress.address;
+        serverUrl = 'http://' + serverHostname + ':' + serverAddress.port + '/';
+    });
+
+    after(function () {
+        server.close();
+    });
+
+    it('should verify the mock again the real service', function () {
+        return expect(serverUrl, 'with http mocked out and verified', {
+            response: {
+                statusCode: 405,
+                headers: {
+                    'X-My-Important-Header': 'on',
+                    'Content-length': 0
+                }
+            },
+            verify: {
+                response: {
+                    ignoreHeaders: ['X-Is-Test']
+                }
+            }
+        }, 'to yield response', 405);
+    });
+});
+```
+
+### Excluding headers during verification
+
+You'll notice that our 'service' actually returns two headers, the critical 'X-My-Important-Header'
+but also 'X-Is-Test' which simply determines we are in a testing environment. This is not interesting
+to us, so we include a `verify` block and exclude the header from the verification comparison.
+
+_This is particularly useful for ignoring e.g. per request session cookies._
