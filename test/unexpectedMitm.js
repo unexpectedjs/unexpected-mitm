@@ -1391,8 +1391,8 @@ describe('unexpectedMitm', function () {
                 }, 'to yield response', 200),
                 'when fulfilled',
                 'to satisfy', [
-                    new messy.HttpExchange(),
                     expect.it('to be an object'),
+                    new messy.HttpExchange(),
                     expect.it('to be an object')
                 ]
             );
