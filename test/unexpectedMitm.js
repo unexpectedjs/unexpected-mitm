@@ -12,6 +12,12 @@ var pathModule = require('path'),
 
 var isNodeZeroTen = !!process.version.match(/v0.10/);
 
+function issueGetAndConsume(url, callback) {
+    http.get(url).on('response', function (response) {
+        response.on('data', function () {}).on('end', callback);
+    }).end();
+}
+
 function trimDiff(message) {
     message = message.replace(/^[\\ ]*Date:.*\n/gm, '');
     message = message.replace(/^[\\ ]*Connection:.*\n/gm, '');
@@ -393,12 +399,6 @@ describe('unexpectedMitm', function () {
     });
 
     describe('with multiple mocks specified', function () {
-        function issueGetAndConsume(url, callback) {
-            http.get(url).on('response', function (response) {
-                response.on('data', function () {}).on('end', callback);
-            }).end();
-        }
-
         it('should succeed with \'to call the callback without error\'', function () {
             return expect(function (cb) {
                 issueGetAndConsume('http://www.google.com/', function () {
@@ -1577,6 +1577,49 @@ describe('unexpectedMitm', function () {
                         }
                     }
                 }, 'to yield response', 405),
+                'to be fulfilled'
+            );
+        });
+
+        it('should allow verify options on multiple mocks', function () {
+            handleRequest = function (req, res) {
+                res.statusCode = 405;
+                res.setHeader('X-Is-Test', 'yes');
+                res.end();
+
+                // change handleRequest for next response
+                handleRequest = function (req, res) {
+                    res.statusCode = 406;
+                    res.setHeader('X-So-Is-This', 'yep');
+                    res.end();
+                };
+            };
+
+            return expect(
+                expect(function (cb) {
+                    issueGetAndConsume(serverUrl, function () {
+                        issueGetAndConsume(serverUrl, cb);
+                    });
+                }, 'with http mocked out and verified', [
+                    {
+                        request: 'GET /',
+                        response: 405,
+                        verify: {
+                            response: {
+                                ignoreHeaders: ['X-Is-Test']
+                            }
+                        }
+                    },
+                    {
+                        request: 'GET /',
+                        response: 406,
+                        verify: {
+                            response: {
+                                ignoreHeaders: ['X-So-Is-This']
+                            }
+                        }
+                    }
+                ], 'to call the callback without error'),
                 'to be fulfilled'
             );
         });
