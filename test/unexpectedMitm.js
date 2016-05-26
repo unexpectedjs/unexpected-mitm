@@ -1382,17 +1382,26 @@ describe('unexpectedMitm', function () {
         });
     });
 
-    it('should resolve with the compared exchanges', function () {
-        return expect(
-            expect('GET /', 'with http mocked out', {
-                request: 'GET /',
-                response: 200
-            }, 'to yield response', 200),
-            'when fulfilled',
-            'to satisfy', [
-                new messy.HttpExchange(),
-                expect.it('to be an object')
-            ]
-        );
+    describe('with the "with extra info" flag', function () {
+        it('should resolve with the compared exchanges', function () {
+            return expect(
+                expect('GET /', 'with http mocked out with extra info', {
+                    request: 'GET /',
+                    response: 200
+                }, 'to yield response', 200),
+                'when fulfilled',
+                'to satisfy', [
+                    expect.it('to be an object'),
+                    new messy.HttpExchange(),
+                    expect.it('to be an object')
+                ]
+            );
+        });
+    });
+
+    it('should preserve the fulfilment value of the promise returned by the assertion being delegated to', function () {
+        return expect([1, 2], 'with http mocked out', [], 'when passed as parameters to', Math.max).then(function (value) {
+            expect(value, 'to equal', 2);
+        });
     });
 });
