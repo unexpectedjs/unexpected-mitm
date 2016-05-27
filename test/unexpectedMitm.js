@@ -392,6 +392,70 @@ describe('unexpectedMitm', function () {
         }, 'to yield response', 412);
     });
 
+    describe('with multiple mocks specified', function () {
+        function issueGetAndConsume(url, callback) {
+            http.get(url).on('response', function (response) {
+                response.on('data', function () {}).on('end', callback);
+            }).end();
+        }
+
+        it('should succeed with \'to call the callback without error\'', function () {
+            return expect(function (cb) {
+                issueGetAndConsume('http://www.google.com/', function () {
+                    issueGetAndConsume('http://www.google.com/', cb);
+                });
+            }, 'with http mocked out', [
+                {
+                    request: 'GET http://www.google.com/',
+                    response: {
+                        headers: {
+                            'Content-Type': 'text/plain'
+                        },
+                        body: 'hello'
+                    }
+                },
+                {
+                    request: 'GET http://www.google.com/',
+                    response: {
+                        headers: {
+                            'Content-Type': 'text/plain'
+                        },
+                        body: 'world'
+                    }
+                }
+            ], 'to call the callback without error');
+        });
+
+        it('should succeed with \'not to error\'', function () {
+            return expect(function () {
+                return expect.promise(function (run) {
+                    issueGetAndConsume('http://www.google.com/', run(function () {
+                        issueGetAndConsume('http://www.google.com/', run(function () {}));
+                    }));
+                });
+            }, 'with http mocked out', [
+                {
+                    request: 'GET http://www.google.com/',
+                    response: {
+                        headers: {
+                            'Content-Type': 'text/plain'
+                        },
+                        body: 'hello'
+                    }
+                },
+                {
+                    request: 'GET http://www.google.com/',
+                    response: {
+                        headers: {
+                            'Content-Type': 'text/plain'
+                        },
+                        body: 'world'
+                    }
+                }
+            ], 'not to error');
+        });
+    });
+
     describe('with a response body provided as a stream', function () {
         it('should support providing such a response', function () {
             return expect('http://www.google.com/', 'with http mocked out', {
