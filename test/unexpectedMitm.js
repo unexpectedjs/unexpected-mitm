@@ -1644,10 +1644,10 @@ describe('unexpectedMitm', function () {
                         '\n' +
                         'The mock and service have diverged.\n' +
                         '\n' +
-                        "expected { url: 'GET http://localhost:59891/' } with http mocked out and verified { response: 405 } to yield response 405\n" +
+                        "expected { url: 'GET " + serverUrl + "' } with http mocked out and verified { response: 405 } to yield response 405\n" +
                         '\n' +
                         'GET / HTTP/1.1\n' +
-                        'Host: localhost:59891\n' +
+                        'Host: ' + serverHostname + ':59891\n' +
                         '\n' +
                         'HTTP/1.1 405 Method Not Allowed // should be 406 Not Acceptable\n' +
                         '                                //\n' +
