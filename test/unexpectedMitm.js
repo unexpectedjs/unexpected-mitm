@@ -1526,7 +1526,6 @@ describe('unexpectedMitm', function () {
         beforeEach(function () {
             handleRequest = undefined;
             server = http.createServer(function (req, res) {
-                res.sendDate = false;
                 handleRequest(req, res);
             }).listen(59891);
             serverAddress = server.address();
