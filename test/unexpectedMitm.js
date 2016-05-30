@@ -1559,6 +1559,28 @@ describe('unexpectedMitm', function () {
             );
         });
 
+        it('should verify an ISO-8859-1 request', function () {
+            handleRequest = function (req, res) {
+                res.statusCode = 200;
+                res.setHeader('Content-Type', 'text/html; charset=ISO-8859-1');
+                res.end(new Buffer([0x62, 0x6c, 0xe5, 0x62, 0xe6, 0x72, 0x67, 0x72, 0xf8, 0x64]));
+            };
+
+            return expect(
+                expect({
+                    url: 'GET ' + serverUrl
+                }, 'with http mocked out and verified', {
+                    response: {
+                        headers: {
+                            'Content-Type': 'text/html; charset=ISO-8859-1'
+                        },
+                        body: new Buffer([0x62, 0x6c, 0xe5, 0x62, 0xe6, 0x72, 0x67, 0x72, 0xf8, 0x64])
+                    }
+                }, 'to yield response', 200),
+                'to be fulfilled'
+            );
+        });
+
         it('should allow excluding headers from verification', function () {
             handleRequest = function (req, res) {
                 res.statusCode = 405;
