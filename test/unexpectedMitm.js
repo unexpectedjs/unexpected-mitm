@@ -1580,6 +1580,36 @@ describe('unexpectedMitm', function () {
             );
         });
 
+        it('should verify an object', function () {
+            handleRequest = function (req, res) {
+                res.statusCode = 201;
+                res.setHeader('Content-Type', 'application/json');
+                res.end(new Buffer(JSON.stringify({foo:'bar'})));
+            };
+
+            return expect(
+                expect({
+                    url: 'GET ' + serverUrl
+                }, 'with http mocked out and verified', {
+                    response: {
+                        statusCode: 201,
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: {
+                            foo: 'bar'
+                        }
+                    }
+                }, 'to yield response', {
+                    statusCode: 201,
+                    body: {
+                        foo: 'bar'
+                    }
+                }),
+                'to be fulfilled'
+            );
+        });
+
         it('should allow excluding headers from verification', function () {
             handleRequest = function (req, res) {
                 res.statusCode = 405;
