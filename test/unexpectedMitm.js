@@ -1537,7 +1537,7 @@ describe('unexpectedMitm', function () {
             server.close();
         });
 
-        it('should verify and resolve with the exchanges', function () {
+        it('should verify and resolve with delegated fulfilment', function () {
             handleRequest = function (req, res) {
                 res.statusCode = 405;
                 res.end();
@@ -1550,7 +1550,26 @@ describe('unexpectedMitm', function () {
                     response: 405
                 }, 'to yield response', 405),
                 'when fulfilled',
-                'to satisfy', [
+                'to satisfy',
+                expect.it('to be an object')
+            );
+        });
+
+        it('should verify and resolve with extra info', function () {
+            handleRequest = function (req, res) {
+                res.statusCode = 405;
+                res.end();
+            };
+
+            return expect(
+                expect({
+                    url: 'GET ' + serverUrl
+                }, 'with http mocked out and verified with extra info', {
+                    response: 405
+                }, 'to yield response', 405),
+                'when fulfilled',
+                'to satisfy',
+                [
                     expect.it('to be an object'),
                     new messy.HttpExchange(),
                     expect.it('to be an object')
