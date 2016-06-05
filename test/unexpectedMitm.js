@@ -1412,6 +1412,10 @@ describe('unexpectedMitm', function () {
             return expect('bufferfile', 'when injected becomes', isNodeZeroTen ? 'bufferfile-injected-v0_10' : 'bufferfile-injected');
         });
 
+        it('should correctly handle error injections', function () {
+            return expect('errorfile', 'when injected becomes', isNodeZeroTen ? 'errorfile-injected-v0_10' : 'errorfile-injected');
+        });
+
         it('should correctly handle multiple injections', function () {
             return expect('multiplefile', 'when injected becomes', isNodeZeroTen ? 'multiplefile-injected-v0_10' : 'multiplefile-injected');
         });
