@@ -975,6 +975,35 @@ describe('unexpectedMitm', function () {
             );
         });
 
+        it('should produce an error and decode the textual body', function () {
+            return expect(
+                expect({
+                    url: 'http://www.google.com/foo',
+                    headers: {
+                        'Content-Type': 'text/plain'
+                    },
+                    body: 'quux & xuuq'
+                }, 'with http mocked out', [], 'to yield response', 200),
+                'when rejected',
+                'to have message', function (message) {
+                    expect(message.replace(/^\/\/ Connection:.*\n/m, ''), 'to equal',
+                        "expected { url: 'http://www.google.com/foo', headers: { 'Content-Type': 'text/plain' }, body: 'quux & xuuq' }\n" +
+                        'with http mocked out [] to yield response 200\n' +
+                        '\n' +
+                        '// should be removed:\n' +
+                        '// GET /foo HTTP/1.1\n' +
+                        '// Content-Type: text/plain\n' +
+                        '// Host: www.google.com\n' +
+                        '// Content-Length: 11\n' +
+                        '//\n' +
+                        '// quux & xuuq\n' +
+                        '//\n' +
+                        '// <no response>'
+                    );
+                }
+            );
+        });
+
         it('should produce an error as soon as the first request is issued, even when the test issues more requests later', function () {
             return expect(
                 expect(function () {
