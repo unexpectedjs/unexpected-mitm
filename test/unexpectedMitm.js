@@ -43,18 +43,18 @@ describe('unexpectedMitm', function () {
                 return value;
             });
         })
-        .addAssertion('<any> with expected http capture <object> <assertion>', function (expect, subject, expectedRecordedExchanges) {
+        .addAssertion('<any> was written correctly on <object> <assertion>', function (expect, subject, requestObject) {
             expect.errorMode = 'bubble';
-            var testName = __dirname + '/../testdata/capture';
-            var testFile = testName + '.js';
+            var expectedRecordedExchanges = subject;
+            var testFile;
             var writtenExchanges;
 
-            expect.args = [subject, 'with mock exchange written to', testName].concat(expect.args.slice(1));
-
             return expect.promise(function () {
-                return expect.shift();
-            }).then(function (recordedExchanges) {
-                expect(function () {
+                return expect.shift(requestObject);
+            }).spread(function (recordedExchanges, recordedFile) {
+                testFile = recordedFile;
+
+                return expect(function () {
                     writtenExchanges = require(testFile);
                 }, 'not to throw').then(function () {
                     return expect(recordedExchanges, 'to equal', expectedRecordedExchanges).then(function () {
@@ -62,7 +62,9 @@ describe('unexpectedMitm', function () {
                     });
                 });
             }).finally(function () {
-                fs.truncateSync(testFile);
+                if (testFile) {
+                    fs.truncateSync(testFile);
+                }
             });
         })
         .addAssertion('<string> when injected becomes <string>', function (expect, subject, expectedFileName) {
@@ -1578,14 +1580,9 @@ describe('unexpectedMitm', function () {
                 res.statusCode = 405;
                 res.end();
             };
+            var outputFile = __dirname + '/../testdata/capture';
 
             return expect({
-                url: 'POST ' + serverUrl,
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: 'foo=bar'
-            }, 'with expected http capture', {
                 request: {
                     host: serverHostname,
                     port: serverAddress.port,
@@ -1602,7 +1599,13 @@ describe('unexpectedMitm', function () {
                         Allow: 'GET, HEAD'
                     }
                 }
-            }, 'to yield response', 405);
+            }, 'was written correctly on', {
+                url: 'POST ' + serverUrl,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: 'foo=bar'
+            }, 'with mock exchange written to', outputFile, 'to yield response', 405);
         });
     });
 
