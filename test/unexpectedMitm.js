@@ -43,6 +43,28 @@ describe('unexpectedMitm', function () {
                 return value;
             });
         })
+        .addAssertion('<any> with expected http capture <object> <assertion>', function (expect, subject, expectedRecordedExchanges) {
+            expect.errorMode = 'bubble';
+            var testName = __dirname + '/../testdata/capture';
+            var testFile = testName + '.js';
+            var writtenExchanges;
+
+            expect.args = [subject, 'with mock exchange written to', testName].concat(expect.args.slice(1));
+
+            return expect.promise(function () {
+                return expect.shift();
+            }).then(function (recordedExchanges) {
+                expect(function () {
+                    writtenExchanges = require(testFile);
+                }, 'not to throw').then(function () {
+                    return expect(recordedExchanges, 'to equal', expectedRecordedExchanges).then(function () {
+                        return expect(writtenExchanges, 'to equal', expectedRecordedExchanges);
+                    });
+                });
+            }).finally(function () {
+                fs.truncateSync(testFile);
+            });
+        })
         .addAssertion('<string> when injected becomes <string>', function (expect, subject, expectedFileName) {
             expect.errorMode = 'nested';
             var basePath = pathModule.join(__dirname, '..');
@@ -1525,6 +1547,62 @@ describe('unexpectedMitm', function () {
                     }
                 }, 'to yield response', 405);
             });
+        });
+    });
+
+    describe('in capturing mode', function () {
+        var handleRequest,
+            server,
+            serverAddress,
+            serverHostname,
+            serverUrl;
+
+        beforeEach(function () {
+            handleRequest = undefined;
+            server = http.createServer(function (req, res) {
+                res.sendDate = false;
+                handleRequest(req, res);
+            }).listen(0);
+            serverAddress = server.address();
+            serverHostname = serverAddress.address === '::' ? 'localhost' : serverAddress.address;
+            serverUrl = 'http://' + serverHostname + ':' + serverAddress.port + '/';
+        });
+
+        afterEach(function () {
+            server.close();
+        });
+
+        it('should capture', function () {
+            handleRequest = function (req, res) {
+                res.setHeader('Allow', 'GET, HEAD');
+                res.statusCode = 405;
+                res.end();
+            };
+
+            return expect({
+                url: 'POST ' + serverUrl,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: 'foo=bar'
+            }, 'with expected http capture', {
+                request: {
+                    host: serverHostname,
+                    port: serverAddress.port,
+                    url: 'POST /',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        Host: serverHostname + ':' + serverAddress.port
+                    },
+                    body: 'foo=bar'
+                },
+                response: {
+                    statusCode: 405,
+                    headers: {
+                        Allow: 'GET, HEAD'
+                    }
+                }
+            }, 'to yield response', 405);
         });
     });
 
