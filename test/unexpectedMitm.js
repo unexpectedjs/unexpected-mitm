@@ -12,6 +12,12 @@ var pathModule = require('path'),
 
 var isNodeZeroTen = !!process.version.match(/v0.10/);
 
+function issueGetAndConsume(url, callback) {
+    http.get(url).on('response', function (response) {
+        response.on('data', function () {}).on('end', callback);
+    }).end();
+}
+
 function trimDiff(message) {
     message = message.replace(/^[\\ ]*Date:.*\n/gm, '');
     message = message.replace(/^[\\ ]*Connection:.*\n/gm, '');
@@ -393,12 +399,6 @@ describe('unexpectedMitm', function () {
     });
 
     describe('with multiple mocks specified', function () {
-        function issueGetAndConsume(url, callback) {
-            http.get(url).on('response', function (response) {
-                response.on('data', function () {}).on('end', callback);
-            }).end();
-        }
-
         it('should succeed with \'to call the callback without error\'', function () {
             return expect(function (cb) {
                 issueGetAndConsume('http://www.google.com/', function () {
@@ -1551,6 +1551,217 @@ describe('unexpectedMitm', function () {
     it('should preserve the fulfilment value of the promise returned by the assertion being delegated to', function () {
         return expect([1, 2], 'with http mocked out', [], 'when passed as parameters to', Math.max).then(function (value) {
             expect(value, 'to equal', 2);
+        });
+    });
+
+    describe('when verifying', function () {
+        var handleRequest,
+            server,
+            serverAddress,
+            serverHostname,
+            serverUrl;
+        beforeEach(function () {
+            handleRequest = undefined;
+            server = http.createServer(function (req, res) {
+                handleRequest(req, res);
+            }).listen(59891);
+            serverAddress = server.address();
+            serverHostname = serverAddress.address === '::' ? 'localhost' : serverAddress.address;
+            serverUrl = 'http://' + serverHostname + ':' + serverAddress.port + '/';
+        });
+
+        afterEach(function () {
+            server.close();
+        });
+
+        it('should verify and resolve with delegated fulfilment', function () {
+            handleRequest = function (req, res) {
+                res.statusCode = 405;
+                res.end();
+            };
+
+            return expect(
+                expect({
+                    url: 'GET ' + serverUrl
+                }, 'with http mocked out and verified', {
+                    response: 405
+                }, 'to yield response', 405),
+                'when fulfilled',
+                'to satisfy',
+                expect.it('to be an object')
+            );
+        });
+
+        it('should verify and resolve with extra info', function () {
+            handleRequest = function (req, res) {
+                res.statusCode = 405;
+                res.end();
+            };
+
+            return expect(
+                expect({
+                    url: 'GET ' + serverUrl
+                }, 'with http mocked out and verified with extra info', {
+                    response: 405
+                }, 'to yield response', 405),
+                'when fulfilled',
+                'to satisfy',
+                [
+                    expect.it('to be an object'),
+                    new messy.HttpExchange(),
+                    expect.it('to be an object')
+                ]
+            );
+        });
+
+        it('should verify an ISO-8859-1 request', function () {
+            handleRequest = function (req, res) {
+                res.statusCode = 200;
+                res.setHeader('Content-Type', 'text/html; charset=ISO-8859-1');
+                res.end(new Buffer([0x62, 0x6c, 0xe5, 0x62, 0xe6, 0x72, 0x67, 0x72, 0xf8, 0x64]));
+            };
+
+            return expect(
+                expect({
+                    url: 'GET ' + serverUrl
+                }, 'with http mocked out and verified', {
+                    response: {
+                        headers: {
+                            'Content-Type': 'text/html; charset=ISO-8859-1'
+                        },
+                        body: new Buffer([0x62, 0x6c, 0xe5, 0x62, 0xe6, 0x72, 0x67, 0x72, 0xf8, 0x64])
+                    }
+                }, 'to yield response', 200),
+                'to be fulfilled'
+            );
+        });
+
+        it('should verify an object', function () {
+            handleRequest = function (req, res) {
+                res.statusCode = 201;
+                res.setHeader('Content-Type', 'application/json');
+                res.end(new Buffer(JSON.stringify({foo:'bar'})));
+            };
+
+            return expect(
+                expect({
+                    url: 'GET ' + serverUrl
+                }, 'with http mocked out and verified', {
+                    response: {
+                        statusCode: 201,
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: {
+                            foo: 'bar'
+                        }
+                    }
+                }, 'to yield response', {
+                    statusCode: 201,
+                    body: {
+                        foo: 'bar'
+                    }
+                }),
+                'to be fulfilled'
+            );
+        });
+
+        it('should allow excluding headers from verification', function () {
+            handleRequest = function (req, res) {
+                res.statusCode = 405;
+                res.setHeader('X-Is-Test', 'yes');
+                res.end();
+            };
+
+            return expect(
+                expect({
+                    url: 'GET ' + serverUrl
+                }, 'with http mocked out and verified', {
+                    response: 405,
+                    verify: {
+                        response: {
+                            ignoreHeaders: ['x-is-test']
+                        }
+                    }
+                }, 'to yield response', 405),
+                'to be fulfilled'
+            );
+        });
+
+        it('should allow verify options on multiple mocks', function () {
+            handleRequest = function (req, res) {
+                res.statusCode = 405;
+                res.setHeader('X-Is-Test', 'yes');
+                res.end();
+
+                // change handleRequest for next response
+                handleRequest = function (req, res) {
+                    res.statusCode = 406;
+                    res.setHeader('X-So-Is-This', 'yep');
+                    res.end();
+                };
+            };
+
+            return expect(
+                expect(function (cb) {
+                    issueGetAndConsume(serverUrl, function () {
+                        issueGetAndConsume(serverUrl, cb);
+                    });
+                }, 'with http mocked out and verified', [
+                    {
+                        request: 'GET /',
+                        response: 405,
+                        verify: {
+                            response: {
+                                ignoreHeaders: ['X-Is-Test']
+                            }
+                        }
+                    },
+                    {
+                        request: 'GET /',
+                        response: 406,
+                        verify: {
+                            response: {
+                                ignoreHeaders: ['X-So-Is-This']
+                            }
+                        }
+                    }
+                ], 'to call the callback without error'),
+                'to be fulfilled'
+            );
+        });
+
+        it('should fail with a diff', function () {
+            handleRequest = function (req, res) {
+                res.statusCode = 406;
+                res.end();
+            };
+
+            return expect(
+                expect({
+                    url: 'GET ' + serverUrl
+                }, 'with http mocked out and verified', {
+                    response: 405
+                }, 'to yield response', 405),
+                'when rejected',
+                'to have message',
+                function (message) {
+                    expect(trimDiff(message), 'to equal',
+                        'Explicit failure\n' +
+                        '\n' +
+                        'The mock and service have diverged.\n' +
+                        '\n' +
+                        "expected { url: 'GET " + serverUrl + "' } with http mocked out and verified { response: 405 } to yield response 405\n" +
+                        '\n' +
+                        'GET / HTTP/1.1\n' +
+                        'Host: ' + serverHostname + ':59891\n' +
+                        '\n' +
+                        'HTTP/1.1 405 Method Not Allowed // should be 406 Not Acceptable\n' +
+                        '                                //\n' +
+                        '                                // -HTTP/1.1 405 Method Not Allowed\n' +
+                        '                                // +HTTP/1.1 406 Not Acceptable\n'
+                    );
+                });
         });
     });
 });
