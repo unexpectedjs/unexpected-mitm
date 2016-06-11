@@ -69,9 +69,12 @@ describe('unexpectedMitm', function () {
         })
         .addAssertion('<any> was read correctly on <object> <assertion>', function (expect, subject, drivingRequest) {
             expect.errorMode = 'bubble';
+            var expectedRecordedExchanges = subject;
 
             return expect.promise(function () {
                 return expect.shift(drivingRequest);
+            }).spread(function (recordedExchanges) {
+                return expect(recordedExchanges.httpExchange, 'to satisfy', expectedRecordedExchanges);
             });
         })
         .addAssertion('<string> when injected becomes <string>', function (expect, subject, expectedFileName) {
