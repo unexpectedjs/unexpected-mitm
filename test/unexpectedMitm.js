@@ -67,6 +67,13 @@ describe('unexpectedMitm', function () {
                 }
             });
         })
+        .addAssertion('<any> was read correctly on <object> <assertion>', function (expect, subject, drivingRequest) {
+            expect.errorMode = 'bubble';
+
+            return expect.promise(function () {
+                return expect.shift(drivingRequest);
+            });
+        })
         .addAssertion('<string> when injected becomes <string>', function (expect, subject, expectedFileName) {
             expect.errorMode = 'nested';
             var basePath = pathModule.join(__dirname, '..');
@@ -1606,6 +1613,23 @@ describe('unexpectedMitm', function () {
                 },
                 body: 'foo=bar'
             }, 'with mock exchange written to', outputFile, 'to yield response', 405);
+        });
+    });
+
+    describe('in replaying mode', function () {
+        it('should replay', function () {
+            var inputFile = __dirname + '/../testdata/replay';
+
+            return expect({
+                response: {
+                    statusCode: 405,
+                    headers: {
+                        Allow: 'GET, HEAD'
+                    }
+                }
+            }, 'was read correctly on', {
+                url: 'GET /'
+            }, 'with mock exchange read from', inputFile, 'to yield response', 405);
         });
     });
 
