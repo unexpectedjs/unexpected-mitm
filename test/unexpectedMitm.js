@@ -1592,6 +1592,9 @@ describe('unexpectedMitm', function () {
             };
             var outputFile = __dirname + '/../testdata/capture';
 
+            // set env for write mode
+            process.env.UNEXPECTED_MITM_WRITE = 'true';
+
             return expect({
                 request: {
                     host: serverHostname,
@@ -1615,7 +1618,9 @@ describe('unexpectedMitm', function () {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 },
                 body: 'foo=bar'
-            }, 'with mock exchange written to', outputFile, 'to yield response', 405);
+            }, 'with http mocked out', outputFile, 'to yield response', 405).finally(function () {
+                delete process.env.UNEXPECTED_MITM_WRITE;
+            });
         });
     });
 
@@ -1632,7 +1637,7 @@ describe('unexpectedMitm', function () {
                 }
             }, 'was read correctly on', {
                 url: 'GET /'
-            }, 'with mock exchange read from', inputFile, 'to yield response', 405);
+            }, 'with http mocked out', inputFile, 'to yield response', 405);
         });
     });
 
