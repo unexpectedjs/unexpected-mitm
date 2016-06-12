@@ -1931,6 +1931,26 @@ describe('unexpectedMitm', function () {
                 });
             });
         });
+
+        describe('with a mock in a file', function () {
+            it('should verify and resolve with delegated fulfilment', function () {
+                var testFile = __dirname + '/../testdata/replay-and-verify';
+                handleRequest = function (req, res) {
+                    res.statusCode = 202;
+                    res.setHeader('X-Is-Test', 'yes');
+                    res.end();
+                };
+
+                return expect(
+                    expect({
+                        url: 'GET ' + serverUrl
+                    }, 'with http mocked out and verified', testFile, 'to yield response', 202),
+                    'when fulfilled',
+                    'to satisfy',
+                    expect.it('to be an object')
+                );
+            });
+        });
     });
 
     it('should fail early, even when there are unexercised mocks', function () {
