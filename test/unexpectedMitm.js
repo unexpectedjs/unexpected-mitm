@@ -1618,7 +1618,7 @@ describe('unexpectedMitm', function () {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 },
                 body: 'foo=bar'
-            }, 'with http mocked out', outputFile, 'to yield response', 405).finally(function () {
+            }, 'with http mocked out returning the file', outputFile, 'to yield response', 405).finally(function () {
                 delete process.env.UNEXPECTED_MITM_WRITE;
             });
         });
@@ -1637,7 +1637,7 @@ describe('unexpectedMitm', function () {
                 }
             }, 'was read correctly on', {
                 url: 'GET /'
-            }, 'with http mocked out', inputFile, 'to yield response', 405);
+            }, 'with http mocked out returning the file', inputFile, 'to yield response', 405);
         });
     });
 
