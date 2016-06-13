@@ -1584,7 +1584,37 @@ describe('unexpectedMitm', function () {
             server.close();
         });
 
-        it('should capture', function () {
+        it('should resolve with delegated fulfilment', function () {
+            handleRequest = function (req, res) {
+                res.setHeader('Allow', 'GET, HEAD');
+                res.statusCode = 405;
+                res.end();
+            };
+            var outputFile = __dirname + '/../testdata/capture';
+
+            // set env for write mode
+            process.env.UNEXPECTED_MITM_WRITE = 'true';
+
+            return expect(
+                expect({
+                    host: serverHostname,
+                    port: serverAddress.port,
+                    url: 'GET /',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        Host: serverHostname + ':' + serverAddress.port
+                    },
+                    body: 'foo=bar'
+                }, 'with http mocked out', outputFile, 'to yield response', 405),
+                'when fulfilled',
+                'to satisfy',
+                expect.it('to be an object')
+            ).finally(function () {
+                delete process.env.UNEXPECTED_MITM_WRITE;
+            });
+        });
+
+        it('should capture the correct mocks', function () {
             handleRequest = function (req, res) {
                 res.setHeader('Allow', 'GET, HEAD');
                 res.statusCode = 405;
@@ -1625,7 +1655,20 @@ describe('unexpectedMitm', function () {
     });
 
     describe('in replaying mode', function () {
-        it('should replay', function () {
+        it('should resolve with delegated fulfilment', function () {
+            var inputFile = __dirname + '/../testdata/replay';
+
+            return expect(
+                expect({
+                    url: 'GET /'
+                }, 'with http mocked out', inputFile, 'to yield response', 405),
+                'when fulfilled',
+                'to satisfy',
+                expect.it('to be an object')
+            );
+        });
+
+        it('should replay the correct mocks', function () {
             var inputFile = __dirname + '/../testdata/replay';
 
             return expect({
