@@ -205,3 +205,14 @@ but also 'X-Is-Test' which simply determines we are in a testing environment. Th
 to us, so we include a `verify` block and exclude the header from the verification comparison.
 
 _This is particularly useful for ignoring e.g. per request session cookies._
+
+Opt-in verification via command line
+====================================
+
+The explicit assertion form of verification will trigger checking the mock on every invocation of
+the test. We may also wish to take to take an existing set of mocked out tests and verify them as
+written with _no changes_ required to the tests - for this we allow `UNEXPECTED_MITM_VERIFY=true`
+to be specified as an environment variable which will opt-in to verification.
+
+This can be used to allow the benefits of mocks in normal test runs with periodic checks for
+divergence of the mocks by, for example, a job run as part of a CI system.

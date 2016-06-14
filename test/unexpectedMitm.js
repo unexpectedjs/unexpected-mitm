@@ -1763,5 +1763,27 @@ describe('unexpectedMitm', function () {
                     );
                 });
         });
+
+        describe('using UNEXPECTED_MITM_VERIFY=true on the command line', function () {
+            it('should be verified', function () {
+                handleRequest = function (req, res) {
+                    res.statusCode = 406;
+                    res.end();
+                };
+                // set verification mode on the command line
+                process.env.UNEXPECTED_MITM_VERIFY = 'true';
+
+                return expect(
+                    expect({
+                        url: 'GET ' + serverUrl
+                    }, 'with http mocked out', {
+                        response: 405
+                    }, 'to yield response', 405),
+                    'to be rejected'
+                ).finally(function () {
+                    delete process.env.UNEXPECTED_MITM_VERIFY;
+                });
+            });
+        });
     });
 });
