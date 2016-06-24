@@ -59,7 +59,7 @@
             
                 <ul class="declarations">
                 
-                    <li>&lt;any&gt; with http mocked out &lt;array|object&gt; &lt;assertion&gt;</li>
+                    <li>&lt;any&gt; with http mocked out [and verified] [with extra info] &lt;array|object&gt; &lt;assertion&gt;</li>
                 
                 </ul>
             
@@ -185,7 +185,69 @@ any server code is compatible and can be leveraged:</p>
   <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">});</span></div>
   <div>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">});</span></div>
   <div><span style="color: #000000">});</span></div>
-</div>
+</div><h2 id="verification">Verification</h2>
+<p>When issuing calls against mocks we are able to check the behaviour of server code against the
+expected responses from services. However, this approach creates an inherent risk that while we
+we be confident our server code reacts correctly in those cases, the real service may change
+meaning it no longer matches our recording and our assurances fail in practice.</p>
+<p>Given our test definition includes the requests we wish to issue, it is feasible to arrange
+performing requests against the real services and validate our recordings proactively. For this
+behaviour we provide &quot;with http mocked out and verified&quot;.</p>
+<div class="code lang-javascript">
+  <div>&nbsp;</div>
+  <div><span style="color: #a71d5d">var</span>&nbsp;http&nbsp;<span style="color: #a71d5d">=</span>&nbsp;<span style="color: #000000">require</span><span style="color: #000000">(</span><span style="color: #df5000">'http'</span><span style="color: #000000">);</span></div>
+  <div>&nbsp;</div>
+  <div><span style="color: #000000">describe</span><span style="color: #000000">(</span><span style="color: #df5000">'with&nbsp;something&nbsp;of&nbsp;a&nbsp;real&nbsp;service'</span><span style="color: #000000">,</span>&nbsp;<span style="color: #a71d5d">function</span>&nbsp;<span style="color: #000000">()</span>&nbsp;<span style="color: #000000">{</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #a71d5d">var</span>&nbsp;server<span style="color: #000000">;</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #a71d5d">var</span>&nbsp;serverUrl<span style="color: #000000">;</span></div>
+  <div>&nbsp;</div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">before</span><span style="color: #000000">(</span><span style="color: #a71d5d">function</span>&nbsp;<span style="color: #000000">()</span>&nbsp;<span style="color: #000000">{</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;server&nbsp;<span style="color: #a71d5d">=</span>&nbsp;http<span style="color: #000000">.</span><span style="color: #000000">createServer</span><span style="color: #000000">(</span><span style="color: #a71d5d">function</span>&nbsp;<span style="color: #000000">(</span>req<span style="color: #000000">,</span>&nbsp;res<span style="color: #000000">)</span>&nbsp;<span style="color: #000000">{</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;res<span style="color: #000000">.</span>statusCode&nbsp;<span style="color: #a71d5d">=</span>&nbsp;<span style="color: #0086b3">405</span><span style="color: #000000">;</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;res<span style="color: #000000">.</span><span style="color: #000000">setHeader</span><span style="color: #000000">(</span><span style="color: #df5000">'X-My-Important-Header'</span><span style="color: #000000">,</span>&nbsp;<span style="color: #df5000">'on'</span><span style="color: #000000">);</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;res<span style="color: #000000">.</span><span style="color: #000000">setHeader</span><span style="color: #000000">(</span><span style="color: #df5000">'X-Is-Test'</span><span style="color: #000000">,</span>&nbsp;<span style="color: #df5000">'yes'</span><span style="color: #000000">);</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;res<span style="color: #000000">.</span><span style="color: #000000">end</span><span style="color: #000000">();</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">}).</span><span style="color: #000000">listen</span><span style="color: #000000">(</span><span style="color: #0086b3">59891</span><span style="color: #000000">);</span></div>
+  <div>&nbsp;</div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #a71d5d">var</span>&nbsp;serverAddress&nbsp;<span style="color: #a71d5d">=</span>&nbsp;server<span style="color: #000000">.</span><span style="color: #000000">address</span><span style="color: #000000">();</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #a71d5d">var</span>&nbsp;serverHostname&nbsp;<span style="color: #a71d5d">=</span>&nbsp;serverAddress<span style="color: #000000">.</span>address&nbsp;<span style="color: #a71d5d">===</span>&nbsp;<span style="color: #df5000">'::'</span>&nbsp;<span style="color: #a71d5d">?</span>&nbsp;<span style="color: #df5000">'localhost'</span>&nbsp;<span style="color: #000000">:</span>&nbsp;serverAddress<span style="color: #000000">.</span>address<span style="color: #000000">;</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;serverUrl&nbsp;<span style="color: #a71d5d">=</span>&nbsp;<span style="color: #df5000">'http://'</span>&nbsp;<span style="color: #a71d5d">+</span>&nbsp;serverHostname&nbsp;<span style="color: #a71d5d">+</span>&nbsp;<span style="color: #df5000">':'</span>&nbsp;<span style="color: #a71d5d">+</span>&nbsp;serverAddress<span style="color: #000000">.</span>port&nbsp;<span style="color: #a71d5d">+</span>&nbsp;<span style="color: #df5000">'/'</span><span style="color: #000000">;</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">});</span></div>
+  <div>&nbsp;</div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">after</span><span style="color: #000000">(</span><span style="color: #a71d5d">function</span>&nbsp;<span style="color: #000000">()</span>&nbsp;<span style="color: #000000">{</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;server<span style="color: #000000">.</span><span style="color: #000000">close</span><span style="color: #000000">();</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">});</span></div>
+  <div>&nbsp;</div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">it</span><span style="color: #000000">(</span><span style="color: #df5000">'should&nbsp;verify&nbsp;the&nbsp;mock&nbsp;again&nbsp;the&nbsp;real&nbsp;service'</span><span style="color: #000000">,</span>&nbsp;<span style="color: #a71d5d">function</span>&nbsp;<span style="color: #000000">()</span>&nbsp;<span style="color: #000000">{</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #a71d5d">return</span>&nbsp;<span style="color: #000000">expect</span><span style="color: #000000">(</span>serverUrl<span style="color: #000000">,</span>&nbsp;<span style="color: #df5000">'with&nbsp;http&nbsp;mocked&nbsp;out&nbsp;and&nbsp;verified'</span><span style="color: #000000">,</span>&nbsp;<span style="color: #000000">{</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;response<span style="color: #000000">:</span>&nbsp;<span style="color: #000000">{</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;statusCode<span style="color: #000000">:</span>&nbsp;<span style="color: #0086b3">405</span><span style="color: #000000">,</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;headers<span style="color: #000000">:</span>&nbsp;<span style="color: #000000">{</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #df5000">'X-My-Important-Header'</span><span style="color: #000000">:</span>&nbsp;<span style="color: #df5000">'on'</span><span style="color: #000000">,</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #df5000">'Content-length'</span><span style="color: #000000">:</span>&nbsp;<span style="color: #0086b3">0</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">}</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">},</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;verify<span style="color: #000000">:</span>&nbsp;<span style="color: #000000">{</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;response<span style="color: #000000">:</span>&nbsp;<span style="color: #000000">{</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ignoreHeaders<span style="color: #000000">:</span>&nbsp;<span style="color: #000000">[</span><span style="color: #df5000">'X-Is-Test'</span><span style="color: #000000">]</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">}</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">}</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">},</span>&nbsp;<span style="color: #df5000">'to&nbsp;yield&nbsp;response'</span><span style="color: #000000">,</span>&nbsp;<span style="color: #0086b3">405</span><span style="color: #000000">);</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">});</span></div>
+  <div><span style="color: #000000">});</span></div>
+</div><h3 id="excluding-headers-during-verification">Excluding headers during verification</h3>
+<p>You&#39;ll notice that our &#39;service&#39; actually returns two headers, the critical &#39;X-My-Important-Header&#39;
+but also &#39;X-Is-Test&#39; which simply determines we are in a testing environment. This is not interesting
+to us, so we include a <code>verify</code> block and exclude the header from the verification comparison.</p>
+<p><em>This is particularly useful for ignoring e.g. per request session cookies.</em></p>
+<h1 id="opt-in-verification-via-command-line">Opt-in verification via command line</h1>
+<p>The explicit assertion form of verification will trigger checking the mock on every invocation of
+the test. We may also wish to take to take an existing set of mocked out tests and verify them as
+written with <em>no changes</em> required to the tests - for this we allow <code>UNEXPECTED_MITM_VERIFY=true</code>
+to be specified as an environment variable which will opt-in to verification.</p>
+<p>This can be used to allow the benefits of mocks in normal test runs with periodic checks for
+divergence of the mocks by, for example, a job run as part of a CI system.</p>
+
         </div>
     </div>
 </section>
