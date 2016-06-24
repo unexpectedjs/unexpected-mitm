@@ -1408,6 +1408,10 @@ describe('unexpectedMitm', function () {
             return expect('utf8file', 'when injected becomes', isNodeZeroTen ? 'utf8file-injected-v0_10' : 'utf8file-injected');
         });
 
+        it('should record and inject into a compound assertion', function () {
+            return expect('compound', 'when injected becomes', isNodeZeroTen ? 'compound-injected-v0_10' : 'compound-injected');
+        });
+
         it('should correctly handle buffer injections', function () {
             return expect('bufferfile', 'when injected becomes', isNodeZeroTen ? 'bufferfile-injected-v0_10' : 'bufferfile-injected');
         });
