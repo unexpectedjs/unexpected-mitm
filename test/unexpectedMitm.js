@@ -1786,4 +1786,66 @@ describe('unexpectedMitm', function () {
             });
         });
     });
+
+    it('should fail early, even when there are unexercised mocks', function () {
+        return expect(function () {
+            return expect(function () {
+                return expect.promise(function (run) {
+                    issueGetAndConsume('http://www.google.com/foo', run(function () {
+                        issueGetAndConsume('http://www.google.com/', run(function () {
+                            throw 'Oh no';
+                        }));
+                    }));
+                });
+            }, 'with http mocked out', [
+                {
+                    request: 'GET http://www.google.com/',
+                    response: {
+                        headers: {
+                            'Content-Type': 'text/plain'
+                        },
+                        body: 'hello'
+                    }
+                },
+                {
+                    request: 'GET http://www.google.com/',
+                    response: {
+                        headers: {
+                            'Content-Type': 'text/plain'
+                        },
+                        body: 'world'
+                    }
+                }
+            ], 'not to error');
+        }, 'to be rejected with', function (err) {
+            expect(trimDiff(err.getErrorMessage('text').toString()), 'to equal',
+                "expected\n" +
+                "function () {\n" +
+                "  return expect.promise(function (run) {\n" +
+                "    issueGetAndConsume('http://www.google.com/foo', run(function () {\n" +
+                "      issueGetAndConsume('http://www.google.com/', run(function () {\n" +
+                "        throw 'Oh no';\n" +
+                "      }));\n" +
+                "    }));\n" +
+                "  });\n" +
+                "}\n" +
+                "with http mocked out\n" +
+                "[\n" +
+                "  { request: 'GET http://www.google.com/', response: { headers: ..., body: 'hello' } },\n" +
+                "  { request: 'GET http://www.google.com/', response: { headers: ..., body: 'world' } }\n" +
+                "] not to error\n" +
+                "\n" +
+                "GET /foo HTTP/1.1 // should be GET /\n" +
+                "                  //\n" +
+                "                  // -GET /foo HTTP/1.1\n" +
+                "                  // +GET / HTTP/1.1\n" +
+                "Host: www.google.com\n" +
+                "\n" +
+                "HTTP/1.1 200 OK\n" +
+                "Content-Type: text/plain\n" +
+                "\n" +
+                "hello"
+            );
+        });
+    });
 });
