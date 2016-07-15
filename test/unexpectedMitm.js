@@ -1787,7 +1787,7 @@ describe('unexpectedMitm', function () {
         });
     });
 
-    it('should fail early, even when there are unexercised mocks', function () {
+    it.skip('should fail early, even when there are unexercised mocks', function () {
         return expect(function () {
             return expect(function () {
                 return expect.promise(function (run) {
