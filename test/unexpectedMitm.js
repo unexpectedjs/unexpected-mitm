@@ -15,7 +15,7 @@ var isNodeZeroTen = !!process.version.match(/v0.10/);
 function issueGetAndConsume(url, callback) {
     http.get(url).on('response', function (response) {
         response.on('data', function () {}).on('end', callback);
-    }).end();
+    }).on('error', callback).end();
 }
 
 function trimDiff(message) {
@@ -1785,7 +1785,7 @@ describe('unexpectedMitm', function () {
         });
     });
 
-    it.skip('should fail early, even when there are unexercised mocks', function () {
+    it('should fail early, even when there are unexercised mocks', function () {
         return expect(function () {
             return expect(function () {
                 return expect.promise(function (run) {
