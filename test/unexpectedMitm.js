@@ -15,7 +15,7 @@ var isNodeZeroTen = !!process.version.match(/v0.10/);
 function issueGetAndConsume(url, callback) {
     http.get(url).on('response', function (response) {
         response.on('data', function () {}).on('end', callback);
-    }).end();
+    }).on('error', callback).end();
 }
 
 function trimDiff(message) {
@@ -257,7 +257,6 @@ describe('unexpectedMitm', function () {
                         "POST / HTTP/1.1\n" +
                         "Host: www.google.com\n" +
                         "Content-Type: application/json\n" +
-                        "Content-Length: 11\n" +
                         "\n" +
                         "expected { foo: 123 } when delayed a little bit to equal { foo: 456 }\n" +
                         "\n" +
@@ -652,7 +651,6 @@ describe('unexpectedMitm', function () {
                         'POST / HTTP/1.1\n' +
                         'Host: www.google.com\n' +
                         'Content-Type: application/json\n' +
-                        'Content-Length: 11\n' +
                         '\n' +
                         '{\n' +
                         '  foo: 123 // should equal 456\n' +
@@ -1784,6 +1782,68 @@ describe('unexpectedMitm', function () {
                     delete process.env.UNEXPECTED_MITM_VERIFY;
                 });
             });
+        });
+    });
+
+    it('should fail early, even when there are unexercised mocks', function () {
+        return expect(function () {
+            return expect(function () {
+                return expect.promise(function (run) {
+                    issueGetAndConsume('http://www.google.com/foo', run(function () {
+                        issueGetAndConsume('http://www.google.com/', run(function () {
+                            throw 'Oh no';
+                        }));
+                    }));
+                });
+            }, 'with http mocked out', [
+                {
+                    request: 'GET http://www.google.com/',
+                    response: {
+                        headers: {
+                            'Content-Type': 'text/plain'
+                        },
+                        body: 'hello'
+                    }
+                },
+                {
+                    request: 'GET http://www.google.com/',
+                    response: {
+                        headers: {
+                            'Content-Type': 'text/plain'
+                        },
+                        body: 'world'
+                    }
+                }
+            ], 'not to error');
+        }, 'to be rejected with', function (err) {
+            expect(trimDiff(err.getErrorMessage('text').toString()), 'to equal',
+                "expected\n" +
+                "function () {\n" +
+                "  return expect.promise(function (run) {\n" +
+                "    issueGetAndConsume('http://www.google.com/foo', run(function () {\n" +
+                "      issueGetAndConsume('http://www.google.com/', run(function () {\n" +
+                "        throw 'Oh no';\n" +
+                "      }));\n" +
+                "    }));\n" +
+                "  });\n" +
+                "}\n" +
+                "with http mocked out\n" +
+                "[\n" +
+                "  { request: 'GET http://www.google.com/', response: { headers: ..., body: 'hello' } },\n" +
+                "  { request: 'GET http://www.google.com/', response: { headers: ..., body: 'world' } }\n" +
+                "] not to error\n" +
+                "\n" +
+                "GET /foo HTTP/1.1 // should be GET /\n" +
+                "                  //\n" +
+                "                  // -GET /foo HTTP/1.1\n" +
+                "                  // +GET / HTTP/1.1\n" +
+                "Host: www.google.com\n" +
+                "\n" +
+                "HTTP/1.1 200 OK\n" +
+                "Content-Type: text/plain\n" +
+                "\n" +
+                "hello"
+            );
         });
     });
 });
