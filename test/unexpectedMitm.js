@@ -83,14 +83,8 @@ describe('unexpectedMitm', function () {
     expect.output.preferredWidth = 150;
 
     function createPemCertificate(certOptions) {
-        return expect.promise(function (resolve, reject) {
-            pem.createCertificate(function (err, certificateKeys) {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(certificateKeys);
-                }
-            });
+        return expect.promise.fromNode(function (cb) {
+            pem.createCertificate(cb);
         });
     }
 
