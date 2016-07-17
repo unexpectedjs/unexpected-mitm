@@ -1846,4 +1846,50 @@ describe('unexpectedMitm', function () {
             );
         });
     });
+
+    it('should fail a test as soon as an unexpected request is made, even if the code being tested ignores the request failing', function () {
+        return expect(function () {
+            return expect(function (run) {
+                return expect.promise(function (run) {
+                    http.get('http://www.google.com/foo').on('error', run(function (err) {
+                        // Ignore error
+                    }));
+                });
+            }, 'with http mocked out', [
+                {
+                    request: 'GET http://www.google.com/',
+                    response: {
+                        headers: {
+                            'Content-Type': 'text/plain'
+                        },
+                        body: 'hello'
+                    }
+                }
+            ], 'not to error');
+        }, 'to be rejected with', function (err) {
+            expect(trimDiff(err.getErrorMessage('text').toString()), 'to equal',
+                "expected\n" +
+                "function (run) {\n" +
+                "  return expect.promise(function (run) {\n" +
+                "    http.get('http://www.google.com/foo').on('error', run(function (err) {\n" +
+                "      // Ignore error\n" +
+                "    }));\n" +
+                "  });\n" +
+                "}\n" +
+                "with http mocked out [ { request: 'GET http://www.google.com/', response: { headers: ..., body: 'hello' } } ] not to error\n" +
+                "\n" +
+                "GET /foo HTTP/1.1 // should be GET /\n" +
+                "                  //\n" +
+                "                  // -GET /foo HTTP/1.1\n" +
+                "                  // +GET / HTTP/1.1\n" +
+                "Host: www.google.com\n" +
+                "\n" +
+                "HTTP/1.1 200 OK\n" +
+                "Content-Type: text/plain\n" +
+                "\n" +
+                "hello"
+            );
+        });
+    });
+
 });
