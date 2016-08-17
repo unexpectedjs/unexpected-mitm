@@ -1892,4 +1892,48 @@ describe('unexpectedMitm', function () {
         });
     });
 
+    it.skip('should fail a test as soon as an unexpected request is made, even if the code being tested ignores the request failing and fails with another error', function () {
+        return expect(function () {
+            return expect(function () {
+                return expect.promise(function (resolve, reject) {
+                    http.get('http://www.google.com/foo').on('error', function (err) {
+                        throw new Error('darn');
+                    });
+                });
+            }, 'with http mocked out', [
+                {
+                    request: 'GET http://www.google.com/',
+                    response: {
+                        headers: {
+                            'Content-Type': 'text/plain'
+                        },
+                        body: 'hello'
+                    }
+                }
+            ], 'not to error');
+        }, 'to be rejected with', function (err) {
+            expect(trimDiff(err.getErrorMessage('text').toString()), 'to equal',
+                "expected\n" +
+                "function () {\n" +
+                "  return expect.promise(function (resolve, reject) {\n" +
+                "    http.get('http://www.google.com/foo').on('error', function (err) {\n" +
+                "      throw new Error('darn');\n" +
+                "    });\n" +
+                "  });\n" +
+                "}\n" +
+                "with http mocked out [ { request: 'GET http://www.google.com/', response: { headers: ..., body: 'hello' } } ] not to error\n" +
+                "\n" +
+                "GET /foo HTTP/1.1 // should be GET /\n" +
+                "                  //\n" +
+                "                  // -GET /foo HTTP/1.1\n" +
+                "                  // +GET / HTTP/1.1\n" +
+                "Host: www.google.com\n" +
+                "\n" +
+                "HTTP/1.1 200 OK\n" +
+                "Content-Type: text/plain\n" +
+                "\n" +
+                "hello"
+            );
+        });
+    });
 });
