@@ -21,7 +21,7 @@
     "deploy-site": "deploy-site.sh"
   },
   "peerDependencies": {
-    "unexpected": "^10.0.0",
+    "unexpected": "^10.15.0",
     "unexpected-messy": "^6.0.0"
   },
   "devDependencies": {
@@ -36,7 +36,7 @@
     "request": "2.53.0",
     "semver": "5.0.1",
     "sinon": "1.17.2",
-    "unexpected": "10.13.0",
+    "unexpected": "10.15.1",
     "unexpected-documentation-site-generator": "^4.0.0",
     "unexpected-express": "8.2.0",
     "unexpected-http": "5.4.0",

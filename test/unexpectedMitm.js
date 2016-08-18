@@ -1892,7 +1892,7 @@ describe('unexpectedMitm', function () {
         });
     });
 
-    it.skip('should fail a test as soon as an unexpected request is made, even if the code being tested ignores the request failing and fails with another error', function () {
+    it('should fail a test as soon as an unexpected request is made, even if the code being tested ignores the request failing and fails with another error', function () {
         return expect(function () {
             return expect(function () {
                 return expect.promise(function (resolve, reject) {
