@@ -1936,4 +1936,49 @@ describe('unexpectedMitm', function () {
             );
         });
     });
+
+    it('should fail a test as soon as an unexpected request is made, even if the code being tested ignores the request failing and fails with an uncaught exception', function () {
+        return expect(function () {
+            return expect(function (cb) {
+                http.get('http://www.google.com/foo').on('error', function (err) {
+                    setImmediate(function () {
+                        throw new Error('darn');
+                    });
+                });
+            }, 'with http mocked out', [
+                {
+                    request: 'GET http://www.google.com/',
+                    response: {
+                        headers: {
+                            'Content-Type': 'text/plain'
+                        },
+                        body: 'hello'
+                    }
+                }
+            ], 'to call the callback without error');
+        }, 'to be rejected with', function (err) {
+            expect(trimDiff(err.getErrorMessage('text').toString()), 'to equal',
+                "expected\n" +
+                "function (cb) {\n" +
+                "  http.get('http://www.google.com/foo').on('error', function (err) {\n" +
+                "    setImmediate(function () {\n" +
+                "      throw new Error('darn');\n" +
+                "    });\n" +
+                "  });\n" +
+                "}\n" +
+                "with http mocked out [ { request: 'GET http://www.google.com/', response: { headers: ..., body: 'hello' } } ] to call the callback without error\n" +
+                "\n" +
+                "GET /foo HTTP/1.1 // should be GET /\n" +
+                "                  //\n" +
+                "                  // -GET /foo HTTP/1.1\n" +
+                "                  // +GET / HTTP/1.1\n" +
+                "Host: www.google.com\n" +
+                "\n" +
+                "HTTP/1.1 200 OK\n" +
+                "Content-Type: text/plain\n" +
+                "\n" +
+                "hello"
+            );
+        });
+    });
 });
