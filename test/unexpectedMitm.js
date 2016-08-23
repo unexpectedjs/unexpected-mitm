@@ -1656,7 +1656,7 @@ describe('unexpectedMitm', function () {
 
     describe('in replaying mode', function () {
         it('should resolve with delegated fulfilment', function () {
-            var inputFile = __dirname + '/../testdata/replay.js';
+            var inputFile = '../testdata/replay.js';
 
             return expect(
                 expect({
@@ -1669,7 +1669,7 @@ describe('unexpectedMitm', function () {
         });
 
         it('should replay the correct mocks', function () {
-            var inputFile = __dirname + '/../testdata/replay.js';
+            var inputFile = '../testdata/replay.js';
 
             return expect({
                 response: {
