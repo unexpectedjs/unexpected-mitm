@@ -2037,4 +2037,30 @@ describe('unexpectedMitm', function () {
             { request: { host: 'www.bing.com', headers: { Host: 'www.bing.com' } }, response: 200 }
         ], 'not to error');
     });
+
+    describe('using a string as a shorthand for a request with a 200 response', function () {
+        it('should succeed', function () {
+            return expect('POST http://www.google.com/', 'with http mocked out', [
+                'POST /'
+            ], 'to yield response', 200);
+        });
+
+        it('should fail with a diff', function () {
+            return expect(
+                expect('GET http://www.google.com/', 'with http mocked out', [
+                    'POST /foo'
+                ], 'to yield response', 400),
+                'to be rejected with',
+                "expected 'GET http://www.google.com/' with http mocked out [ 'POST /foo' ] to yield response 400\n" +
+                "\n" +
+                "GET / HTTP/1.1 // should be POST /foo\n" +
+                "               //\n" +
+                "               // -GET / HTTP/1.1\n" +
+                "               // +POST /foo HTTP/1.1\n" +
+                "Host: www.google.com\n" +
+                "\n" +
+                "HTTP/1.1 200 OK"
+            );
+        });
+    });
 });
