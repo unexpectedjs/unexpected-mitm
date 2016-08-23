@@ -1590,7 +1590,7 @@ describe('unexpectedMitm', function () {
                 res.statusCode = 405;
                 res.end();
             };
-            var outputFile = __dirname + '/../testdata/capture';
+            var outputFile = __dirname + '/../testdata/capture.js';
 
             // set env for write mode
             process.env.UNEXPECTED_MITM_WRITE = 'true';
@@ -1620,7 +1620,7 @@ describe('unexpectedMitm', function () {
                 res.statusCode = 405;
                 res.end();
             };
-            var outputFile = __dirname + '/../testdata/capture';
+            var outputFile = __dirname + '/../testdata/capture.js';
 
             // set env for write mode
             process.env.UNEXPECTED_MITM_WRITE = 'true';
@@ -1656,7 +1656,7 @@ describe('unexpectedMitm', function () {
 
     describe('in replaying mode', function () {
         it('should resolve with delegated fulfilment', function () {
-            var inputFile = __dirname + '/../testdata/replay';
+            var inputFile = __dirname + '/../testdata/replay.js';
 
             return expect(
                 expect({
@@ -1669,7 +1669,7 @@ describe('unexpectedMitm', function () {
         });
 
         it('should replay the correct mocks', function () {
-            var inputFile = __dirname + '/../testdata/replay';
+            var inputFile = __dirname + '/../testdata/replay.js';
 
             return expect({
                 response: {
