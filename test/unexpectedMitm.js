@@ -1434,6 +1434,10 @@ describe('unexpectedMitm', function () {
             return expect('bufferfile', 'when injected becomes', isNodeZeroTen ? 'bufferfile-injected-v0_10' : 'bufferfile-injected');
         });
 
+        it('should correctly handle long buffer injections (>32 octets should be base64 encoded)', function () {
+            return expect('longbufferfile', 'when injected becomes', isNodeZeroTen ? 'longbufferfile-injected-v0_10' : 'longbufferfile-injected');
+        });
+
         it('should correctly handle error injections', function () {
             return expect('errorfile', 'when injected becomes', isNodeZeroTen ? 'errorfile-injected-v0_10' : 'errorfile-injected');
         });
