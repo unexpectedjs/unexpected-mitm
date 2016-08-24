@@ -1389,6 +1389,31 @@ describe('unexpectedMitm', function () {
                 response: expectedError
             }, 'to yield response', expectedError);
         });
+
+        it('should recognize a Content-Type ending with +json as JSON, but preserve it in the recording', function () {
+            handleRequest = function (req, res) {
+                res.setHeader('Content-Type', 'application/vnd.api+json');
+                res.end('{"foo": 123}');
+            };
+            return expect('GET ' + serverUrl, 'with expected http recording', {
+                request: {
+                    url: 'GET /',
+                    host: serverHostname,
+                    port: serverAddress.port,
+                    headers: {
+                        Host: serverHostname + ':' + serverAddress.port
+                    }
+                },
+                response: {
+                    body: {
+                        foo: 123
+                    },
+                    headers: {
+                        'Content-Type': 'application/vnd.api+json'
+                    }
+                }
+            }, 'to yield response', 200);
+        });
     });
 
     describe('in injecting mode against a local HTTP server', function () {
