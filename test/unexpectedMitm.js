@@ -1682,6 +1682,28 @@ describe('unexpectedMitm', function () {
                 url: 'GET /'
             }, 'with http mocked out returning the file', inputFile, 'to yield response', 405);
         });
+
+        it('should replay with delegated fulfilment', function () {
+            var inputFile = '../testdata/replay-from-function.js';
+
+            return expect({
+                request: {
+                    body: expect.it('to end with', '123')
+                },
+                response: {
+                    statusCode: 405,
+                    headers: {
+                        Allow: 'GET, HEAD'
+                    }
+                }
+            }, 'was read correctly on', {
+                url: 'POST /',
+                headers: {
+                    'Content-Type': 'text/plain'
+                },
+                body: 'testing testing 123'
+            }, 'with http mocked out returning the file', inputFile, 'to yield response', 405);
+        });
     });
 
     it('should not overwrite an explicitly defined Host header in the expected request properties', function () {
