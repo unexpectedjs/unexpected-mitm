@@ -43,6 +43,7 @@ describe('unexpectedMitm', function () {
             });
         })
         .addAssertion('<string> when injected becomes <string>', function (expect, subject, expectedFileName) {
+            expect.errorMode = 'nested';
             var basePath = pathModule.join(__dirname, '..');
             var testPath = pathModule.join(basePath, 'testdata');
 
