@@ -1975,6 +1975,26 @@ describe('unexpectedMitm', function () {
                 });
         });
 
+        describe('with a mock in a file', function () {
+            it('should verify and resolve with delegated fulfilment', function () {
+                var testFile = __dirname + '/../testdata/replay-and-verify.js';
+                handleRequest = function (req, res) {
+                    res.statusCode = 202;
+                    res.setHeader('X-Is-Test', 'yes');
+                    res.end();
+                };
+
+                return expect(
+                    expect({
+                        url: 'GET ' + serverUrl
+                    }, 'with http mocked out by file and verified', testFile, 'to yield response', 202),
+                    'when fulfilled',
+                    'to satisfy',
+                    expect.it('to be an object')
+                );
+            });
+        });
+
         describe('using UNEXPECTED_MITM_VERIFY=true on the command line', function () {
             it('should be verified', function () {
                 handleRequest = function (req, res) {
@@ -1995,10 +2015,8 @@ describe('unexpectedMitm', function () {
                     delete process.env.UNEXPECTED_MITM_VERIFY;
                 });
             });
-        });
 
-        describe('with a mock in a file', function () {
-            it('should verify and resolve with delegated fulfilment', function () {
+            it('should verify a mock in a file', function () {
                 var testFile = __dirname + '/../testdata/replay-and-verify.js';
                 handleRequest = function (req, res) {
                     res.statusCode = 202;
@@ -2006,14 +2024,19 @@ describe('unexpectedMitm', function () {
                     res.end();
                 };
 
+                // set verification mode on the command line
+                process.env.UNEXPECTED_MITM_VERIFY = 'true';
+
                 return expect(
                     expect({
                         url: 'GET ' + serverUrl
-                    }, 'with http mocked out by file and verified', testFile, 'to yield response', 202),
+                    }, 'with http mocked out by file', testFile, 'to yield response', 202),
                     'when fulfilled',
                     'to satisfy',
                     expect.it('to be an object')
-                );
+                ).finally(function () {
+                    delete process.env.UNEXPECTED_MITM_VERIFY;
+                });
             });
         });
     });
