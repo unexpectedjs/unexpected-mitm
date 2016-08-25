@@ -2019,7 +2019,7 @@ describe('unexpectedMitm', function () {
             it('should verify a mock in a file', function () {
                 var testFile = __dirname + '/../testdata/replay-and-verify.js';
                 handleRequest = function (req, res) {
-                    res.statusCode = 202;
+                    res.statusCode = 201;
                     res.setHeader('X-Is-Test', 'yes');
                     res.end();
                 };
@@ -2031,9 +2031,11 @@ describe('unexpectedMitm', function () {
                     expect({
                         url: 'GET ' + serverUrl
                     }, 'with http mocked out by file', testFile, 'to yield response', 202),
-                    'when fulfilled',
-                    'to satisfy',
-                    expect.it('to be an object')
+                    'when rejected',
+                    'to have message',
+                    function (message) {
+                        expect(trimDiff(message), 'to begin with', 'Explicit failure').and('to contain', 'The mock and service have diverged.');
+                    }
                 ).finally(function () {
                     delete process.env.UNEXPECTED_MITM_VERIFY;
                 });
