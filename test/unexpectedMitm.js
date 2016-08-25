@@ -1605,7 +1605,7 @@ describe('unexpectedMitm', function () {
                         Host: serverHostname + ':' + serverAddress.port
                     },
                     body: 'foo=bar'
-                }, 'with http mocked out', outputFile, 'to yield response', 405),
+                }, 'with http mocked out by file', outputFile, 'to yield response', 405),
                 'when fulfilled',
                 'to satisfy',
                 expect.it('to be an object')
@@ -1648,7 +1648,7 @@ describe('unexpectedMitm', function () {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 },
                 body: 'foo=bar'
-            }, 'with http mocked out returning the file', outputFile, 'to yield response', 405).finally(function () {
+            }, 'with http mocked out by file returning the file', outputFile, 'to yield response', 405).finally(function () {
                 delete process.env.UNEXPECTED_MITM_WRITE;
             });
         });
@@ -1661,7 +1661,7 @@ describe('unexpectedMitm', function () {
             return expect(
                 expect({
                     url: 'GET /'
-                }, 'with http mocked out', inputFile, 'to yield response', 405),
+                }, 'with http mocked out by file', inputFile, 'to yield response', 405),
                 'when fulfilled',
                 'to satisfy',
                 expect.it('to be an object')
@@ -1680,7 +1680,7 @@ describe('unexpectedMitm', function () {
                 }
             }, 'was read correctly on', {
                 url: 'GET /'
-            }, 'with http mocked out returning the file', inputFile, 'to yield response', 405);
+            }, 'with http mocked out by file returning the file', inputFile, 'to yield response', 405);
         });
 
         it('should replay with delegated fulfilment', function () {
@@ -1702,7 +1702,7 @@ describe('unexpectedMitm', function () {
                     'Content-Type': 'text/plain'
                 },
                 body: 'testing testing 123'
-            }, 'with http mocked out returning the file', inputFile, 'to yield response', 405);
+            }, 'with http mocked out by file returning the file', inputFile, 'to yield response', 405);
         });
     });
 
@@ -1999,7 +1999,7 @@ describe('unexpectedMitm', function () {
 
         describe('with a mock in a file', function () {
             it('should verify and resolve with delegated fulfilment', function () {
-                var testFile = __dirname + '/../testdata/replay-and-verify';
+                var testFile = __dirname + '/../testdata/replay-and-verify.js';
                 handleRequest = function (req, res) {
                     res.statusCode = 202;
                     res.setHeader('X-Is-Test', 'yes');
@@ -2009,7 +2009,7 @@ describe('unexpectedMitm', function () {
                 return expect(
                     expect({
                         url: 'GET ' + serverUrl
-                    }, 'with http mocked out and verified', testFile, 'to yield response', 202),
+                    }, 'with http mocked out by file and verified', testFile, 'to yield response', 202),
                     'when fulfilled',
                     'to satisfy',
                     expect.it('to be an object')
