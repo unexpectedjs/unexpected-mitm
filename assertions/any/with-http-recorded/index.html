@@ -45,6 +45,10 @@
                 <a href="../with-http-mocked-out">with http mocked out</a>
             </li>
             
+            <li class="">
+                <a href="../with-http-mocked-out-by-file">with http mocked out by file</a>
+            </li>
+            
             <li class="active">
                 <a href="">with http recorded</a>
             </li>
@@ -59,7 +63,7 @@
             
                 <ul class="declarations">
                 
-                    <li>&lt;any&gt; with http recorded [and injected] &lt;assertion&gt;</li>
+                    <li>&lt;any&gt; with http recorded [and injected] [with extra info] &lt;assertion&gt;</li>
                 
                 </ul>
             
@@ -73,8 +77,9 @@ popular web search service:</p>
   <div>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">it</span><span style="color: #000000">(</span><span style="color: #df5000">'should&nbsp;have&nbsp;a&nbsp;Content-Type'</span><span style="color: #000000">,</span>&nbsp;<span style="color: #a71d5d">function</span>&nbsp;<span style="color: #000000">()</span>&nbsp;<span style="color: #000000">{</span></div>
   <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #a71d5d">return</span>&nbsp;<span style="color: #000000">expect</span><span style="color: #000000">({</span></div>
   <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;url<span style="color: #000000">:</span>&nbsp;<span style="color: #df5000">'GET&nbsp;https://www.google.co.uk'</span><span style="color: #000000">,</span></div>
-  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">},</span>&nbsp;<span style="color: #df5000">'with&nbsp;http&nbsp;recorded'</span><span style="color: #000000">,</span>&nbsp;<span style="color: #df5000">'to&nbsp;yield&nbsp;response'</span><span style="color: #000000">,</span>&nbsp;<span style="color: #0086b3">200</span><span style="color: #000000">).</span><span style="color: #000000">then</span><span style="color: #000000">(</span><span style="color: #a71d5d">function</span>&nbsp;<span style="color: #000000">(</span>exchange<span style="color: #000000">)</span>&nbsp;<span style="color: #000000">{</span></div>
-  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">expect</span><span style="color: #000000">(</span>exchange<span style="color: #000000">.</span>response<span style="color: #000000">.</span>headers<span style="color: #000000">,</span>&nbsp;<span style="color: #df5000">'to&nbsp;have&nbsp;property'</span><span style="color: #000000">,</span>&nbsp;<span style="color: #df5000">'Content-Type'</span><span style="color: #000000">);</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">},</span>&nbsp;<span style="color: #df5000">'with&nbsp;http&nbsp;recorded'</span><span style="color: #000000">,</span>&nbsp;<span style="color: #df5000">'to&nbsp;yield&nbsp;response'</span><span style="color: #000000">,</span>&nbsp;<span style="color: #0086b3">200</span><span style="color: #000000">).</span><span style="color: #000000">then</span><span style="color: #000000">(</span><span style="color: #a71d5d">function</span>&nbsp;<span style="color: #000000">(</span>context<span style="color: #000000">)</span>&nbsp;<span style="color: #000000">{</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #969896">&nbsp;//&nbsp;context&nbsp;is&nbsp;provided&nbsp;by&nbsp;unexpected-http:</span></div>
+  <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">expect</span><span style="color: #000000">(</span>context<span style="color: #000000">.</span>httpResponse<span style="color: #000000">.</span>headers<span style="color: #000000">,</span>&nbsp;<span style="color: #df5000">'to&nbsp;satisfy'</span><span style="color: #000000">,</span>&nbsp;<span style="color: #000000">{</span><span style="color: #df5000">'Content-Type'</span><span style="color: #000000">:</span>&nbsp;<span style="color: #183691">/html/</span><span style="color: #000000">});</span></div>
   <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">});</span></div>
   <div>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #000000">});</span></div>
   <div><span style="color: #000000">});</span></div>
