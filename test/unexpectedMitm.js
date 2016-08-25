@@ -51,7 +51,7 @@ describe('unexpectedMitm', function () {
 
             return expect.promise(function () {
                 return expect.shift(requestObject);
-            }).spread(function (recordedExchanges, recordedFile) {
+            }).spread(function (recordedExchanges, _, __, recordedFile) {
                 testFile = recordedFile;
 
                 return expect(function () {
@@ -1648,7 +1648,7 @@ describe('unexpectedMitm', function () {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 },
                 body: 'foo=bar'
-            }, 'with http mocked out by file returning the file', outputFile, 'to yield response', 405).finally(function () {
+            }, 'with http mocked out by file with extra info', outputFile, 'to yield response', 405).finally(function () {
                 delete process.env.UNEXPECTED_MITM_WRITE;
             });
         });
@@ -1680,7 +1680,7 @@ describe('unexpectedMitm', function () {
                 }
             }, 'was read correctly on', {
                 url: 'GET /'
-            }, 'with http mocked out by file returning the file', inputFile, 'to yield response', 405);
+            }, 'with http mocked out by file with extra info', inputFile, 'to yield response', 405);
         });
 
         it('should replay with delegated fulfilment', function () {
@@ -1702,7 +1702,7 @@ describe('unexpectedMitm', function () {
                     'Content-Type': 'text/plain'
                 },
                 body: 'testing testing 123'
-            }, 'with http mocked out by file returning the file', inputFile, 'to yield response', 405);
+            }, 'with http mocked out by file with extra info', inputFile, 'to yield response', 405);
         });
     });
 
