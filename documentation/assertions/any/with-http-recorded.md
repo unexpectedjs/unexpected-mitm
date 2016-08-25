@@ -10,8 +10,9 @@ describe('requests to a popular web search service', function () {
     it('should have a Content-Type', function () {
         return expect({
             url: 'GET https://www.google.co.uk',
-        }, 'with http recorded', 'to yield response', 200).then(function (exchange) {
-            expect(exchange.response.headers, 'to have property', 'Content-Type');
+        }, 'with http recorded', 'to yield response', 200).then(function (context) {
+            // context is provided by unexpected-http:
+            expect(context.httpResponse.headers, 'to satisfy', {'Content-Type': /html/});
         });
     });
 });
