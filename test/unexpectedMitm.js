@@ -43,6 +43,40 @@ describe('unexpectedMitm', function () {
                 return value;
             });
         })
+        .addAssertion('<any> was written correctly on <object> <assertion>', function (expect, subject, requestObject) {
+            expect.errorMode = 'bubble';
+            var expectedRecordedExchanges = subject;
+            var testFile;
+            var writtenExchanges;
+
+            return expect.promise(function () {
+                return expect.shift(requestObject);
+            }).spread(function (recordedExchanges, _, __, recordedFile) {
+                testFile = recordedFile;
+
+                return expect(function () {
+                    writtenExchanges = require(testFile);
+                }, 'not to throw').then(function () {
+                    return expect(recordedExchanges, 'to equal', expectedRecordedExchanges).then(function () {
+                        return expect(writtenExchanges, 'to equal', expectedRecordedExchanges);
+                    });
+                });
+            }).finally(function () {
+                if (testFile) {
+                    fs.truncateSync(testFile);
+                }
+            });
+        })
+        .addAssertion('<any> was read correctly on <object> <assertion>', function (expect, subject, drivingRequest) {
+            expect.errorMode = 'bubble';
+            var expectedRecordedExchanges = subject;
+
+            return expect.promise(function () {
+                return expect.shift(drivingRequest);
+            }).spread(function (recordedExchanges) {
+                return expect(recordedExchanges.httpExchange, 'to satisfy', expectedRecordedExchanges);
+            });
+        })
         .addAssertion('<string> when injected becomes <string>', function (expect, subject, expectedFileName) {
             expect.errorMode = 'nested';
             var basePath = pathModule.join(__dirname, '..');
@@ -1528,6 +1562,150 @@ describe('unexpectedMitm', function () {
         });
     });
 
+    describe('in capturing mode', function () {
+        var handleRequest,
+            server,
+            serverAddress,
+            serverHostname,
+            serverUrl;
+
+        beforeEach(function () {
+            handleRequest = undefined;
+            server = http.createServer(function (req, res) {
+                res.sendDate = false;
+                handleRequest(req, res);
+            }).listen(0);
+            serverAddress = server.address();
+            serverHostname = serverAddress.address === '::' ? 'localhost' : serverAddress.address;
+            serverUrl = 'http://' + serverHostname + ':' + serverAddress.port + '/';
+        });
+
+        afterEach(function () {
+            server.close();
+        });
+
+        it('should resolve with delegated fulfilment', function () {
+            handleRequest = function (req, res) {
+                res.setHeader('Allow', 'GET, HEAD');
+                res.statusCode = 405;
+                res.end();
+            };
+            var outputFile = __dirname + '/../testdata/capture.js';
+
+            // set env for write mode
+            process.env.UNEXPECTED_MITM_WRITE = 'true';
+
+            return expect(
+                expect({
+                    host: serverHostname,
+                    port: serverAddress.port,
+                    url: 'GET /',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        Host: serverHostname + ':' + serverAddress.port
+                    },
+                    body: 'foo=bar'
+                }, 'with http mocked out by file', outputFile, 'to yield response', 405),
+                'when fulfilled',
+                'to satisfy',
+                expect.it('to be an object')
+            ).finally(function () {
+                delete process.env.UNEXPECTED_MITM_WRITE;
+            });
+        });
+
+        it('should capture the correct mocks', function () {
+            handleRequest = function (req, res) {
+                res.setHeader('Allow', 'GET, HEAD');
+                res.statusCode = 405;
+                res.end();
+            };
+            var outputFile = __dirname + '/../testdata/capture.js';
+
+            // set env for write mode
+            process.env.UNEXPECTED_MITM_WRITE = 'true';
+
+            return expect({
+                request: {
+                    host: serverHostname,
+                    port: serverAddress.port,
+                    url: 'POST /',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        Host: serverHostname + ':' + serverAddress.port
+                    },
+                    body: 'foo=bar'
+                },
+                response: {
+                    statusCode: 405,
+                    headers: {
+                        Allow: 'GET, HEAD'
+                    }
+                }
+            }, 'was written correctly on', {
+                url: 'POST ' + serverUrl,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: 'foo=bar'
+            }, 'with http mocked out by file with extra info', outputFile, 'to yield response', 405).finally(function () {
+                delete process.env.UNEXPECTED_MITM_WRITE;
+            });
+        });
+    });
+
+    describe('in replaying mode', function () {
+        it('should resolve with delegated fulfilment', function () {
+            var inputFile = '../testdata/replay.js';
+
+            return expect(
+                expect({
+                    url: 'GET /'
+                }, 'with http mocked out by file', inputFile, 'to yield response', 405),
+                'when fulfilled',
+                'to satisfy',
+                expect.it('to be an object')
+            );
+        });
+
+        it('should replay the correct mocks', function () {
+            var inputFile = '../testdata/replay.js';
+
+            return expect({
+                response: {
+                    statusCode: 405,
+                    headers: {
+                        Allow: 'GET, HEAD'
+                    }
+                }
+            }, 'was read correctly on', {
+                url: 'GET /'
+            }, 'with http mocked out by file with extra info', inputFile, 'to yield response', 405);
+        });
+
+        it('should replay with delegated fulfilment', function () {
+            var inputFile = '../testdata/replay-from-function.js';
+
+            return expect({
+                request: {
+                    body: expect.it('to end with', '123')
+                },
+                response: {
+                    statusCode: 405,
+                    headers: {
+                        Allow: 'GET, HEAD'
+                    }
+                }
+            }, 'was read correctly on', {
+                url: 'POST /',
+                headers: {
+                    'Content-Type': 'text/plain'
+                },
+                body: 'testing testing 123'
+            }, 'with http mocked out by file with extra info', inputFile, 'to yield response', 405);
+        });
+    });
+
     it('should not overwrite an explicitly defined Host header in the expected request properties', function () {
         return expect({
             url: 'GET http://localhost/',
@@ -1797,6 +1975,26 @@ describe('unexpectedMitm', function () {
                 });
         });
 
+        describe('with a mock in a file', function () {
+            it('should verify and resolve with delegated fulfilment', function () {
+                var testFile = __dirname + '/../testdata/replay-and-verify.js';
+                handleRequest = function (req, res) {
+                    res.statusCode = 202;
+                    res.setHeader('X-Is-Test', 'yes');
+                    res.end();
+                };
+
+                return expect(
+                    expect({
+                        url: 'GET ' + serverUrl
+                    }, 'with http mocked out by file and verified', testFile, 'to yield response', 202),
+                    'when fulfilled',
+                    'to satisfy',
+                    expect.it('to be an object')
+                );
+            });
+        });
+
         describe('using UNEXPECTED_MITM_VERIFY=true on the command line', function () {
             it('should be verified', function () {
                 handleRequest = function (req, res) {
@@ -1813,6 +2011,31 @@ describe('unexpectedMitm', function () {
                         response: 405
                     }, 'to yield response', 405),
                     'to be rejected'
+                ).finally(function () {
+                    delete process.env.UNEXPECTED_MITM_VERIFY;
+                });
+            });
+
+            it('should verify a mock in a file', function () {
+                var testFile = __dirname + '/../testdata/replay-and-verify.js';
+                handleRequest = function (req, res) {
+                    res.statusCode = 201;
+                    res.setHeader('X-Is-Test', 'yes');
+                    res.end();
+                };
+
+                // set verification mode on the command line
+                process.env.UNEXPECTED_MITM_VERIFY = 'true';
+
+                return expect(
+                    expect({
+                        url: 'GET ' + serverUrl
+                    }, 'with http mocked out by file', testFile, 'to yield response', 202),
+                    'when rejected',
+                    'to have message',
+                    function (message) {
+                        expect(trimDiff(message), 'to begin with', 'Explicit failure').and('to contain', 'The mock and service have diverged.');
+                    }
                 ).finally(function () {
                     delete process.env.UNEXPECTED_MITM_VERIFY;
                 });
