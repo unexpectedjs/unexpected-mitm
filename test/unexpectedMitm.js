@@ -35,11 +35,12 @@ describe('unexpectedMitm', function () {
         .use(require('unexpected-sinon'))
         .addAssertion('<any> with expected http recording <object> <assertion>', function (expect, subject, expectedRecordedExchanges) { // ...
             expect.errorMode = 'nested';
-            expect.args.splice(1, 0, 'with http recorded');
+            expect.args.splice(1, 0, 'with http recorded with extra info');
             return expect.promise(function () {
                 return expect.shift();
-            }).then(function (recordedExchanges) {
+            }).spread(function (value, recordedExchanges) {
                 expect(recordedExchanges, 'to equal', expectedRecordedExchanges);
+                return value;
             });
         })
         .addAssertion('<string> when injected becomes <string>', function (expect, subject, expectedFileName) {
@@ -1333,6 +1334,12 @@ describe('unexpectedMitm', function () {
                     }
                 }
             }, 'to yield response', 405);
+        });
+
+        it('should preserve the fulfilment value', function () {
+            return expect('foo', 'with http recorded', 'to match', /^(f)o/).then(function (matches) {
+                expect(matches, 'to satisfy', {0: 'fo', 1: 'f', index: 0});
+            });
         });
 
         it('should record an error', function () {
