@@ -2012,4 +2012,25 @@ describe('unexpectedMitm', function () {
             );
         });
     });
+
+    it('should handle concurrent requests without confusing the Host headers', function () {
+        return expect(function () {
+            return expect.promise(function (resolve, reject) {
+                var urls = ['http://www.google.com/', 'http://www.bing.com/'];
+                var numInFlight = 0;
+                urls.forEach(function (url) {
+                    numInFlight += 1;
+                    issueGetAndConsume(url, function () {
+                        numInFlight -= 1;
+                        if (numInFlight === 0) {
+                            resolve();
+                        }
+                    });
+                });
+            });
+        }, 'with http mocked out', [
+            { request: { host: 'www.google.com', headers: { Host: 'www.google.com' } }, response: 200 },
+            { request: { host: 'www.bing.com', headers: { Host: 'www.bing.com' } }, response: 200 }
+        ], 'not to error');
+    });
 });
