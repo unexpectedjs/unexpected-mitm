@@ -1,9 +1,5 @@
 [
   {
-    "label": "with http mocked out by file (any)",
-    "url": "/assertions/any/with-http-mocked-out-by-file/"
-  },
-  {
     "label": "with http mocked out (any)",
     "url": "/assertions/any/with-http-mocked-out/"
   },
