@@ -1122,6 +1122,10 @@ describe('unexpectedMitm', function () {
                 }
             }, 'to yield response', {
                 body: expectedBuffer
+            }).then(function (fulfilmentValue) {
+                expect(fulfilmentValue.httpResponse, 'to satisfy', {
+                    body: expectedBuffer
+                });
             });
         });
 
@@ -1142,6 +1146,10 @@ describe('unexpectedMitm', function () {
                 }
             }, 'to yield response', {
                 body: expectedArray
+            }).then(function (fulfilmentValue) {
+                expect(fulfilmentValue.httpResponse, 'to satisfy', {
+                    body: expectedArray
+                });
             });
         });
 
@@ -1164,6 +1172,10 @@ describe('unexpectedMitm', function () {
                 }
             }, 'to yield response', {
                 body: expectedBody
+            }).then(function (fulfilmentValue) {
+                expect(fulfilmentValue.httpResponse, 'to satisfy', {
+                    body: expectedBody
+                });
             });
         });
 
