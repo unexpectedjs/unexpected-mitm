@@ -108,6 +108,17 @@ describe('unexpectedMitm', function () {
                 } catch (e) {}
             });
         })
+        .addAssertion('<messyHttpExchange> to have a response with body <any>', function (expect, subject, value) {
+            return expect.promise(function () {
+                var response = subject.response;
+
+                if (!response.body) {
+                    throw new Error('Missing response body.');
+                }
+
+                return expect(response.body, 'to equal', value);
+            });
+        })
         .addAssertion('<any> when delayed a little bit <assertion>', function (expect, subject) {
             return expect.promise(function (run) {
                 setTimeout(run(function () {
@@ -1112,7 +1123,7 @@ describe('unexpectedMitm', function () {
         it('should allow returning a response with a body Buffer', function  () {
             var expectedBuffer = new Buffer([0xc3, 0xa6, 0xc3, 0xb8, 0xc3, 0xa5]);
 
-            return expect('/200', 'with http mocked out', {
+            return expect('/200', 'with http mocked out with extra info', {
                 request: {
                     method: 'GET',
                     url: '/200'
@@ -1122,17 +1133,15 @@ describe('unexpectedMitm', function () {
                 }
             }, 'to yield response', {
                 body: expectedBuffer
-            }).then(function (fulfilmentValue) {
-                expect(fulfilmentValue.httpResponse, 'to satisfy', {
-                    body: expectedBuffer
-                });
+            }).spread(function (fulfilmentValue, httpConversation) {
+                expect(httpConversation.exchanges[0], 'to have a response with body', expectedBuffer);
             });
         });
 
         it('should allow returning a response with a body Array', function  () {
             var expectedArray = [null, {}, {foo: 'bar'}];
 
-            return expect('/200', 'with http mocked out', {
+            return expect('/200', 'with http mocked out with extra info', {
                 request: {
                     method: 'GET',
                     url: '/200'
@@ -1146,19 +1155,17 @@ describe('unexpectedMitm', function () {
                 }
             }, 'to yield response', {
                 body: expectedArray
-            }).then(function (fulfilmentValue) {
-                expect(fulfilmentValue.httpResponse, 'to satisfy', {
-                    body: expectedArray
-                });
+            }).spread(function (fulfilmentValue, httpConversation) {
+                expect(httpConversation.exchanges[0], 'to have a response with body', expectedArray);
             });
         });
 
-        it('should allow returning a response with a body object', function  () {
+        it('should allow returning a response with a body Object', function  () {
             var expectedBody = {
                 foo: 'bar'
             };
 
-            return expect('/200', 'with http mocked out', {
+            return expect('/200', 'with http mocked out with extra info', {
                 request: {
                     method: 'GET',
                     url: '/200'
@@ -1172,27 +1179,50 @@ describe('unexpectedMitm', function () {
                 }
             }, 'to yield response', {
                 body: expectedBody
-            }).then(function (fulfilmentValue) {
-                expect(fulfilmentValue.httpResponse, 'to satisfy', {
-                    body: expectedBody
-                });
+            }).spread(function (fulfilmentValue, httpConversation) {
+                expect(httpConversation.exchanges[0], 'to have a response with body', expectedBody);
+            });
+        });
+
+        it('should allow consuming the request body', function () {
+            var expectedBody = {
+                foo: 'bar'
+            };
+
+            return expect({
+                url: 'POST /',
+                body: expectedBody
+            }, 'with http mocked out with extra info', {
+                response: require('express')()
+                    .use(require('body-parser').json())
+                    .use(function (req, res, next) {
+                        res.send(req.body);
+                    })
+            }, 'to yield response', {
+                body: expectedBody
+            }).spread(function (fulfilmentValue, httpConversation) {
+                expect(httpConversation.exchanges[0], 'to have a response with body', expectedBody);
             });
         });
 
         it('should allow the use of pipe() internally', function  () {
+            var expectedBuffer = new Buffer('foobar', 'utf-8');
+
             return expect({
                 url: 'GET /stream',
-                body: new Buffer('foobar', 'utf-8')
-            }, 'with http mocked out', {
+                body: expectedBuffer
+            }, 'with http mocked out with extra info', {
                 request: {
                     url: '/stream',
-                    body: new Buffer('foobar', 'utf-8')
+                    body: expectedBuffer
                 },
                 response: function (req, res) {
                     req.pipe(res);
                 }
             }, 'to yield response', {
-                body: new Buffer('foobar', 'utf-8')
+                body: expectedBuffer
+            }).spread(function (fulfilmentValue, httpConversation) {
+                expect(httpConversation.exchanges[0], 'to have a response with body', expectedBuffer);
             });
         });
 
@@ -1213,25 +1243,6 @@ describe('unexpectedMitm', function () {
                 'to be',
                 err
             );
-        });
-
-        it('should allow consuming the request body', function () {
-            return expect({
-                url: 'POST /',
-                body: {
-                    foo: 'bar'
-                }
-            }, 'with http mocked out', {
-                response: require('express')()
-                    .use(require('body-parser').json())
-                    .use(function (req, res, next) {
-                        res.send(req.body);
-                    })
-            }, 'to yield response', {
-                body: {
-                    foo: 'bar'
-                }
-            });
         });
 
         describe('with documentation response function', function () {
