@@ -1222,6 +1222,21 @@ describe('unexpectedMitm', function () {
             });
         });
 
+        it('should ignore any other header containing "Content-Length"', function () {
+            var expectedBuffer = new Buffer([0xf0, 0x9f, 0x99, 0x82]);
+
+            return expect('/200', 'with http mocked out', {
+                request: 'GET /200',
+                response: function (req, res) {
+                    res.setHeader('X-Content-Length', 2);
+
+                    res.end(expectedBuffer);
+                }
+            }, 'to yield response', {
+                body: expectedBuffer
+            });
+        });
+
         describe('with documentation response function', function () {
             function documentationHandler(req, res) {
                 var myMessage;
