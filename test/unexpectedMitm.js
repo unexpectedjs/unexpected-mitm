@@ -1780,6 +1780,21 @@ describe('unexpectedMitm', function () {
                 ]
             );
         });
+
+        it('should output response headers preserving their original case', function () {
+            return expect('GET /', 'with http mocked out with extra info', {
+                response: {
+                    statusCode: 200,
+                    headers: {
+                        'X-Is-Test': 'yes'
+                    }
+                }
+            }, 'to yield response', 200).spread(function (fulfilmentValue, httpConversation) {
+                var httpResponse = httpConversation.exchanges[0].response;
+
+                expect(httpResponse.headers.getNames(), 'to contain', 'X-Is-Test');
+            });
+        });
     });
 
     it('should preserve the fulfilment value of the promise returned by the assertion being delegated to', function () {
