@@ -184,8 +184,7 @@ describe('with something of a real service', function () {
             response: {
                 statusCode: 405,
                 headers: {
-                    'X-My-Important-Header': 'on',
-                    'Content-length': 0
+                    'X-My-Important-Header': 'on'
                 }
             },
             verify: {
