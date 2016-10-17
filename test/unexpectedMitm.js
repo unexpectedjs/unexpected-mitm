@@ -173,7 +173,13 @@ describe('unexpectedMitm', function () {
         });
     });
 
+
     it('should clean up properly after a keep-alived request with a custom Agent instance', function () {
+        if (/^v0\.10\./.test(process.version)) {
+            // Seems like mitm doesn't support custom Agent instances with node.js 0.10
+            return this.skip();
+        }
+
         var agent = new http.Agent({keepAlive: true});
         return expect(function () {
             return expect.promise(function (run) {
