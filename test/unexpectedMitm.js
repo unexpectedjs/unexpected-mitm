@@ -173,6 +173,55 @@ describe('unexpectedMitm', function () {
         });
     });
 
+    it('should clean up properly after a keep-alived request with a custom Agent instance', function () {
+        var agent = new http.Agent({keepAlive: true});
+        return expect(function () {
+            return expect.promise(function (run) {
+                http.get({host: 'example.com', agent: agent}).on('response', run(function (response) {
+                    response.on('data', function () {}).on('end', run());
+                }));
+            });
+        }, 'with http mocked out', [
+            {request: 'GET http://example.com/', response: 200}
+        ], 'not to error').then(function () {
+            return expect(function () {
+                return expect.promise(function (run) {
+                    http.get({host: 'example.com', agent: agent}).on('response', run(function (response) {
+                        response.on('data', function () {}).on('end', run(function () {}));
+                    }));
+                });
+            }, 'with http mocked out', [
+                {request: 'GET http://example.com/', response: 200}
+            ], 'not to error');
+        });
+    });
+
+    it('should clean up properly after a keep-alived request with the global agent', function () {
+        var originalKeepAliveValue = http.globalAgent.keepAlive;
+        http.globalAgent.keepAlive = true;
+        return expect(function () {
+            return expect.promise(function (run) {
+                http.get({host: 'example.com'}).on('response', run(function (response) {
+                    response.on('data', function () {}).on('end', run());
+                }));
+            });
+        }, 'with http mocked out', [
+            {request: 'GET http://example.com/', response: 200}
+        ], 'not to error').then(function () {
+            return expect(function () {
+                return expect.promise(function (run) {
+                    http.get({host: 'example.com'}).on('response', run(function (response) {
+                        response.on('data', function () {}).on('end', run(function () {}));
+                    }));
+                });
+            }, 'with http mocked out', [
+                {request: 'GET http://example.com/', response: 200}
+            ], 'not to error');
+        }).finally(function () {
+            http.globalAgent.keepAlive = originalKeepAliveValue;
+        });
+    });
+
     it('should mock out an erroring response', function () {
         return expect('http://www.google.com/', 'with http mocked out', {
             request: 'GET /',
