@@ -2353,4 +2353,13 @@ describe('unexpectedMitm', function () {
             { request: { host: 'www.bing.com', headers: { Host: 'www.bing.com' } }, response: 200 }
         ], 'not to error');
     });
+
+    it('should allow adding more mocked out requests by pushing to the array after initiating the assertion', function () {
+        var mocks = [];
+
+        return expect(function (cb) {
+            mocks.push({request: 'GET /', response: 200});
+            issueGetAndConsume('http://www.example.com/', cb);
+        }, 'with http mocked out', mocks, 'to call the callback without error');
+    });
 });
