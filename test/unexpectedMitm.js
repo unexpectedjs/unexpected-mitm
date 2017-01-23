@@ -584,7 +584,7 @@ describe('unexpectedMitm', function () {
             responseBodyStream._read = function (num, cb) {
                 responseBodyStream._read = function () {};
                 setImmediate(function () {
-                    responseBodyStream.push(JSON.stringify({"foo":"bar"}));
+                    responseBodyStream.push(JSON.stringify({"foo": "bar"}));
                     responseBodyStream.push(null);
                 });
             };
@@ -1944,7 +1944,7 @@ describe('unexpectedMitm', function () {
             handleRequest = function (req, res) {
                 res.statusCode = 201;
                 res.setHeader('Content-Type', 'application/json');
-                res.end(new Buffer(JSON.stringify({foo:'bar'})));
+                res.end(new Buffer(JSON.stringify({foo: 'bar'})));
             };
 
             return expect(
