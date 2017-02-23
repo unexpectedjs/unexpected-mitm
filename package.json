@@ -27,8 +27,8 @@
   "devDependencies": {
     "body-parser": "1.15.0",
     "coveralls": "2.11.2",
-    "eslint": "2.4.0",
-    "eslint-config-onelint": "1.0.2",
+    "eslint": "2.13.1",
+    "eslint-config-onelint": "1.2.0",
     "express": "4.13.4",
     "mocha": "2.2.5",
     "nyc": "6.1.1",
