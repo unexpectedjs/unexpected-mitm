@@ -2374,21 +2374,7 @@ describe('unexpectedMitm', function () {
                     mocks.push({request: 'GET /', response: 200});
                     issueGetAndConsume('http://www.example.com/', cb);
                 }, 'with http mocked out', mocks, 'to call the callback without error');
-            }, 'to error with',
-                "expected\n" +
-                "function (cb) {\n" +
-                "  mocks.push({request: 'GET /', response: 200});\n" +
-                "  issueGetAndConsume('http://www.example.com/', cb);\n" +
-                "}\n" +
-                "with http mocked out [ { request: 'GET /', response: 200 } ] to call the callback without error\n" +
-                "\n" +
-                "// should be removed:\n" +
-                "// GET / HTTP/1.1\n" +
-                "// Host: www.example.com\n" +
-                "// Connection: close\n" +
-                "//\n" +
-                "// <no response>"
-            );
+            }, 'to error with', /\/\/ should be removed:/);
         });
     });
 });
