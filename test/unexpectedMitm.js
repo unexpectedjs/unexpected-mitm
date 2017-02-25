@@ -2354,12 +2354,41 @@ describe('unexpectedMitm', function () {
         ], 'not to error');
     });
 
-    it('should allow adding more mocked out requests by pushing to the array after initiating the assertion', function () {
-        var mocks = [];
+    describe('with the "allowing modification" flag', function () {
+        it('should allow adding more mocked out requests by pushing to the mocks array after initiating the assertion', function () {
+            var mocks = [];
 
-        return expect(function (cb) {
-            mocks.push({request: 'GET /', response: 200});
-            issueGetAndConsume('http://www.example.com/', cb);
-        }, 'with http mocked out', mocks, 'to call the callback without error');
+            return expect(function (cb) {
+                mocks.push({request: 'GET /', response: 200});
+                issueGetAndConsume('http://www.example.com/', cb);
+            }, 'with http mocked out allowing modification', mocks, 'to call the callback without error');
+        });
+    });
+
+    describe('without the "allowing modification" flag', function () {
+        it('should be unaffected by modifications to the mocks array after initiating the assertion', function () {
+            var mocks = [];
+
+            return expect(function () {
+                return expect(function (cb) {
+                    mocks.push({request: 'GET /', response: 200});
+                    issueGetAndConsume('http://www.example.com/', cb);
+                }, 'with http mocked out', mocks, 'to call the callback without error');
+            }, 'to error with',
+                "expected\n" +
+                "function (cb) {\n" +
+                "  mocks.push({request: 'GET /', response: 200});\n" +
+                "  issueGetAndConsume('http://www.example.com/', cb);\n" +
+                "}\n" +
+                "with http mocked out [ { request: 'GET /', response: 200 } ] to call the callback without error\n" +
+                "\n" +
+                "// should be removed:\n" +
+                "// GET / HTTP/1.1\n" +
+                "// Host: www.example.com\n" +
+                "// Connection: close\n" +
+                "//\n" +
+                "// <no response>"
+            );
+        });
     });
 });
