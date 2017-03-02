@@ -50,7 +50,7 @@
     "messy": "^6.12.0",
     "mitm-papandreou": "1.3.2-patch1",
     "underscore": "1.7.0",
-    "unexpected-messy": "^6.2.0"
+    "unexpected-messy": "unexpectedjs/unexpected-messy#ee9720dd98d30ca59f72ec93cd25bb5355ec654f"
   },
   "nyc": {
     "include": [
