@@ -38,7 +38,7 @@
     "sinon": "1.17.2",
     "unexpected": "unexpectedjs/unexpected#d10718ac1a1e3dc90f3dadacafd391132e4ebc94",
     "unexpected-documentation-site-generator": "^4.0.0",
-    "unexpected-express": "8.2.0",
+    "unexpected-express": "github:unexpectedjs/unexpected-express#0446436d50c1546e2fc6ad081ccdf83678f63c36",
     "unexpected-http": "github:unexpectedjs/unexpected-http#d65ac08f746a6837f372b1e26cd890a897a5206a",
     "unexpected-markdown": "^1.4.0",
     "unexpected-sinon": "10.1.1"
