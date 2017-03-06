@@ -36,7 +36,7 @@
     "request": "2.53.0",
     "semver": "5.0.1",
     "sinon": "1.17.2",
-    "unexpected": "unexpectedjs/unexpected#d10718ac1a1e3dc90f3dadacafd391132e4ebc94",
+    "unexpected": "unexpectedjs/unexpected#666caa62712056314624579b2b7d527df12c59de",
     "unexpected-documentation-site-generator": "^4.0.0",
     "unexpected-express": "github:unexpectedjs/unexpected-express#b27a21ebaf379804709c97a6b7669fbcc87398d9",
     "unexpected-http": "github:unexpectedjs/unexpected-http#d65ac08f746a6837f372b1e26cd890a897a5206a",
