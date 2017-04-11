@@ -8,7 +8,8 @@ var pathModule = require('path'),
     pem = require('pem'),
     stream = require('stream'),
     semver = require('semver'),
-    sinon = require('sinon');
+    sinon = require('sinon'),
+    socketErrors = require('socketerrors-papandreou');
 
 var isNodeZeroTen = !!process.version.match(/v0.10/);
 
@@ -233,6 +234,13 @@ describe('unexpectedMitm', function () {
             request: 'GET /',
             response: new Error('foo')
         }, 'to yield response', new Error('foo'));
+    });
+
+    it('should mock out an erroring response 2', function () {
+        return expect('http://www.google.com/', 'with http mocked out', {
+            request: 'GET /',
+            response: new socketErrors.ECONNRESET()
+        }, 'to yield response', new socketErrors.ECONNRESET());
     });
 
     it('should mock out an application/json response', function () {

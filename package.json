@@ -36,6 +36,7 @@
     "request": "2.53.0",
     "semver": "5.0.1",
     "sinon": "1.17.2",
+    "socketerrors-papandreou": "0.2.0-patch2",
     "unexpected": "10.15.1",
     "unexpected-documentation-site-generator": "^4.0.0",
     "unexpected-express": "8.2.0",
