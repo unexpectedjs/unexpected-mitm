@@ -1159,11 +1159,8 @@ describe('unexpectedMitm', function () {
                     '  GET /foo HTTP/1.1\n' +
                     '  Host: www.google.com\n' +
                     '\n' +
-                    '  HTTP/1.1 200 OK // should be 412 Precondition Failed\n' +
-                    '                  //\n' +
-                    '                  // -HTTP/1.1 200 OK\n' +
-                    '                  // +HTTP/1.1 412 Precondition Failed\n'
-            );
+                    '  HTTP/1.1 200 OK // should be 412 Precondition Failed\n'
+                );
             }
         );
     });
