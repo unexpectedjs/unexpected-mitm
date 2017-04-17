@@ -21,8 +21,7 @@
     "deploy-site": "deploy-site.sh"
   },
   "peerDependencies": {
-    "unexpected": "^10.15.0",
-    "unexpected-messy": "^6.2.0"
+    "unexpected": "^10.27.0"
   },
   "devDependencies": {
     "body-parser": "1.15.0",
@@ -36,10 +35,10 @@
     "request": "2.53.0",
     "semver": "5.0.1",
     "sinon": "1.17.2",
-    "unexpected": "unexpectedjs/unexpected#c4fd18a1db963deed0944caaad0ee68ea21a9ed3",
+    "unexpected": "10.27.0",
     "unexpected-documentation-site-generator": "^4.0.0",
-    "unexpected-express": "github:unexpectedjs/unexpected-express#b27a21ebaf379804709c97a6b7669fbcc87398d9",
-    "unexpected-http": "github:unexpectedjs/unexpected-http#d65ac08f746a6837f372b1e26cd890a897a5206a",
+    "unexpected-express": "9.0.0",
+    "unexpected-http": "6.0.0",
     "unexpected-markdown": "^1.4.0",
     "unexpected-sinon": "10.1.1"
   },
@@ -50,7 +49,7 @@
     "messy": "^6.12.0",
     "mitm-papandreou": "1.3.2-patch1",
     "underscore": "1.7.0",
-    "unexpected-messy": "unexpectedjs/unexpected-messy#ee9720dd98d30ca59f72ec93cd25bb5355ec654f"
+    "unexpected-messy": "7.0.0"
   },
   "nyc": {
     "include": [
