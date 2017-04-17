@@ -34,6 +34,7 @@ describe('unexpectedMitm', function () {
         .use(require('../lib/unexpectedMitm'))
         .use(require('unexpected-http'))
         .use(require('unexpected-sinon'))
+        .use(require('unexpected-messy'))
         .addAssertion('<any> with expected http recording <object> <assertion>', function (expect, subject, expectedRecordedExchanges) { // ...
             expect.errorMode = 'nested';
             expect.args.splice(1, 0, 'with http recorded with extra info');

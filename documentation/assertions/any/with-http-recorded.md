@@ -12,7 +12,7 @@ describe('requests to a popular web search service', function () {
             url: 'GET https://www.google.co.uk',
         }, 'with http recorded', 'to yield response', 200).then(function (context) {
             // context is provided by unexpected-http:
-            expect(context.httpResponse.headers, 'to satisfy', {'Content-Type': /html/});
+            expect(context.httpResponse.headers.get('Content-Type'), 'to match', /html/);
         });
     });
 });
