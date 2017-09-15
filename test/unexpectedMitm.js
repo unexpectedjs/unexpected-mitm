@@ -2383,4 +2383,23 @@ describe('unexpectedMitm', function () {
             }, 'to error with', /\/\/ should be removed:/);
         });
     });
+
+    it('should not break when a response mocked out by an Error instance with extra properties is checked against the actual exchanges at the end', function () {
+        var err = new Error('foo');
+        err.bar = 123;
+        err.statusCode = 404;
+        return expect(
+            expect(function (cb) {
+                setImmediate(cb);
+            }, 'with http mocked out', { request: 'GET /', response: err }, 'to call the callback without error'),
+            'to be rejected with',
+            'expected function (cb) { setImmediate(cb); }\n' +
+            'with http mocked out { request: \'GET /\', response: Error({ message: \'foo\', bar: 123, statusCode: 404 }) } to call the callback without error\n' +
+            '\n' +
+            '// missing:\n' +
+            '// GET /\n' +
+            '//\n' +
+            '// 404'
+        );
+    });
 });
