@@ -15,7 +15,13 @@ var isNodeZeroTen = !!process.version.match(/v0.10/);
 
 function issueGetAndConsume(url, callback) {
     http.get(url).on('response', function (response) {
-        response.on('data', function () {}).on('end', callback);
+        var chunks = [];
+
+        response.on('data', function (chunk) {
+            chunks.push(Buffer.isBuffer(chunk) ? chunk : new Buffer(chunk));
+        }).on('end', function () {
+            callback(null, Buffer.concat(chunks));
+        });
     }).on('error', callback).end();
 }
 
@@ -1458,6 +1464,44 @@ describe('unexpectedMitm', function () {
             return expect('foo', 'with http recorded', 'to match', /^(f)o/).then(function (matches) {
                 expect(matches, 'to satisfy', {0: 'fo', 1: 'f', index: 0});
             });
+        });
+
+        it('should not break on an exception from the request itself', function () {
+            handleRequest = function (req, res) {
+                res.setHeader('Content-Type', 'text/plain');
+                res.statusCode = 200;
+                res.end('hello');
+            };
+
+            return expect(
+                expect(function () {
+                    return expect.promise.fromNode(function (cb) {
+                        issueGetAndConsume(serverUrl, cb);
+                    }).then(function (buffer) {
+                        expect(buffer.toString('utf-8'), 'to equal', 'hello world');
+                    });
+                }, 'with http recorded', 'not to error'),
+                'when rejected',
+                'to have message',
+                function (message) {
+                    expect(message, 'to equal',
+                        "expected\n" +
+                        "function () {\n" +
+                        "  return expect.promise.fromNode(function (cb) {\n" +
+                        "    issueGetAndConsume(serverUrl, cb);\n" +
+                        "  }).then(function (buffer) {\n" +
+                        "    expect(buffer.toString('utf-8'), 'to equal', 'hello world');\n" +
+                        "  });\n" +
+                        "}\n" +
+                        "with http recorded not to error\n" +
+                        "  expected function not to error\n" +
+                        "    returned promise rejected with: expected 'hello' to equal 'hello world'\n" +
+                        "\n" +
+                        "    -hello\n" +
+                        "    +hello world"
+                    );
+                }
+            );
         });
 
         it('should record an error', function () {
