@@ -1513,9 +1513,14 @@ describe('unexpectedMitm', function () {
                 expectedError = new Error('getaddrinfo EADDRINFO');
                 expectedError.code = expectedError.errno = 'EADDRINFO';
             } else if (semver.satisfies(nodeJsVersion, '>=0.12.0')) {
-                expectedError = new Error();
-                // explicitly set "message" to workaround an issue with enumerable properties
-                expectedError.message = 'getaddrinfo ENOTFOUND www.icwqjecoiqwjecoiwqjecoiwqjceoiwq.com';
+                var message = 'getaddrinfo ENOTFOUND www.icwqjecoiqwjecoiwqjecoiwqjceoiwq.com';
+                if (semver.satisfies(nodeJsVersion, '>=9.7.0')) {
+                    expectedError = new Error();
+                    // explicitly set "message" to workaround an issue with enumerable properties
+                    expectedError.message = message;
+                } else {
+                    expectedError = new Error(message);
+                }
                 if (semver.satisfies(nodeJsVersion, '>=2.0.0')) {
                     expectedError.message += ' www.icwqjecoiqwjecoiwqjecoiwqjceoiwq.com:80';
                     expectedError.host = 'www.icwqjecoiqwjecoiwqjecoiwqjceoiwq.com';
