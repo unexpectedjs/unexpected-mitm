@@ -2,7 +2,7 @@
   "name": "unexpected-mitm",
   "version": "10.2.1",
   "description": "Unexpected plugin for the mitm library",
-  "author": "Andreas Lind <andreas@one.com>",
+  "author": "Andreas Lind <andreaslindpetersen@gmail.com>",
   "repository": {
     "type": "git",
     "url": "git://github.com/unexpectedjs/unexpected-mitm.git"
