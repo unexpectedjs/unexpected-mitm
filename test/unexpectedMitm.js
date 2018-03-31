@@ -388,9 +388,11 @@ describe('unexpectedMitm', function () {
     });
 
     it('should not break when the assertion being delegated to throws synchronously', function () {
-        expect(function () {
-            expect('http://www.google.com/', 'with http mocked out', [], 'to foobarquux');
-        }, 'to throw', /^Unknown assertion 'to foobarquux'/);
+        return expect(
+            expect('http://www.google.com/', 'with http mocked out', [], 'to foobarquux'),
+            'to be rejected with',
+            /^Unknown assertion 'to foobarquux'/
+        );
     });
 
     describe('when mocking out an https request and asserting that the request is https', function () {
