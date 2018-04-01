@@ -1164,12 +1164,11 @@ describe('unexpectedMitm', function () {
             'to have message', function (message) {
                 expect(trimDiff(message), 'to equal',
                     "expected 'http://www.google.com/foo' with http mocked out { request: 'GET /foo', response: 200 } to yield response 412\n" +
-                    "  expected 'http://www.google.com/foo' to yield response 412\n" +
                     '\n' +
-                    '  GET /foo HTTP/1.1\n' +
-                    '  Host: www.google.com\n' +
+                    'GET /foo HTTP/1.1\n' +
+                    'Host: www.google.com\n' +
                     '\n' +
-                    '  HTTP/1.1 200 OK // should be 412 Precondition Failed\n'
+                    'HTTP/1.1 200 OK // should be 412 Precondition Failed\n'
                 );
             }
         );
