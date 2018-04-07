@@ -368,7 +368,6 @@ describe('unexpectedMitm', function () {
                         "POST / HTTP/1.1\n" +
                         "Host: www.google.com\n" +
                         "Content-Type: application/json\n" +
-                        "Content-Length: 11\n" +
                         "\n" +
                         "expected { foo: 123 } when delayed a little bit to equal { foo: 456 }\n" +
                         "\n" +
@@ -765,7 +764,6 @@ describe('unexpectedMitm', function () {
                         'POST / HTTP/1.1\n' +
                         'Host: www.google.com\n' +
                         'Content-Type: application/json\n' +
-                        'Content-Length: 11\n' +
                         '\n' +
                         '{\n' +
                         '  foo: 123 // should equal 456\n' +
