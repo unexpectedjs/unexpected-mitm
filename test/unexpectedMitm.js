@@ -2279,7 +2279,7 @@ describe('unexpectedMitm', function () {
                 'expected\n' +
                 'function (run) {\n' +
                 '  return expect.promise(function (run) {\n' +
-                "    http.get('http://www.google.com/foo').on('error', run(function (err) {\n" +
+                "    http.get('http://www.google.com/foo').on('error', run(function () {\n" +
                 '      // Ignore error\n' +
                 '    }));\n' +
                 '  });\n' +
@@ -2324,7 +2324,7 @@ describe('unexpectedMitm', function () {
                 'expected\n' +
                 'function () {\n' +
                 '  return expect.promise(function (resolve, reject) {\n' +
-                "    http.get('http://www.google.com/foo').on('error', function (err) {\n" +
+                "    http.get('http://www.google.com/foo').on('error', function () {\n" +
                 "      throw new Error('darn');\n" +
                 '    });\n' +
                 '  });\n' +
@@ -2368,7 +2368,7 @@ describe('unexpectedMitm', function () {
             expect(trimDiff(err.getErrorMessage('text').toString()), 'to equal',
                 'expected\n' +
                 'function (cb) {\n' +
-                "  http.get('http://www.google.com/foo').on('error', function (err) {\n" +
+                "  http.get('http://www.google.com/foo').on('error', function () {\n" +
                 '    setImmediate(function () {\n' +
                 "      throw new Error('darn');\n" +
                 '    });\n' +
