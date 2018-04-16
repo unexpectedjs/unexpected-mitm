@@ -27,7 +27,7 @@
     "body-parser": "1.18.2",
     "coveralls": "2.11.2",
     "eslint": "2.13.1",
-    "eslint-config-onelint": "1.2.0",
+    "eslint-config-onelint": "3.0.0",
     "express": "4.16.3",
     "mocha": "2.2.5",
     "nyc": "6.4.4",
