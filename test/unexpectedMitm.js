@@ -675,11 +675,11 @@ describe('unexpectedMitm', function () {
                 var firstResponseSpy = sinon.spy();
                 return expect(function () {
                     return expect.promise(function (run) {
-                        http.get('http://www.google.com/').on('error', run(function (err) {
+                        http.get('http://www.google.com/').on('error', run(function () {
                             expect(firstResponseSpy, 'to have calls satisfying', function () {
                                 firstResponseSpy({ headers: { 'content-type': 'text/plain' } });
                             });
-                            http.get('http://www.google.com/').on('error', function (err) {
+                            http.get('http://www.google.com/').on('error', function () {
                                 expect.fail('request unexpectedly errored');
                             }).on('response', run(function () {})).end();
                         }))
@@ -2259,7 +2259,7 @@ describe('unexpectedMitm', function () {
         return expect(function () {
             return expect(function (run) {
                 return expect.promise(function (run) {
-                    http.get('http://www.google.com/foo').on('error', run(function (err) {
+                    http.get('http://www.google.com/foo').on('error', run(function () {
                         // Ignore error
                     }));
                 });
@@ -2304,7 +2304,7 @@ describe('unexpectedMitm', function () {
         return expect(function () {
             return expect(function () {
                 return expect.promise(function (resolve, reject) {
-                    http.get('http://www.google.com/foo').on('error', function (err) {
+                    http.get('http://www.google.com/foo').on('error', function () {
                         throw new Error('darn');
                     });
                 });
@@ -2348,7 +2348,7 @@ describe('unexpectedMitm', function () {
     it('should fail a test as soon as an unexpected request is made, even if the code being tested ignores the request failing and fails with an uncaught exception', function () {
         return expect(function () {
             return expect(function (cb) {
-                http.get('http://www.google.com/foo').on('error', function (err) {
+                http.get('http://www.google.com/foo').on('error', function () {
                     setImmediate(function () {
                         throw new Error('darn');
                     });
