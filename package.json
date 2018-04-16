@@ -32,7 +32,7 @@
     "mocha": "2.2.5",
     "nyc": "6.4.4",
     "pem": "1.12.5",
-    "request": "2.53.0",
+    "request": "2.85.0",
     "semver": "5.0.1",
     "sinon": "1.17.2",
     "socketerrors-papandreou": "0.2.0-patch2",
