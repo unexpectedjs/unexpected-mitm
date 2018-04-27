@@ -2434,28 +2434,15 @@ describe('unexpectedMitm', function () {
         ], 'not to error');
     });
 
-    describe('with the "allowing modification" flag', function () {
-        it('should allow adding more mocked out requests by pushing to the mocks array after initiating the assertion', function () {
-            var mocks = [];
+    it('should be unaffected by modifications to the mocks array after initiating the assertion', function () {
+        var mocks = [];
 
+        return expect(function () {
             return expect(function (cb) {
                 mocks.push({request: 'GET /', response: 200});
                 issueGetAndConsume('http://www.example.com/', cb);
-            }, 'with http mocked out allowing modification', mocks, 'to call the callback without error');
-        });
-    });
-
-    describe('without the "allowing modification" flag', function () {
-        it('should be unaffected by modifications to the mocks array after initiating the assertion', function () {
-            var mocks = [];
-
-            return expect(function () {
-                return expect(function (cb) {
-                    mocks.push({request: 'GET /', response: 200});
-                    issueGetAndConsume('http://www.example.com/', cb);
-                }, 'with http mocked out', mocks, 'to call the callback without error');
-            }, 'to error with', /\/\/ should be removed:/);
-        });
+            }, 'with http mocked out', mocks, 'to call the callback without error');
+        }, 'to error with', /\/\/ should be removed:/);
     });
 
     it('should not break when a response mocked out by an Error instance with extra properties is checked against the actual exchanges at the end', function () {
