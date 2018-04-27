@@ -387,9 +387,11 @@ describe('unexpectedMitm', function () {
     });
 
     it('should not break when the assertion being delegated to throws synchronously', function () {
-        expect(function () {
-            expect('http://www.google.com/', 'with http mocked out', [], 'to foobarquux');
-        }, 'to throw', /^Unknown assertion 'to foobarquux'/);
+        return expect(
+            expect('http://www.google.com/', 'with http mocked out', [], 'to foobarquux'),
+            'to be rejected with',
+            /^Unknown assertion 'to foobarquux'/
+        );
     });
 
     describe('when mocking out an https request and asserting that the request is https', function () {
@@ -618,6 +620,35 @@ describe('unexpectedMitm', function () {
                     foo: 'bar'
                 }
             });
+        });
+
+        it('should treat Content-Length case insentitively', function () {
+            return expect('http://www.google.com/', 'with http mocked out', {
+                request: 'GET /',
+                response: {
+                    headers: {
+                        'content-length': 5
+                    },
+                    body: new Buffer('hello')
+                }
+            }, 'to yield response', 200);
+        });
+
+        it('should treat Transfer-Encoding case insentitively', function () {
+            return expect(function () {
+                return expect.promise(function (run) {
+                    issueGetAndConsume('http://www.google.com/', run(function () {}));
+                });
+            }, 'with http mocked out', {
+                request: 'GET /',
+                response: {
+                    headers: {
+                        'transfer-encoding': 'chunked',
+                        'content-length': 1
+                    },
+                    body: fs.createReadStream(pathModule.resolve(__dirname, '..', 'testdata', 'foo.txt'))
+                }
+            }, 'not to error');
         });
 
         describe('that emits an error', function () {
@@ -1160,12 +1191,11 @@ describe('unexpectedMitm', function () {
             'to have message', function (message) {
                 expect(trimDiff(message), 'to equal',
                     "expected 'http://www.google.com/foo' with http mocked out { request: 'GET /foo', response: 200 } to yield response 412\n" +
-                    "  expected 'http://www.google.com/foo' to yield response 412\n" +
                     '\n' +
-                    '  GET /foo HTTP/1.1\n' +
-                    '  Host: www.google.com\n' +
+                    'GET /foo HTTP/1.1\n' +
+                    'Host: www.google.com\n' +
                     '\n' +
-                    '  HTTP/1.1 200 OK // should be 412 Precondition Failed\n'
+                    'HTTP/1.1 200 OK // should be 412 Precondition Failed\n'
                 );
             }
         );
