@@ -11,8 +11,6 @@ var pathModule = require('path'),
     sinon = require('sinon'),
     socketErrors = require('socketerrors-papandreou');
 
-var isNodeZeroTen = !!process.version.match(/v0.10/);
-
 function issueGetAndConsume(url, callback) {
     http.get(url).on('response', function (response) {
         var chunks = [];
@@ -183,11 +181,6 @@ describe('unexpectedMitm', function () {
 
 
     it('should clean up properly after a keep-alived request with a custom Agent instance', function () {
-        if (isNodeZeroTen) {
-            // Seems like mitm doesn't support custom Agent instances with node.js 0.10
-            return this.skip();
-        }
-
         var agent = new http.Agent({keepAlive: true});
         return expect(function () {
             return expect.promise(function (run) {
@@ -1625,31 +1618,31 @@ describe('unexpectedMitm', function () {
 
     describe('in injecting mode against a local HTTP server', function () {
         it('should record and inject', function () {
-            return expect('testfile', 'when injected becomes', isNodeZeroTen ? 'testfile-injected-v0_10' : 'testfile-injected');
+            return expect('testfile', 'when injected becomes', 'testfile-injected');
         });
 
         it('should record and inject textual injections', function () {
-            return expect('utf8file', 'when injected becomes', isNodeZeroTen ? 'utf8file-injected-v0_10' : 'utf8file-injected');
+            return expect('utf8file', 'when injected becomes', 'utf8file-injected');
         });
 
         it('should record and inject into a compound assertion', function () {
-            return expect('compound', 'when injected becomes', isNodeZeroTen ? 'compound-injected-v0_10' : 'compound-injected');
+            return expect('compound', 'when injected becomes', 'compound-injected');
         });
 
         it('should correctly handle buffer injections', function () {
-            return expect('bufferfile', 'when injected becomes', isNodeZeroTen ? 'bufferfile-injected-v0_10' : 'bufferfile-injected');
+            return expect('bufferfile', 'when injected becomes', 'bufferfile-injected');
         });
 
         it('should correctly handle long buffer injections (>32 octets should be base64 encoded)', function () {
-            return expect('longbufferfile', 'when injected becomes', isNodeZeroTen ? 'longbufferfile-injected-v0_10' : 'longbufferfile-injected');
+            return expect('longbufferfile', 'when injected becomes', 'longbufferfile-injected');
         });
 
         it('should correctly handle error injections', function () {
-            return expect('errorfile', 'when injected becomes', isNodeZeroTen ? 'errorfile-injected-v0_10' : 'errorfile-injected');
+            return expect('errorfile', 'when injected becomes', 'errorfile-injected');
         });
 
         it('should correctly handle multiple injections', function () {
-            return expect('multiplefile', 'when injected becomes', isNodeZeroTen ? 'multiplefile-injected-v0_10' : 'multiplefile-injected');
+            return expect('multiplefile', 'when injected becomes', 'multiplefile-injected');
         });
     });
 
