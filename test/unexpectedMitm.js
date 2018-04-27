@@ -622,6 +622,35 @@ describe('unexpectedMitm', function () {
             });
         });
 
+        it('should treat Content-Length case insentitively', function () {
+            return expect('http://www.google.com/', 'with http mocked out', {
+                request: 'GET /',
+                response: {
+                    headers: {
+                        'content-length': 5
+                    },
+                    body: new Buffer('hello')
+                }
+            }, 'to yield response', 200);
+        });
+
+        it('should treat Transfer-Encoding case insentitively', function () {
+            return expect(function () {
+                return expect.promise(function (run) {
+                    issueGetAndConsume('http://www.google.com/', run(function () {}));
+                });
+            }, 'with http mocked out', {
+                request: 'GET /',
+                response: {
+                    headers: {
+                        'transfer-encoding': 'chunked',
+                        'content-length': 1
+                    },
+                    body: fs.createReadStream(pathModule.resolve(__dirname, '..', 'testdata', 'foo.txt'))
+                }
+            }, 'not to error');
+        });
+
         describe('that emits an error', function () {
             it('should propagate the error to the mocked-out HTTP response', function () {
                 var erroringStream = new stream.Readable();
