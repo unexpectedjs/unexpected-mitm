@@ -38,7 +38,7 @@
     "socketerrors-papandreou": "^0.2.0-patch2",
     "unexpected": "^10.27.0",
     "unexpected-documentation-site-generator": "^4.0.0",
-    "unexpected-express": "^10.0.0",
+    "unexpected-express": "^11.0.0",
     "unexpected-http": "^6.0.0",
     "unexpected-markdown": "^1.4.0",
     "unexpected-sinon": "^10.1.1"
