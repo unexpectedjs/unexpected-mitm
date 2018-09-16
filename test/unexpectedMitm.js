@@ -1537,7 +1537,7 @@ describe('unexpectedMitm', function () {
                 expectedError.code = expectedError.errno = 'EADDRINFO';
             } else if (semver.satisfies(nodeJsVersion, '>=0.12.0')) {
                 var message = 'getaddrinfo ENOTFOUND www.icwqjecoiqwjecoiwqjecoiwqjceoiwq.com';
-                if (semver.satisfies(nodeJsVersion, '>=9.7.0')) {
+                if (semver.satisfies(nodeJsVersion, '>=9.7.0 <10')) {
                     expectedError = new Error();
                     // explicitly set "message" to workaround an issue with enumerable properties
                     expectedError.message = message;
