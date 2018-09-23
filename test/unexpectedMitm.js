@@ -99,8 +99,8 @@ describe('unexpectedMitm', () => {
 
         return expect
           .promise(() => expect.shift(drivingRequest))
-          .spread(recordedExchanges => expect(
-          recordedExchanges.httpExchange,
+          .spread(({httpExchange}) => expect(
+          httpExchange,
           'to satisfy',
           expectedRecordedExchanges
         ));
@@ -1536,9 +1536,9 @@ describe('unexpectedMitm', () => {
         'with http mocked out',
         {
           request: 'GET /404',
-          response(req, res) {
+          response({url}, res) {
             res.statusCode =
-              req.url === '/404' ? cannedResponse.statusCode : 200;
+              url === '/404' ? cannedResponse.statusCode : 200;
 
             res.end();
           }
@@ -1567,9 +1567,9 @@ describe('unexpectedMitm', () => {
         {
           body: expectedBuffer
         }
-      ).spread((fulfilmentValue, httpConversation) => {
+      ).spread((fulfilmentValue, {exchanges}) => {
         expect(
-          httpConversation.exchanges[0],
+          exchanges[0],
           'to have a response with body',
           expectedBuffer
         );
@@ -1599,9 +1599,9 @@ describe('unexpectedMitm', () => {
         {
           body: expectedArray
         }
-      ).spread((fulfilmentValue, httpConversation) => {
+      ).spread((fulfilmentValue, {exchanges}) => {
         expect(
-          httpConversation.exchanges[0],
+          exchanges[0],
           'to have a response with body',
           expectedArray
         );
@@ -1633,9 +1633,9 @@ describe('unexpectedMitm', () => {
         {
           body: expectedBody
         }
-      ).spread((fulfilmentValue, httpConversation) => {
+      ).spread((fulfilmentValue, {exchanges}) => {
         expect(
-          httpConversation.exchanges[0],
+          exchanges[0],
           'to have a response with body',
           expectedBody
         );
@@ -1656,17 +1656,17 @@ describe('unexpectedMitm', () => {
         {
           response: require('express')()
             .use(require('body-parser').json())
-            .use((req, res, next) => {
-              res.send(req.body);
+            .use(({body}, res, next) => {
+              res.send(body);
             })
         },
         'to yield response',
         {
           body: expectedBody
         }
-      ).spread((fulfilmentValue, httpConversation) => {
+      ).spread((fulfilmentValue, {exchanges}) => {
         expect(
-          httpConversation.exchanges[0],
+          exchanges[0],
           'to have a response with body',
           expectedBody
         );
@@ -1695,9 +1695,9 @@ describe('unexpectedMitm', () => {
         {
           body: expectedBuffer
         }
-      ).spread((fulfilmentValue, httpConversation) => {
+      ).spread((fulfilmentValue, {exchanges}) => {
         expect(
-          httpConversation.exchanges[0],
+          exchanges[0],
           'to have a response with body',
           expectedBuffer
         );
@@ -1730,10 +1730,10 @@ describe('unexpectedMitm', () => {
     });
 
     describe('with documentation response function', () => {
-      function documentationHandler(req, res) {
+      function documentationHandler({url}, res) {
         let myMessage;
 
-        if (req.url === '/thatOneExpectedThing') {
+        if (url === '/thatOneExpectedThing') {
           myMessage = '<h1>to be expected</h1>';
         } else {
           myMessage = '<h1>how very unexpected</h1>';
@@ -2101,12 +2101,12 @@ describe('unexpectedMitm', () => {
     let serverUrl;
 
     beforeEach(() => createPemCertificate({ days: 1, selfSigned: true }).then(
-      serverKeys => {
+      ({certificate, serviceKey}) => {
         handleRequest = undefined;
         server = https
           .createServer({
-            cert: serverKeys.certificate,
-            key: serverKeys.serviceKey
+            cert: certificate,
+            key: serviceKey
           })
           .on('request', (req, res) => {
             res.sendDate = false;
@@ -2452,8 +2452,8 @@ describe('unexpectedMitm', () => {
       },
       'to yield response',
       200
-    ).spread((fulfilmentValue, httpConversation) => {
-      const httpResponse = httpConversation.exchanges[0].response;
+    ).spread((fulfilmentValue, {exchanges}) => {
+      const httpResponse = exchanges[0].response;
 
       expect(httpResponse.headers.getNames(), 'to contain', 'X-Is-Test');
     }));
