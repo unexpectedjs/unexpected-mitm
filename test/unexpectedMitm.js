@@ -1843,7 +1843,11 @@ describe('unexpectedMitm', () => {
   });
 
   describe('in recording mode against a local HTTP server', () => {
-    var handleRequest, server, serverAddress, serverHostname, serverUrl;
+    var handleRequest;
+    var server;
+    var serverAddress;
+    var serverHostname;
+    var serverUrl;
     beforeEach(() => {
       handleRequest = undefined;
       server = http
@@ -2090,7 +2094,11 @@ describe('unexpectedMitm', () => {
   });
 
   describe('in recording mode against a local HTTPS server', () => {
-    var handleRequest, server, serverAddress, serverHostname, serverUrl;
+    var handleRequest;
+    var server;
+    var serverAddress;
+    var serverHostname;
+    var serverUrl;
 
     beforeEach(() => createPemCertificate({ days: 1, selfSigned: true }).then(
       serverKeys => {
@@ -2174,7 +2182,11 @@ describe('unexpectedMitm', () => {
   });
 
   describe('in capturing mode', () => {
-    var handleRequest, server, serverAddress, serverHostname, serverUrl;
+    var handleRequest;
+    var server;
+    var serverAddress;
+    var serverHostname;
+    var serverUrl;
 
     beforeEach(() => {
       handleRequest = undefined;
@@ -2458,7 +2470,11 @@ describe('unexpectedMitm', () => {
   }));
 
   describe('when verifying', () => {
-    var handleRequest, server, serverAddress, serverHostname, serverUrl;
+    var handleRequest;
+    var server;
+    var serverAddress;
+    var serverHostname;
+    var serverUrl;
     beforeEach(() => {
       handleRequest = undefined;
       server = http
