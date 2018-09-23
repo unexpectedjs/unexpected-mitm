@@ -1,24 +1,14 @@
 /*global describe, it, __dirname, beforeEach, afterEach, setTimeout, setImmediate*/
 var pathModule = require('path');
-
 var childProcess = require('child_process');
-
 var fs = require('fs');
-
 var http = require('http');
-
 var https = require('https');
-
 var messy = require('messy');
-
 var pem = require('pem');
-
 var stream = require('stream');
-
 var semver = require('semver');
-
 var sinon = require('sinon');
-
 var socketErrors = require('socketerrors-papandreou');
 
 function issueGetAndConsume(url, callback) {
