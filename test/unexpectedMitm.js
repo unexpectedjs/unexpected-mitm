@@ -14,14 +14,14 @@ var socketErrors = require('socketerrors-papandreou');
 function issueGetAndConsume(url, callback) {
   http
     .get(url)
-    .on('response', function(response) {
+    .on('response', response => {
       var chunks = [];
 
       response
-        .on('data', function(chunk) {
+        .on('data', chunk => {
           chunks.push(Buffer.isBuffer(chunk) ? chunk : new Buffer(chunk));
         })
-        .on('end', function() {
+        .on('end', () => {
           callback(null, Buffer.concat(chunks));
         });
     })
@@ -39,7 +39,7 @@ function trimDiff(message) {
   return message;
 }
 
-describe('unexpectedMitm', function() {
+describe('unexpectedMitm', () => {
   var expect = require('unexpected')
     .use(require('../lib/unexpectedMitm'))
     .use(require('unexpected-http'))
@@ -47,15 +47,15 @@ describe('unexpectedMitm', function() {
     .use(require('unexpected-messy'))
     .addAssertion(
       '<any> with expected http recording <object> <assertion>',
-      function(expect, subject, expectedRecordedExchanges) {
+      (expect, subject, expectedRecordedExchanges) => {
         // ...
         expect.errorMode = 'nested';
         expect.args.splice(1, 0, 'with http recorded with extra info');
         return expect
-          .promise(function() {
+          .promise(() => {
             return expect.shift();
           })
-          .spread(function(value, recordedExchanges) {
+          .spread((value, recordedExchanges) => {
             expect(recordedExchanges, 'to equal', expectedRecordedExchanges);
             return value;
           });
@@ -63,27 +63,27 @@ describe('unexpectedMitm', function() {
     )
     .addAssertion(
       '<any> was written correctly on <object> <assertion>',
-      function(expect, subject, requestObject) {
+      (expect, subject, requestObject) => {
         expect.errorMode = 'bubble';
         var expectedRecordedExchanges = subject;
         var testFile;
         var writtenExchanges;
 
         return expect
-          .promise(function() {
+          .promise(() => {
             return expect.shift(requestObject);
           })
-          .spread(function(recordedExchanges, _, __, recordedFile) {
+          .spread((recordedExchanges, _, __, recordedFile) => {
             testFile = recordedFile;
 
-            return expect(function() {
+            return expect(() => {
               writtenExchanges = require(testFile);
-            }, 'not to throw').then(function() {
+            }, 'not to throw').then(() => {
               return expect(
                 recordedExchanges,
                 'to equal',
                 expectedRecordedExchanges
-              ).then(function() {
+              ).then(() => {
                 return expect(
                   writtenExchanges,
                   'to equal',
@@ -92,87 +92,87 @@ describe('unexpectedMitm', function() {
               });
             });
           })
-          .finally(function() {
+          .finally(() => {
             if (testFile) {
               fs.truncateSync(testFile);
             }
           });
       }
     )
-    .addAssertion('<any> was read correctly on <object> <assertion>', function(
-      expect,
-      subject,
-      drivingRequest
-    ) {
-      expect.errorMode = 'bubble';
-      var expectedRecordedExchanges = subject;
+    .addAssertion(
+      '<any> was read correctly on <object> <assertion>',
+      (expect, subject, drivingRequest) => {
+        expect.errorMode = 'bubble';
+        var expectedRecordedExchanges = subject;
 
-      return expect
-        .promise(function() {
-          return expect.shift(drivingRequest);
-        })
-        .spread(function(recordedExchanges) {
-          return expect(
-            recordedExchanges.httpExchange,
-            'to satisfy',
-            expectedRecordedExchanges
-          );
-        });
-    })
-    .addAssertion('<string> when injected becomes <string>', function(
-      expect,
-      subject,
-      expectedFileName
-    ) {
-      expect.errorMode = 'nested';
-      var basePath = pathModule.join(__dirname, '..');
-      var testPath = pathModule.join(basePath, 'testdata');
+        return expect
+          .promise(() => {
+            return expect.shift(drivingRequest);
+          })
+          .spread(recordedExchanges => {
+            return expect(
+              recordedExchanges.httpExchange,
+              'to satisfy',
+              expectedRecordedExchanges
+            );
+          });
+      }
+    )
+    .addAssertion(
+      '<string> when injected becomes <string>',
+      (expect, subject, expectedFileName) => {
+        expect.errorMode = 'nested';
+        var basePath = pathModule.join(__dirname, '..');
+        var testPath = pathModule.join(basePath, 'testdata');
 
-      var commandPath = pathModule.join(
-        basePath,
-        'node_modules',
-        '.bin',
-        'mocha'
-      );
-      var inputFilePath = pathModule.join(testPath, subject + '.js');
-      var expectedFilePath = pathModule.join(
-        testPath,
-        expectedFileName + '.js'
-      );
-      var outputFilePath = pathModule.join(testPath, '.' + subject + '.js');
+        var commandPath = pathModule.join(
+          basePath,
+          'node_modules',
+          '.bin',
+          'mocha'
+        );
+        var inputFilePath = pathModule.join(testPath, subject + '.js');
+        var expectedFilePath = pathModule.join(
+          testPath,
+          expectedFileName + '.js'
+        );
+        var outputFilePath = pathModule.join(testPath, '.' + subject + '.js');
 
-      return expect
-        .promise(function(run) {
-          // create a temporary output file
-          fs.writeFileSync(outputFilePath, fs.readFileSync(inputFilePath));
+        return expect
+          .promise(run => {
+            // create a temporary output file
+            fs.writeFileSync(outputFilePath, fs.readFileSync(inputFilePath));
 
-          // execute the mocha test file which will cause injection
-          childProcess.execFile(
-            commandPath,
-            [outputFilePath],
-            {
-              cwd: basePath
-            },
-            run(function(err) {
-              expect(err, 'to be falsy');
-              var inputFileData = fs.readFileSync(outputFilePath).toString();
-              var outputFileData = fs.readFileSync(expectedFilePath).toString();
+            // execute the mocha test file which will cause injection
+            childProcess.execFile(
+              commandPath,
+              [outputFilePath],
+              {
+                cwd: basePath
+              },
+              run(err => {
+                expect(err, 'to be falsy');
+                var inputFileData = fs.readFileSync(outputFilePath).toString();
+                var outputFileData = fs
+                  .readFileSync(expectedFilePath)
+                  .toString();
 
-              expect(inputFileData, 'to equal', outputFileData);
-            })
-          );
-        })
-        .finally(function() {
-          try {
-            // swallow any unlink error
-            fs.unlinkSync(outputFilePath);
-          } catch (e) {}
-        });
-    })
+                expect(inputFileData, 'to equal', outputFileData);
+              })
+            );
+          })
+          .finally(() => {
+            try {
+              // swallow any unlink error
+              fs.unlinkSync(outputFilePath);
+            } catch (e) {}
+          });
+      }
+    )
     .addAssertion(
       '<messyHttpExchange> to have a response with body <any>',
-      function(expect, subject, value) {
-        return expect.promise(function() {
+      (expect, subject, value) => {
+        return expect.promise(() => {
           var response = subject.response;
 
           if (!response.body) {
@@ -183,29 +183,29 @@ describe('unexpectedMitm', function() {
         });
       }
     )
-    .addAssertion('<any> when delayed a little bit <assertion>', function(
-      expect,
-      subject
-    ) {
-      return expect.promise(function(run) {
-        setTimeout(
-          run(function() {
-            return expect.shift();
-          }),
-          1
-        );
-      });
-    });
+    .addAssertion(
+      '<any> when delayed a little bit <assertion>',
+      (expect, subject) => {
+        return expect.promise(run => {
+          setTimeout(
+            run(() => {
+              return expect.shift();
+            }),
+            1
+          );
+        });
+      }
+    );
 
   expect.output.preferredWidth = 150;
 
   function createPemCertificate(certOptions) {
-    return expect.promise.fromNode(function(cb) {
+    return expect.promise.fromNode(cb => {
       pem.createCertificate(cb);
     });
   }
 
-  it('should mock out a simple request', function() {
+  it('should mock out a simple request', () => {
     return expect(
       'http://www.google.com/',
       'with http mocked out',
@@ -230,7 +230,7 @@ describe('unexpectedMitm', function() {
     );
   });
 
-  it('should mock out a request with a binary body', function() {
+  it('should mock out a request with a binary body', () => {
     return expect(
       'http://www.google.com/',
       'with http mocked out',
@@ -255,15 +255,15 @@ describe('unexpectedMitm', function() {
     );
   });
 
-  it('should clean up properly after a keep-alived request with a custom Agent instance', function() {
+  it('should clean up properly after a keep-alived request with a custom Agent instance', () => {
     var agent = new http.Agent({ keepAlive: true });
     return expect(
-      function() {
-        return expect.promise(function(run) {
+      () => {
+        return expect.promise(run => {
           http.get({ host: 'example.com', agent: agent }).on(
             'response',
-            run(function(response) {
-              response.on('data', function() {}).on('end', run());
+            run(response => {
+              response.on('data', () => {}).on('end', run());
             })
           );
         });
@@ -271,16 +271,14 @@ describe('unexpectedMitm', function() {
       'with http mocked out',
       [{ request: 'GET http://example.com/', response: 200 }],
       'not to error'
-    ).then(function() {
+    ).then(() => {
       return expect(
-        function() {
-          return expect.promise(function(run) {
+        () => {
+          return expect.promise(run => {
             http.get({ host: 'example.com', agent: agent }).on(
               'response',
-              run(function(response) {
-                response
-                  .on('data', function() {})
-                  .on('end', run(function() {}));
+              run(response => {
+                response.on('data', () => {}).on('end', run(() => {}));
               })
             );
           });
@@ -292,16 +290,16 @@ describe('unexpectedMitm', function() {
     });
   });
 
-  it('should clean up properly after a keep-alived request with the global agent', function() {
+  it('should clean up properly after a keep-alived request with the global agent', () => {
     var originalKeepAliveValue = http.globalAgent.keepAlive;
     http.globalAgent.keepAlive = true;
     return expect(
-      function() {
-        return expect.promise(function(run) {
+      () => {
+        return expect.promise(run => {
           http.get({ host: 'example.com' }).on(
             'response',
-            run(function(response) {
-              response.on('data', function() {}).on('end', run());
+            run(response => {
+              response.on('data', () => {}).on('end', run());
             })
           );
         });
@@ -310,16 +308,14 @@ describe('unexpectedMitm', function() {
       [{ request: 'GET http://example.com/', response: 200 }],
       'not to error'
     )
-      .then(function() {
+      .then(() => {
         return expect(
-          function() {
-            return expect.promise(function(run) {
+          () => {
+            return expect.promise(run => {
               http.get({ host: 'example.com' }).on(
                 'response',
-                run(function(response) {
-                  response
-                    .on('data', function() {})
-                    .on('end', run(function() {}));
+                run(response => {
+                  response.on('data', () => {}).on('end', run(() => {}));
                 })
               );
             });
@@ -329,12 +325,12 @@ describe('unexpectedMitm', function() {
           'not to error'
         );
       })
-      .finally(function() {
+      .finally(() => {
         http.globalAgent.keepAlive = originalKeepAliveValue;
       });
   });
 
-  it('should mock out an erroring response', function() {
+  it('should mock out an erroring response', () => {
     return expect(
       'http://www.google.com/',
       'with http mocked out',
@@ -347,7 +343,7 @@ describe('unexpectedMitm', function() {
     );
   });
 
-  it('should mock out an erroring response 2', function() {
+  it('should mock out an erroring response 2', () => {
     return expect(
       'http://www.google.com/',
       'with http mocked out',
@@ -360,7 +356,7 @@ describe('unexpectedMitm', function() {
     );
   });
 
-  it('should mock out an application/json response', function() {
+  it('should mock out an application/json response', () => {
     return expect(
       'http://www.google.com/',
       'with http mocked out',
@@ -380,7 +376,7 @@ describe('unexpectedMitm', function() {
     );
   });
 
-  it('should mock out an application/json response with invalid JSON', function() {
+  it('should mock out an application/json response with invalid JSON', () => {
     return expect(
       'http://www.google.com/',
       'with http mocked out',
@@ -403,19 +399,19 @@ describe('unexpectedMitm', function() {
     );
   });
 
-  it('should preserve the original serialization of JSON provided as a string', function() {
+  it('should preserve the original serialization of JSON provided as a string', () => {
     return expect(
-      function(cb) {
+      cb => {
         http
           .get('http://www.examplestuff.com/')
           .on('error', cb)
-          .on('response', function(response) {
+          .on('response', response => {
             var chunks = [];
             response
-              .on('data', function(chunk) {
+              .on('data', chunk => {
                 chunks.push(chunk);
               })
-              .on('end', function() {
+              .on('end', () => {
                 expect(
                   Buffer.concat(chunks).toString('utf-8'),
                   'to equal',
@@ -441,8 +437,8 @@ describe('unexpectedMitm', function() {
     );
   });
 
-  describe('with async expects on the request', function() {
-    it('should succeed', function() {
+  describe('with async expects on the request', () => {
+    it('should succeed', () => {
       return expect(
         {
           url: 'POST http://www.google.com/',
@@ -475,7 +471,7 @@ describe('unexpectedMitm', function() {
       );
     });
 
-    it('should fail with a diff', function() {
+    it('should fail with a diff', () => {
       return expect(
         expect(
           {
@@ -509,7 +505,7 @@ describe('unexpectedMitm', function() {
         ),
         'when rejected',
         'to have message',
-        function(message) {
+        message => {
           expect(
             trimDiff(message),
             'to equal',
@@ -540,7 +536,7 @@ describe('unexpectedMitm', function() {
     });
   });
 
-  it('should not break when the assertion being delegated to throws synchronously', function() {
+  it('should not break when the assertion being delegated to throws synchronously', () => {
     return expect(
       expect(
         'http://www.google.com/',
@@ -553,9 +549,9 @@ describe('unexpectedMitm', function() {
     );
   });
 
-  describe('when mocking out an https request and asserting that the request is https', function() {
-    describe('when https is specified as part of the request url', function() {
-      it('should succeed', function() {
+  describe('when mocking out an https request and asserting that the request is https', () => {
+    describe('when https is specified as part of the request url', () => {
+      it('should succeed', () => {
         return expect(
           'https://www.google.com/',
           'with http mocked out',
@@ -568,7 +564,7 @@ describe('unexpectedMitm', function() {
         );
       });
 
-      it('should fail', function() {
+      it('should fail', () => {
         return expect(
           expect(
             'http://www.google.com/',
@@ -582,7 +578,7 @@ describe('unexpectedMitm', function() {
           ),
           'when rejected',
           'to have message',
-          function(message) {
+          message => {
             expect(
               trimDiff(message),
               'to equal',
@@ -599,8 +595,8 @@ describe('unexpectedMitm', function() {
       });
     });
 
-    describe('when "encrypted" is specified as a standalone property', function() {
-      it('should succeed', function() {
+    describe('when "encrypted" is specified as a standalone property', () => {
+      it('should succeed', () => {
         return expect(
           'https://www.google.com/',
           'with http mocked out',
@@ -613,7 +609,7 @@ describe('unexpectedMitm', function() {
         );
       });
 
-      it('should fail', function() {
+      it('should fail', () => {
         return expect(
           expect(
             'http://www.google.com/',
@@ -627,7 +623,7 @@ describe('unexpectedMitm', function() {
           ),
           'when rejected',
           'to have message',
-          function(message) {
+          message => {
             expect(
               trimDiff(message),
               'to equal',
@@ -645,8 +641,8 @@ describe('unexpectedMitm', function() {
     });
   });
 
-  describe('using a fully-qualified request url', function() {
-    it('should assert on the host name of the issued request', function() {
+  describe('using a fully-qualified request url', () => {
+    it('should assert on the host name of the issued request', () => {
       return expect(
         'http://www.google.com/',
         'with http mocked out',
@@ -659,7 +655,7 @@ describe('unexpectedMitm', function() {
       );
     });
 
-    it('should fail', function() {
+    it('should fail', () => {
       return expect(
         expect(
           'http://www.google.com/',
@@ -673,7 +669,7 @@ describe('unexpectedMitm', function() {
         ),
         'when rejected',
         'to have message',
-        function(message) {
+        message => {
           expect(
             trimDiff(message),
             'to equal',
@@ -699,7 +695,7 @@ describe('unexpectedMitm', function() {
     });
   });
 
-  it('should support mocking out the status code', function() {
+  it('should support mocking out the status code', () => {
     return expect(
       'http://www.google.com/',
       'with http mocked out',
@@ -714,7 +710,7 @@ describe('unexpectedMitm', function() {
     );
   });
 
-  it('should work fine without any assertions on the request', function() {
+  it('should work fine without any assertions on the request', () => {
     return expect(
       'http://www.google.com/',
       'with http mocked out',
@@ -726,11 +722,11 @@ describe('unexpectedMitm', function() {
     );
   });
 
-  describe('with multiple mocks specified', function() {
-    it("should succeed with 'to call the callback without error'", function() {
+  describe('with multiple mocks specified', () => {
+    it("should succeed with 'to call the callback without error'", () => {
       return expect(
-        function(cb) {
-          issueGetAndConsume('http://www.google.com/', function() {
+        cb => {
+          issueGetAndConsume('http://www.google.com/', () => {
             issueGetAndConsume('http://www.google.com/', cb);
           });
         },
@@ -759,17 +755,14 @@ describe('unexpectedMitm', function() {
       );
     });
 
-    it("should succeed with 'not to error'", function() {
+    it("should succeed with 'not to error'", () => {
       return expect(
-        function() {
-          return expect.promise(function(run) {
+        () => {
+          return expect.promise(run => {
             issueGetAndConsume(
               'http://www.google.com/',
-              run(function() {
-                issueGetAndConsume(
-                  'http://www.google.com/',
-                  run(function() {})
-                );
+              run(() => {
+                issueGetAndConsume('http://www.google.com/', run(() => {}));
               })
             );
           });
@@ -800,8 +793,8 @@ describe('unexpectedMitm', function() {
     });
   });
 
-  describe('with a response body provided as a stream', function() {
-    it('should support providing such a response', function() {
+  describe('with a response body provided as a stream', () => {
+    it('should support providing such a response', () => {
       return expect(
         'http://www.google.com/',
         'with http mocked out',
@@ -821,7 +814,7 @@ describe('unexpectedMitm', function() {
       );
     });
 
-    it('should decode the stream as a string', function() {
+    it('should decode the stream as a string', () => {
       return expect(
         'http://www.google.com/',
         'with http mocked out',
@@ -844,11 +837,11 @@ describe('unexpectedMitm', function() {
       );
     });
 
-    it('should decode the stream as JSON', function() {
+    it('should decode the stream as JSON', () => {
       var responseBodyStream = new stream.Readable();
-      responseBodyStream._read = function(num, cb) {
-        responseBodyStream._read = function() {};
-        setImmediate(function() {
+      responseBodyStream._read = (num, cb) => {
+        responseBodyStream._read = () => {};
+        setImmediate(() => {
           responseBodyStream.push(JSON.stringify({ foo: 'bar' }));
           responseBodyStream.push(null);
         });
@@ -876,7 +869,7 @@ describe('unexpectedMitm', function() {
       );
     });
 
-    it('should treat Content-Length case insentitively', function() {
+    it('should treat Content-Length case insentitively', () => {
       return expect(
         'http://www.google.com/',
         'with http mocked out',
@@ -894,11 +887,11 @@ describe('unexpectedMitm', function() {
       );
     });
 
-    it('should treat Transfer-Encoding case insentitively', function() {
+    it('should treat Transfer-Encoding case insentitively', () => {
       return expect(
-        function() {
-          return expect.promise(function(run) {
-            issueGetAndConsume('http://www.google.com/', run(function() {}));
+        () => {
+          return expect.promise(run => {
+            issueGetAndConsume('http://www.google.com/', run(() => {}));
           });
         },
         'with http mocked out',
@@ -918,11 +911,11 @@ describe('unexpectedMitm', function() {
       );
     });
 
-    describe('that emits an error', function() {
-      it('should propagate the error to the mocked-out HTTP response', function() {
+    describe('that emits an error', () => {
+      it('should propagate the error to the mocked-out HTTP response', () => {
         var erroringStream = new stream.Readable();
-        erroringStream._read = function(num, cb) {
-          setImmediate(function() {
+        erroringStream._read = (num, cb) => {
+          setImmediate(() => {
             erroringStream.emit('error', new Error('Fake error'));
           });
         };
@@ -943,11 +936,11 @@ describe('unexpectedMitm', function() {
         );
       });
 
-      it('should support a stream that emits some data, then errors out', function() {
+      it('should support a stream that emits some data, then errors out', () => {
         var responseBodyStream = new stream.Readable();
-        responseBodyStream._read = function(num, cb) {
-          responseBodyStream._read = function() {};
-          setImmediate(function() {
+        responseBodyStream._read = (num, cb) => {
+          responseBodyStream._read = () => {};
+          setImmediate(() => {
             responseBodyStream.push('foobarquux');
             responseBodyStream.emit('error', new Error('Fake error'));
           });
@@ -973,39 +966,35 @@ describe('unexpectedMitm', function() {
         );
       });
 
-      it('should recover from the error and replay the next request', function() {
+      it('should recover from the error and replay the next request', () => {
         var erroringStream = new stream.Readable();
-        erroringStream._read = function(num) {
-          erroringStream._read = function() {};
+        erroringStream._read = num => {
+          erroringStream._read = () => {};
           erroringStream.push('yaddayadda');
-          setImmediate(function() {
+          setImmediate(() => {
             erroringStream.emit('error', new Error('Fake error'));
           });
         };
         var firstResponseSpy = sinon.spy();
         return expect(
-          function() {
-            return expect.promise(function(run) {
+          () => {
+            return expect.promise(run => {
               http
                 .get('http://www.google.com/')
                 .on(
                   'error',
-                  run(function() {
-                    expect(
-                      firstResponseSpy,
-                      'to have calls satisfying',
-                      function() {
-                        firstResponseSpy({
-                          headers: { 'content-type': 'text/plain' }
-                        });
-                      }
-                    );
+                  run(() => {
+                    expect(firstResponseSpy, 'to have calls satisfying', () => {
+                      firstResponseSpy({
+                        headers: { 'content-type': 'text/plain' }
+                      });
+                    });
                     http
                       .get('http://www.google.com/')
-                      .on('error', function() {
+                      .on('error', () => {
                         expect.fail('request unexpectedly errored');
                       })
-                      .on('response', run(function() {}))
+                      .on('response', run(() => {}))
                       .end();
                   })
                 )
@@ -1040,7 +1029,7 @@ describe('unexpectedMitm', function() {
     });
   });
 
-  it('should error if the request body provided for verification was a stream', function() {
+  it('should error if the request body provided for verification was a stream', () => {
     return expect(
       expect(
         'http://www.google.com/',
@@ -1065,8 +1054,8 @@ describe('unexpectedMitm', function() {
     );
   });
 
-  describe('with the expected request body given as an object (shorthand for JSON)', function() {
-    it('should succeed the match', function() {
+  describe('with the expected request body given as an object (shorthand for JSON)', () => {
+    it('should succeed the match', () => {
       return expect(
         {
           url: 'POST http://www.google.com/',
@@ -1085,7 +1074,7 @@ describe('unexpectedMitm', function() {
       );
     });
 
-    it('should fail with a diff', function() {
+    it('should fail with a diff', () => {
       return expect(
         expect(
           {
@@ -1105,7 +1094,7 @@ describe('unexpectedMitm', function() {
         ),
         'when rejected',
         'to have message',
-        function(message) {
+        message => {
           expect(
             trimDiff(message),
             'to equal',
@@ -1127,7 +1116,7 @@ describe('unexpectedMitm', function() {
     });
   });
 
-  it('should produce a JSON response if the response body is given as an object', function() {
+  it('should produce a JSON response if the response body is given as an object', () => {
     return expect(
       'http://www.google.com/',
       'with http mocked out',
@@ -1146,7 +1135,7 @@ describe('unexpectedMitm', function() {
     );
   });
 
-  it('should produce a JSON response if the response body is given as an array', function() {
+  it('should produce a JSON response if the response body is given as an array', () => {
     return expect(
       'http://www.google.com/',
       'with http mocked out',
@@ -1165,7 +1154,7 @@ describe('unexpectedMitm', function() {
     );
   });
 
-  it('should produce an error if the request conditions are not satisfied', function() {
+  it('should produce an error if the request conditions are not satisfied', () => {
     return expect(
       expect(
         'http://www.google.com/foo',
@@ -1179,7 +1168,7 @@ describe('unexpectedMitm', function() {
       ),
       'when rejected',
       'to have message',
-      function(message) {
+      message => {
         expect(
           trimDiff(message),
           'to equal',
@@ -1197,7 +1186,7 @@ describe('unexpectedMitm', function() {
     );
   });
 
-  it('should produce an error if a mocked request is not exercised', function() {
+  it('should produce an error if a mocked request is not exercised', () => {
     return expect(
       expect(
         'http://www.google.com/foo',
@@ -1217,7 +1206,7 @@ describe('unexpectedMitm', function() {
       ),
       'when rejected',
       'to have message',
-      function(message) {
+      message => {
         expect(
           trimDiff(message),
           'to equal',
@@ -1238,11 +1227,11 @@ describe('unexpectedMitm', function() {
     );
   });
 
-  it('should produce an error if a mocked request is not exercised and the second mock has a stream', function() {
+  it('should produce an error if a mocked request is not exercised and the second mock has a stream', () => {
     var responseBodyStream = new stream.Readable();
-    responseBodyStream._read = function(num, cb) {
-      responseBodyStream._read = function() {};
-      setImmediate(function() {
+    responseBodyStream._read = (num, cb) => {
+      responseBodyStream._read = () => {};
+      setImmediate(() => {
         responseBodyStream.push('foobarquux');
         responseBodyStream.push(null);
       });
@@ -1268,7 +1257,7 @@ describe('unexpectedMitm', function() {
       ),
       'when rejected',
       'to have message',
-      function(message) {
+      message => {
         expect(
           trimDiff(message),
           'to equal',
@@ -1291,11 +1280,11 @@ describe('unexpectedMitm', function() {
     );
   });
 
-  it('should decode the textual body if a mocked request is not exercised', function() {
+  it('should decode the textual body if a mocked request is not exercised', () => {
     var responseBodyStream = new stream.Readable();
-    responseBodyStream._read = function(num, cb) {
-      responseBodyStream._read = function() {};
-      setImmediate(function() {
+    responseBodyStream._read = (num, cb) => {
+      responseBodyStream._read = () => {};
+      setImmediate(() => {
         responseBodyStream.push('foobarquux');
         responseBodyStream.push(null);
       });
@@ -1324,7 +1313,7 @@ describe('unexpectedMitm', function() {
       ),
       'when rejected',
       'to have message',
-      function(message) {
+      message => {
         expect(
           trimDiff(message),
           'to equal',
@@ -1348,11 +1337,11 @@ describe('unexpectedMitm', function() {
     );
   });
 
-  it('should produce an error if a mocked request is not exercised with an expected request stream', function() {
+  it('should produce an error if a mocked request is not exercised with an expected request stream', () => {
     var requestBodyStream = new stream.Readable();
-    requestBodyStream._read = function(num, cb) {
-      requestBodyStream._read = function() {};
-      setImmediate(function() {
+    requestBodyStream._read = (num, cb) => {
+      requestBodyStream._read = () => {};
+      setImmediate(() => {
         requestBodyStream.push('foobarquux');
         requestBodyStream.push(null);
       });
@@ -1382,7 +1371,7 @@ describe('unexpectedMitm', function() {
     );
   });
 
-  it('should produce an error if a mocked request is not exercised and there are non-trivial assertions on it', function() {
+  it('should produce an error if a mocked request is not exercised and there are non-trivial assertions on it', () => {
     return expect(
       expect(
         'http://www.google.com/foo',
@@ -1405,7 +1394,7 @@ describe('unexpectedMitm', function() {
       ),
       'when rejected',
       'to have message',
-      function(message) {
+      message => {
         expect(
           trimDiff(message),
           'to equal',
@@ -1429,7 +1418,7 @@ describe('unexpectedMitm', function() {
     );
   });
 
-  it('should produce an error if a mocked request is not exercised and there are failing async expects', function() {
+  it('should produce an error if a mocked request is not exercised and there are failing async expects', () => {
     return expect(
       expect(
         {
@@ -1460,7 +1449,7 @@ describe('unexpectedMitm', function() {
       ),
       'when rejected',
       'to have message',
-      function(message) {
+      message => {
         expect(
           trimDiff(message),
           'to equal',
@@ -1491,8 +1480,8 @@ describe('unexpectedMitm', function() {
     );
   });
 
-  describe('when the test suite issues more requests than have been mocked out', function() {
-    it('should produce an error', function() {
+  describe('when the test suite issues more requests than have been mocked out', () => {
+    it('should produce an error', () => {
       return expect(
         expect(
           'http://www.google.com/foo',
@@ -1503,7 +1492,7 @@ describe('unexpectedMitm', function() {
         ),
         'when rejected',
         'to have message',
-        function(message) {
+        message => {
           expect(
             message.replace(/^\/\/ Connection:.*\n/m, ''),
             'to equal',
@@ -1520,7 +1509,7 @@ describe('unexpectedMitm', function() {
       );
     });
 
-    it('should produce an error and decode the textual body', function() {
+    it('should produce an error and decode the textual body', () => {
       return expect(
         expect(
           {
@@ -1537,7 +1526,7 @@ describe('unexpectedMitm', function() {
         ),
         'when rejected',
         'to have message',
-        function(message) {
+        message => {
           expect(
             message.replace(/^\/\/ Connection:.*\n/m, ''),
             'to equal',
@@ -1558,15 +1547,15 @@ describe('unexpectedMitm', function() {
       );
     });
 
-    it('should produce an error as soon as the first request is issued, even when the test issues more requests later', function() {
+    it('should produce an error as soon as the first request is issued, even when the test issues more requests later', () => {
       return expect(
         expect(
-          function() {
+          () => {
             return expect(
               'http://www.google.com/foo',
               'to yield response',
               200
-            ).then(function() {
+            ).then(() => {
               return expect(
                 'http://www.google.com/foo',
                 'to yield response',
@@ -1580,7 +1569,7 @@ describe('unexpectedMitm', function() {
         ),
         'when rejected',
         'to have message',
-        function(message) {
+        message => {
           expect(
             message.replace(/^\/\/ Connection:.*\n/m, ''),
             'to equal',
@@ -1608,7 +1597,7 @@ describe('unexpectedMitm', function() {
     });
   });
 
-  it('should not mangle the requestDescriptions array', function() {
+  it('should not mangle the requestDescriptions array', () => {
     var requestDescriptions = [{ request: 'GET /', response: 200 }];
     return expect(
       'http://www.google.com/',
@@ -1616,12 +1605,12 @@ describe('unexpectedMitm', function() {
       requestDescriptions,
       'to yield response',
       200
-    ).then(function() {
+    ).then(() => {
       expect(requestDescriptions, 'to have length', 1);
     });
   });
 
-  it('should output the error if the assertion being delegated to fails', function() {
+  it('should output the error if the assertion being delegated to fails', () => {
     return expect(
       expect(
         'http://www.google.com/foo',
@@ -1635,7 +1624,7 @@ describe('unexpectedMitm', function() {
       ),
       'when rejected',
       'to have message',
-      function(message) {
+      message => {
         expect(
           trimDiff(message),
           'to equal',
@@ -1650,8 +1639,8 @@ describe('unexpectedMitm', function() {
     );
   });
 
-  describe('with response function', function() {
-    it('should allow returning a response in callback', function() {
+  describe('with response function', () => {
+    it('should allow returning a response in callback', () => {
       var cannedResponse = {
         statusCode: 404
       };
@@ -1673,7 +1662,7 @@ describe('unexpectedMitm', function() {
       );
     });
 
-    it('should allow returning a response with a body Buffer', function() {
+    it('should allow returning a response with a body Buffer', () => {
       var expectedBuffer = new Buffer([0xc3, 0xa6, 0xc3, 0xb8, 0xc3, 0xa5]);
 
       return expect(
@@ -1692,7 +1681,7 @@ describe('unexpectedMitm', function() {
         {
           body: expectedBuffer
         }
-      ).spread(function(fulfilmentValue, httpConversation) {
+      ).spread((fulfilmentValue, httpConversation) => {
         expect(
           httpConversation.exchanges[0],
           'to have a response with body',
@@ -1701,7 +1690,7 @@ describe('unexpectedMitm', function() {
       });
     });
 
-    it('should allow returning a response with a body Array', function() {
+    it('should allow returning a response with a body Array', () => {
       var expectedArray = [null, {}, { foo: 'bar' }];
 
       return expect(
@@ -1724,7 +1713,7 @@ describe('unexpectedMitm', function() {
         {
           body: expectedArray
         }
-      ).spread(function(fulfilmentValue, httpConversation) {
+      ).spread((fulfilmentValue, httpConversation) => {
         expect(
           httpConversation.exchanges[0],
           'to have a response with body',
@@ -1733,7 +1722,7 @@ describe('unexpectedMitm', function() {
       });
     });
 
-    it('should allow returning a response with a body Object', function() {
+    it('should allow returning a response with a body Object', () => {
       var expectedBody = {
         foo: 'bar'
       };
@@ -1758,7 +1747,7 @@ describe('unexpectedMitm', function() {
         {
           body: expectedBody
         }
-      ).spread(function(fulfilmentValue, httpConversation) {
+      ).spread((fulfilmentValue, httpConversation) => {
         expect(
           httpConversation.exchanges[0],
           'to have a response with body',
@@ -1767,7 +1756,7 @@ describe('unexpectedMitm', function() {
       });
     });
 
-    it('should allow consuming the request body', function() {
+    it('should allow consuming the request body', () => {
       var expectedBody = {
         foo: 'bar'
       };
@@ -1781,7 +1770,7 @@ describe('unexpectedMitm', function() {
         {
           response: require('express')()
             .use(require('body-parser').json())
-            .use(function(req, res, next) {
+            .use((req, res, next) => {
               res.send(req.body);
             })
         },
@@ -1789,7 +1778,7 @@ describe('unexpectedMitm', function() {
         {
           body: expectedBody
         }
-      ).spread(function(fulfilmentValue, httpConversation) {
+      ).spread((fulfilmentValue, httpConversation) => {
         expect(
           httpConversation.exchanges[0],
           'to have a response with body',
@@ -1798,7 +1787,7 @@ describe('unexpectedMitm', function() {
       });
     });
 
-    it('should allow the use of pipe() internally', function() {
+    it('should allow the use of pipe() internally', () => {
       var expectedBuffer = new Buffer('foobar', 'utf-8');
 
       return expect(
@@ -1820,7 +1809,7 @@ describe('unexpectedMitm', function() {
         {
           body: expectedBuffer
         }
-      ).spread(function(fulfilmentValue, httpConversation) {
+      ).spread((fulfilmentValue, httpConversation) => {
         expect(
           httpConversation.exchanges[0],
           'to have a response with body',
@@ -1829,7 +1818,7 @@ describe('unexpectedMitm', function() {
       });
     });
 
-    it('should report if the response function returns an error', function() {
+    it('should report if the response function returns an error', () => {
       var err = new Error('bailed');
 
       return expect(
@@ -1854,7 +1843,7 @@ describe('unexpectedMitm', function() {
       );
     });
 
-    describe('with documentation response function', function() {
+    describe('with documentation response function', () => {
       function documentationHandler(req, res) {
         var myMessage;
 
@@ -1870,7 +1859,7 @@ describe('unexpectedMitm', function() {
         res.end(myMessage);
       }
 
-      it('should remark "to be expected" for GET /thatOneExpectedThing', function() {
+      it('should remark "to be expected" for GET /thatOneExpectedThing', () => {
         return expect(
           '/thatOneExpectedThing',
           'with http mocked out',
@@ -1886,7 +1875,7 @@ describe('unexpectedMitm', function() {
         );
       });
 
-      it('should remark "how very unexpected" for GET /somethingOtherThing', function() {
+      it('should remark "how very unexpected" for GET /somethingOtherThing', () => {
         return expect(
           '/somethingOtherThing',
           'with http mocked out',
@@ -1904,9 +1893,9 @@ describe('unexpectedMitm', function() {
     });
   });
 
-  describe('wíth a client certificate', function() {
-    describe('when asserting on ca/cert/key', function() {
-      it('should succeed', function() {
+  describe('wíth a client certificate', () => {
+    describe('when asserting on ca/cert/key', () => {
+      it('should succeed', () => {
         return expect(
           {
             url: 'https://www.google.com/foo',
@@ -1929,7 +1918,7 @@ describe('unexpectedMitm', function() {
         );
       });
 
-      it('should fail with a meaningful error message', function() {
+      it('should fail with a meaningful error message', () => {
         return expect(
           expect(
             {
@@ -1953,7 +1942,7 @@ describe('unexpectedMitm', function() {
           ),
           'when rejected',
           'to have message',
-          function(message) {
+          message => {
             expect(
               trimDiff(message),
               'to equal',
@@ -1975,12 +1964,12 @@ describe('unexpectedMitm', function() {
     });
   });
 
-  describe('in recording mode against a local HTTP server', function() {
+  describe('in recording mode against a local HTTP server', () => {
     var handleRequest, server, serverAddress, serverHostname, serverUrl;
-    beforeEach(function() {
+    beforeEach(() => {
       handleRequest = undefined;
       server = http
-        .createServer(function(req, res) {
+        .createServer((req, res) => {
           res.sendDate = false;
           handleRequest(req, res);
         })
@@ -1991,12 +1980,12 @@ describe('unexpectedMitm', function() {
       serverUrl = 'http://' + serverHostname + ':' + serverAddress.port + '/';
     });
 
-    afterEach(function() {
+    afterEach(() => {
       server.close();
     });
 
-    it('should record', function() {
-      handleRequest = function(req, res) {
+    it('should record', () => {
+      handleRequest = (req, res) => {
         res.setHeader('Allow', 'GET, HEAD');
         res.statusCode = 405;
         res.end();
@@ -2033,16 +2022,16 @@ describe('unexpectedMitm', function() {
       );
     });
 
-    it('should preserve the fulfilment value', function() {
+    it('should preserve the fulfilment value', () => {
       return expect('foo', 'with http recorded', 'to match', /^(f)o/).then(
-        function(matches) {
+        matches => {
           expect(matches, 'to satisfy', { 0: 'fo', 1: 'f', index: 0 });
         }
       );
     });
 
-    it('should not break on an exception from the request itself', function() {
-      handleRequest = function(req, res) {
+    it('should not break on an exception from the request itself', () => {
+      handleRequest = (req, res) => {
         res.setHeader('Content-Type', 'text/plain');
         res.statusCode = 200;
         res.end('hello');
@@ -2050,12 +2039,12 @@ describe('unexpectedMitm', function() {
 
       return expect(
         expect(
-          function() {
+          () => {
             return expect.promise
-              .fromNode(function(cb) {
+              .fromNode(cb => {
                 issueGetAndConsume(serverUrl, cb);
               })
-              .then(function(buffer) {
+              .then(buffer => {
                 expect(buffer.toString('utf-8'), 'to equal', 'hello world');
               });
           },
@@ -2064,7 +2053,7 @@ describe('unexpectedMitm', function() {
         ),
         'when rejected',
         'to have message',
-        function(message) {
+        message => {
           expect(
             message,
             'to equal',
@@ -2089,7 +2078,7 @@ describe('unexpectedMitm', function() {
       );
     });
 
-    it('should record an error', function() {
+    it('should record an error', () => {
       var expectedError;
       // I do not know the exact version where this change was introduced. Hopefully this is enough to get
       // it working on Travis (0.10.36 presently):
@@ -2137,8 +2126,8 @@ describe('unexpectedMitm', function() {
       );
     });
 
-    it('should record a socket disconnect', function() {
-      handleRequest = function(req, res) {
+    it('should record a socket disconnect', () => {
+      handleRequest = (req, res) => {
         res.destroy();
       };
 
@@ -2166,8 +2155,8 @@ describe('unexpectedMitm', function() {
       );
     });
 
-    it('should recognize a Content-Type ending with +json as JSON, but preserve it in the recording', function() {
-      handleRequest = function(req, res) {
+    it('should recognize a Content-Type ending with +json as JSON, but preserve it in the recording', () => {
+      handleRequest = (req, res) => {
         res.setHeader('Content-Type', 'application/vnd.api+json');
         res.end('{"foo": 123}');
       };
@@ -2198,20 +2187,20 @@ describe('unexpectedMitm', function() {
     });
   });
 
-  describe('in injecting mode against a local HTTP server', function() {
-    it('should record and inject', function() {
+  describe('in injecting mode against a local HTTP server', () => {
+    it('should record and inject', () => {
       return expect('testfile', 'when injected becomes', 'testfile-injected');
     });
 
-    it('should record and inject textual injections', function() {
+    it('should record and inject textual injections', () => {
       return expect('utf8file', 'when injected becomes', 'utf8file-injected');
     });
 
-    it('should record and inject into a compound assertion', function() {
+    it('should record and inject into a compound assertion', () => {
       return expect('compound', 'when injected becomes', 'compound-injected');
     });
 
-    it('should correctly handle buffer injections', function() {
+    it('should correctly handle buffer injections', () => {
       return expect(
         'bufferfile',
         'when injected becomes',
@@ -2219,7 +2208,7 @@ describe('unexpectedMitm', function() {
       );
     });
 
-    it('should correctly handle long buffer injections (>32 octets should be base64 encoded)', function() {
+    it('should correctly handle long buffer injections (>32 octets should be base64 encoded)', () => {
       return expect(
         'longbufferfile',
         'when injected becomes',
@@ -2227,11 +2216,11 @@ describe('unexpectedMitm', function() {
       );
     });
 
-    it('should correctly handle error injections', function() {
+    it('should correctly handle error injections', () => {
       return expect('errorfile', 'when injected becomes', 'errorfile-injected');
     });
 
-    it('should correctly handle multiple injections', function() {
+    it('should correctly handle multiple injections', () => {
       return expect(
         'multiplefile',
         'when injected becomes',
@@ -2240,51 +2229,53 @@ describe('unexpectedMitm', function() {
     });
   });
 
-  describe('in recording mode against a local HTTPS server', function() {
+  describe('in recording mode against a local HTTPS server', () => {
     var handleRequest, server, serverAddress, serverHostname, serverUrl;
 
-    beforeEach(function() {
-      return createPemCertificate({ days: 1, selfSigned: true }).then(function(
-        serverKeys
-      ) {
-        handleRequest = undefined;
-        server = https
-          .createServer({
-            cert: serverKeys.certificate,
-            key: serverKeys.serviceKey
-          })
-          .on('request', function(req, res) {
-            res.sendDate = false;
-            handleRequest(req, res);
-          })
-          .listen(0);
-        serverAddress = server.address();
-        serverHostname =
-          serverAddress.address === '::' ? 'localhost' : serverAddress.address;
-        serverUrl =
-          'https://' + serverHostname + ':' + serverAddress.port + '/';
-      });
+    beforeEach(() => {
+      return createPemCertificate({ days: 1, selfSigned: true }).then(
+        serverKeys => {
+          handleRequest = undefined;
+          server = https
+            .createServer({
+              cert: serverKeys.certificate,
+              key: serverKeys.serviceKey
+            })
+            .on('request', (req, res) => {
+              res.sendDate = false;
+              handleRequest(req, res);
+            })
+            .listen(0);
+          serverAddress = server.address();
+          serverHostname =
+            serverAddress.address === '::'
+              ? 'localhost'
+              : serverAddress.address;
+          serverUrl =
+            'https://' + serverHostname + ':' + serverAddress.port + '/';
+        }
+      );
     });
 
-    afterEach(function() {
+    afterEach(() => {
       server.close();
     });
 
-    describe('with a client certificate', function() {
+    describe('with a client certificate', () => {
       var clientKeys;
 
       var ca = new Buffer([1, 2, 3]); // Can apparently be bogus
 
-      beforeEach(function() {
+      beforeEach(() => {
         return createPemCertificate({ days: 1, selfSigned: true }).then(
-          function(keys) {
+          keys => {
             clientKeys = keys;
           }
         );
       });
 
-      it('should record a client certificate', function() {
-        handleRequest = function(req, res) {
+      it('should record a client certificate', () => {
+        handleRequest = (req, res) => {
           res.setHeader('Allow', 'GET, HEAD');
           res.statusCode = 405;
           res.end();
@@ -2326,13 +2317,13 @@ describe('unexpectedMitm', function() {
     });
   });
 
-  describe('in capturing mode', function() {
+  describe('in capturing mode', () => {
     var handleRequest, server, serverAddress, serverHostname, serverUrl;
 
-    beforeEach(function() {
+    beforeEach(() => {
       handleRequest = undefined;
       server = http
-        .createServer(function(req, res) {
+        .createServer((req, res) => {
           res.sendDate = false;
           handleRequest(req, res);
         })
@@ -2343,12 +2334,12 @@ describe('unexpectedMitm', function() {
       serverUrl = 'http://' + serverHostname + ':' + serverAddress.port + '/';
     });
 
-    afterEach(function() {
+    afterEach(() => {
       server.close();
     });
 
-    it('should resolve with delegated fulfilment', function() {
-      handleRequest = function(req, res) {
+    it('should resolve with delegated fulfilment', () => {
+      handleRequest = (req, res) => {
         res.setHeader('Allow', 'GET, HEAD');
         res.statusCode = 405;
         res.end();
@@ -2383,13 +2374,13 @@ describe('unexpectedMitm', function() {
         'when fulfilled',
         'to satisfy',
         expect.it('to be an object')
-      ).finally(function() {
+      ).finally(() => {
         delete process.env.UNEXPECTED_MITM_WRITE;
       });
     });
 
-    it('should capture the correct mocks', function() {
-      handleRequest = function(req, res) {
+    it('should capture the correct mocks', () => {
+      handleRequest = (req, res) => {
         res.setHeader('Allow', 'GET, HEAD');
         res.statusCode = 405;
         res.end();
@@ -2435,14 +2426,14 @@ describe('unexpectedMitm', function() {
         outputFile,
         'to yield response',
         405
-      ).finally(function() {
+      ).finally(() => {
         delete process.env.UNEXPECTED_MITM_WRITE;
       });
     });
   });
 
-  describe('in replaying mode', function() {
-    it('should resolve with delegated fulfilment', function() {
+  describe('in replaying mode', () => {
+    it('should resolve with delegated fulfilment', () => {
       var inputFile = '../testdata/replay.js';
 
       return expect(
@@ -2461,7 +2452,7 @@ describe('unexpectedMitm', function() {
       );
     });
 
-    it('should replay the correct mocks', function() {
+    it('should replay the correct mocks', () => {
       var inputFile = '../testdata/replay.js';
 
       return expect(
@@ -2484,7 +2475,7 @@ describe('unexpectedMitm', function() {
       );
     });
 
-    it('should replay with delegated fulfilment', function() {
+    it('should replay with delegated fulfilment', () => {
       var inputFile = '../testdata/replay-from-function.js';
 
       return expect(
@@ -2515,7 +2506,7 @@ describe('unexpectedMitm', function() {
     });
   });
 
-  it('should not overwrite an explicitly defined Host header in the expected request properties', function() {
+  it('should not overwrite an explicitly defined Host header in the expected request properties', () => {
     return expect(
       {
         url: 'GET http://localhost/',
@@ -2539,7 +2530,7 @@ describe('unexpectedMitm', function() {
     );
   });
 
-  it('should interpret a response body provided as a non-Buffer object as JSON even though the message has a non-JSON Content-Type', function() {
+  it('should interpret a response body provided as a non-Buffer object as JSON even though the message has a non-JSON Content-Type', () => {
     return expect(
       'http://www.google.com/',
       'with http mocked out',
@@ -2563,8 +2554,8 @@ describe('unexpectedMitm', function() {
     );
   });
 
-  describe('with the "with extra info" flag', function() {
-    it('should resolve with the compared exchanges', function() {
+  describe('with the "with extra info" flag', () => {
+    it('should resolve with the compared exchanges', () => {
       return expect(
         expect(
           'GET /',
@@ -2586,7 +2577,7 @@ describe('unexpectedMitm', function() {
       );
     });
 
-    it('should output response headers preserving their original case', function() {
+    it('should output response headers preserving their original case', () => {
       return expect(
         'GET /',
         'with http mocked out with extra info',
@@ -2600,7 +2591,7 @@ describe('unexpectedMitm', function() {
         },
         'to yield response',
         200
-      ).spread(function(fulfilmentValue, httpConversation) {
+      ).spread((fulfilmentValue, httpConversation) => {
         var httpResponse = httpConversation.exchanges[0].response;
 
         expect(httpResponse.headers.getNames(), 'to contain', 'X-Is-Test');
@@ -2608,24 +2599,24 @@ describe('unexpectedMitm', function() {
     });
   });
 
-  it('should preserve the fulfilment value of the promise returned by the assertion being delegated to', function() {
+  it('should preserve the fulfilment value of the promise returned by the assertion being delegated to', () => {
     return expect(
       [1, 2],
       'with http mocked out',
       [],
       'when passed as parameters to',
       Math.max
-    ).then(function(value) {
+    ).then(value => {
       expect(value, 'to equal', 2);
     });
   });
 
-  describe('when verifying', function() {
+  describe('when verifying', () => {
     var handleRequest, server, serverAddress, serverHostname, serverUrl;
-    beforeEach(function() {
+    beforeEach(() => {
       handleRequest = undefined;
       server = http
-        .createServer(function(req, res) {
+        .createServer((req, res) => {
           handleRequest(req, res);
         })
         .listen(59891);
@@ -2635,12 +2626,12 @@ describe('unexpectedMitm', function() {
       serverUrl = 'http://' + serverHostname + ':' + serverAddress.port + '/';
     });
 
-    afterEach(function() {
+    afterEach(() => {
       server.close();
     });
 
-    it('should verify and resolve with delegated fulfilment', function() {
-      handleRequest = function(req, res) {
+    it('should verify and resolve with delegated fulfilment', () => {
+      handleRequest = (req, res) => {
         res.statusCode = 405;
         res.end();
       };
@@ -2663,8 +2654,8 @@ describe('unexpectedMitm', function() {
       );
     });
 
-    it('should verify and resolve with extra info', function() {
-      handleRequest = function(req, res) {
+    it('should verify and resolve with extra info', () => {
+      handleRequest = (req, res) => {
         res.statusCode = 405;
         res.end();
       };
@@ -2691,8 +2682,8 @@ describe('unexpectedMitm', function() {
       );
     });
 
-    it('should verify an ISO-8859-1 request', function() {
-      handleRequest = function(req, res) {
+    it('should verify an ISO-8859-1 request', () => {
+      handleRequest = (req, res) => {
         res.statusCode = 200;
         res.setHeader('Content-Type', 'text/html; charset=ISO-8859-1');
         res.end(
@@ -2743,8 +2734,8 @@ describe('unexpectedMitm', function() {
       );
     });
 
-    it('should verify an object', function() {
-      handleRequest = function(req, res) {
+    it('should verify an object', () => {
+      handleRequest = (req, res) => {
         res.statusCode = 201;
         res.setHeader('Content-Type', 'application/json');
         res.end(new Buffer(JSON.stringify({ foo: 'bar' })));
@@ -2779,8 +2770,8 @@ describe('unexpectedMitm', function() {
       );
     });
 
-    it('should allow excluding headers from verification', function() {
-      handleRequest = function(req, res) {
+    it('should allow excluding headers from verification', () => {
+      handleRequest = (req, res) => {
         res.statusCode = 405;
         res.setHeader('X-Is-Test', 'yes');
         res.end();
@@ -2807,14 +2798,14 @@ describe('unexpectedMitm', function() {
       );
     });
 
-    it('should allow verify options on multiple mocks', function() {
-      handleRequest = function(req, res) {
+    it('should allow verify options on multiple mocks', () => {
+      handleRequest = (req, res) => {
         res.statusCode = 405;
         res.setHeader('X-Is-Test', 'yes');
         res.end();
 
         // change handleRequest for next response
-        handleRequest = function(req, res) {
+        handleRequest = (req, res) => {
           res.statusCode = 406;
           res.setHeader('X-So-Is-This', 'yep');
           res.end();
@@ -2823,8 +2814,8 @@ describe('unexpectedMitm', function() {
 
       return expect(
         expect(
-          function(cb) {
-            issueGetAndConsume(serverUrl, function() {
+          cb => {
+            issueGetAndConsume(serverUrl, () => {
               issueGetAndConsume(serverUrl, cb);
             });
           },
@@ -2855,8 +2846,8 @@ describe('unexpectedMitm', function() {
       );
     });
 
-    it('should fail with a diff', function() {
-      handleRequest = function(req, res) {
+    it('should fail with a diff', () => {
+      handleRequest = (req, res) => {
         res.statusCode = 406;
         res.end();
       };
@@ -2875,7 +2866,7 @@ describe('unexpectedMitm', function() {
         ),
         'when rejected',
         'to have message',
-        function(message) {
+        message => {
           expect(
             trimDiff(message),
             'to equal',
@@ -2901,15 +2892,15 @@ describe('unexpectedMitm', function() {
       );
     });
 
-    describe('with a mock in a file', function() {
-      it('should verify and resolve with delegated fulfilment', function() {
+    describe('with a mock in a file', () => {
+      it('should verify and resolve with delegated fulfilment', () => {
         var testFile = pathModule.resolve(
           __dirname,
           '..',
           'testdata',
           'replay-and-verify.js'
         );
-        handleRequest = function(req, res) {
+        handleRequest = (req, res) => {
           res.statusCode = 202;
           res.setHeader('X-Is-Test', 'yes');
           res.end();
@@ -2932,9 +2923,9 @@ describe('unexpectedMitm', function() {
       });
     });
 
-    describe('using UNEXPECTED_MITM_VERIFY=true on the command line', function() {
-      it('should be verified', function() {
-        handleRequest = function(req, res) {
+    describe('using UNEXPECTED_MITM_VERIFY=true on the command line', () => {
+      it('should be verified', () => {
+        handleRequest = (req, res) => {
           res.statusCode = 406;
           res.end();
         };
@@ -2954,19 +2945,19 @@ describe('unexpectedMitm', function() {
             405
           ),
           'to be rejected'
-        ).finally(function() {
+        ).finally(() => {
           delete process.env.UNEXPECTED_MITM_VERIFY;
         });
       });
 
-      it('should verify a mock in a file', function() {
+      it('should verify a mock in a file', () => {
         var testFile = pathModule.resolve(
           __dirname,
           '..',
           'testdata',
           'replay-and-verify.js'
         );
-        handleRequest = function(req, res) {
+        handleRequest = (req, res) => {
           res.statusCode = 201;
           res.setHeader('X-Is-Test', 'yes');
           res.end();
@@ -2987,31 +2978,31 @@ describe('unexpectedMitm', function() {
           ),
           'when rejected',
           'to have message',
-          function(message) {
+          message => {
             expect(trimDiff(message), 'to begin with', 'Explicit failure').and(
               'to contain',
               'The mock and service have diverged.'
             );
           }
-        ).finally(function() {
+        ).finally(() => {
           delete process.env.UNEXPECTED_MITM_VERIFY;
         });
       });
     });
   });
 
-  it('should fail early, even when there are unexercised mocks', function() {
+  it('should fail early, even when there are unexercised mocks', () => {
     return expect(
-      function() {
+      () => {
         return expect(
-          function() {
-            return expect.promise(function(run) {
+          () => {
+            return expect.promise(run => {
               issueGetAndConsume(
                 'http://www.google.com/foo',
-                run(function() {
+                run(() => {
                   issueGetAndConsume(
                     'http://www.google.com/',
-                    run(function() {
+                    run(() => {
                       throw new Error('Oh no');
                     })
                   );
@@ -3044,7 +3035,7 @@ describe('unexpectedMitm', function() {
         );
       },
       'to be rejected with',
-      function(err) {
+      err => {
         expect(
           trimDiff(err.getErrorMessage('text').toString()),
           'to equal',
@@ -3079,15 +3070,15 @@ describe('unexpectedMitm', function() {
     );
   });
 
-  it('should fail a test as soon as an unexpected request is made, even if the code being tested ignores the request failing', function() {
+  it('should fail a test as soon as an unexpected request is made, even if the code being tested ignores the request failing', () => {
     return expect(
-      function() {
+      () => {
         return expect(
-          function(run) {
-            return expect.promise(function(run) {
+          run => {
+            return expect.promise(run => {
               http.get('http://www.google.com/foo').on(
                 'error',
-                run(function() {
+                run(() => {
                   // Ignore error
                 })
               );
@@ -3109,7 +3100,7 @@ describe('unexpectedMitm', function() {
         );
       },
       'to be rejected with',
-      function(err) {
+      err => {
         expect(
           trimDiff(err.getErrorMessage('text').toString()),
           'to equal',
@@ -3140,13 +3131,13 @@ describe('unexpectedMitm', function() {
     );
   });
 
-  it('should fail a test as soon as an unexpected request is made, even if the code being tested ignores the request failing and fails with another error', function() {
+  it('should fail a test as soon as an unexpected request is made, even if the code being tested ignores the request failing and fails with another error', () => {
     return expect(
-      function() {
+      () => {
         return expect(
-          function() {
-            return expect.promise(function(resolve, reject) {
-              http.get('http://www.google.com/foo').on('error', function() {
+          () => {
+            return expect.promise((resolve, reject) => {
+              http.get('http://www.google.com/foo').on('error', () => {
                 throw new Error('darn');
               });
             });
@@ -3167,7 +3158,7 @@ describe('unexpectedMitm', function() {
         );
       },
       'to be rejected with',
-      function(err) {
+      err => {
         expect(
           trimDiff(err.getErrorMessage('text').toString()),
           'to equal',
@@ -3196,13 +3187,13 @@ describe('unexpectedMitm', function() {
     );
   });
 
-  it('should fail a test as soon as an unexpected request is made, even if the code being tested ignores the request failing and fails with an uncaught exception', function() {
+  it('should fail a test as soon as an unexpected request is made, even if the code being tested ignores the request failing and fails with an uncaught exception', () => {
     return expect(
-      function() {
+      () => {
         return expect(
-          function(cb) {
-            http.get('http://www.google.com/foo').on('error', function() {
-              setImmediate(function() {
+          cb => {
+            http.get('http://www.google.com/foo').on('error', () => {
+              setImmediate(() => {
                 throw new Error('darn');
               });
             });
@@ -3223,7 +3214,7 @@ describe('unexpectedMitm', function() {
         );
       },
       'to be rejected with',
-      function(err) {
+      err => {
         expect(
           trimDiff(err.getErrorMessage('text').toString()),
           'to equal',
@@ -3252,15 +3243,15 @@ describe('unexpectedMitm', function() {
     );
   });
 
-  it('should handle concurrent requests without confusing the Host headers', function() {
+  it('should handle concurrent requests without confusing the Host headers', () => {
     return expect(
-      function() {
-        return expect.promise(function(resolve, reject) {
+      () => {
+        return expect.promise((resolve, reject) => {
           var urls = ['http://www.google.com/', 'http://www.bing.com/'];
           var numInFlight = 0;
-          urls.forEach(function(url) {
+          urls.forEach(url => {
             numInFlight += 1;
-            issueGetAndConsume(url, function() {
+            issueGetAndConsume(url, () => {
               numInFlight -= 1;
               if (numInFlight === 0) {
                 resolve();
@@ -3287,13 +3278,13 @@ describe('unexpectedMitm', function() {
     );
   });
 
-  it('should be unaffected by modifications to the mocks array after initiating the assertion', function() {
+  it('should be unaffected by modifications to the mocks array after initiating the assertion', () => {
     var mocks = [];
 
     return expect(
-      function() {
+      () => {
         return expect(
-          function(cb) {
+          cb => {
             mocks.push({ request: 'GET /', response: 200 });
             issueGetAndConsume('http://www.example.com/', cb);
           },
@@ -3307,13 +3298,13 @@ describe('unexpectedMitm', function() {
     );
   });
 
-  it('should not break when a response mocked out by an Error instance with extra properties is checked against the actual exchanges at the end', function() {
+  it('should not break when a response mocked out by an Error instance with extra properties is checked against the actual exchanges at the end', () => {
     var err = new Error('foo');
     err.bar = 123;
     err.statusCode = 404;
     return expect(
       expect(
-        function(cb) {
+        cb => {
           setImmediate(cb);
         },
         'with http mocked out',
