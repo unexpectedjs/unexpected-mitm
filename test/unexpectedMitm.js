@@ -1586,8 +1586,12 @@ describe('unexpectedMitm', function() {
             'to equal',
             'expected\n' +
               'function () {\n' +
-              "  return expect('http://www.google.com/foo', 'to yield response', 200).then(function () {\n" +
-              "    return expect('http://www.google.com/foo', 'to yield response', 200);\n" +
+              '  return expect(\n' +
+              "    'http://www.google.com/foo',\n" +
+              "    'to yield response',\n" +
+              '    // ... lines removed ...\n' +
+              '      200\n' +
+              '    );\n' +
               '  });\n' +
               '}\n' +
               'with http mocked out [] not to error\n' +
@@ -2066,11 +2070,13 @@ describe('unexpectedMitm', function() {
             'to equal',
             'expected\n' +
               'function () {\n' +
-              '  return expect.promise.fromNode(function (cb) {\n' +
-              '    issueGetAndConsume(serverUrl, cb);\n' +
-              '  }).then(function (buffer) {\n' +
-              "    expect(buffer.toString('utf-8'), 'to equal', 'hello world');\n" +
-              '  });\n' +
+              '  return expect.promise\n' +
+              '    .fromNode(function(cb) {\n' +
+              '      issueGetAndConsume(serverUrl, cb);\n' +
+              '    })\n' +
+              '    .then(function(buffer) {\n' +
+              "      expect(buffer.toString('utf-8'), 'to equal', 'hello world');\n" +
+              '    });\n' +
               '}\n' +
               'with http recorded not to error\n' +
               '  expected function not to error\n' +
@@ -3044,12 +3050,12 @@ describe('unexpectedMitm', function() {
           'to equal',
           'expected\n' +
             'function () {\n' +
-            '  return expect.promise(function (run) {\n' +
-            "    issueGetAndConsume('http://www.google.com/foo', run(function () {\n" +
-            "      issueGetAndConsume('http://www.google.com/', run(function () {\n" +
-            "        throw 'Oh no';\n" +
-            '      }));\n' +
-            '    }));\n' +
+            '  return expect.promise(function(run) {\n' +
+            '    issueGetAndConsume(\n' +
+            "      'http://www.google.com/foo',\n" +
+            '      // ... lines removed ...\n' +
+            '      })\n' +
+            '    );\n' +
             '  });\n' +
             '}\n' +
             'with http mocked out\n' +
@@ -3109,10 +3115,12 @@ describe('unexpectedMitm', function() {
           'to equal',
           'expected\n' +
             'function (run) {\n' +
-            '  return expect.promise(function (run) {\n' +
-            "    http.get('http://www.google.com/foo').on('error', run(function () {\n" +
-            '      // Ignore error\n' +
-            '    }));\n' +
+            '  return expect.promise(function(run) {\n' +
+            "    http.get('http://www.google.com/foo').on(\n" +
+            "      'error',\n" +
+            '      // ... lines removed ...\n' +
+            '      })\n' +
+            '    );\n' +
             '  });\n' +
             '}\n' +
             "with http mocked out [ { request: 'GET http://www.google.com/', response: { headers: ..., body: 'hello' } } ] not to error\n" +
@@ -3165,8 +3173,8 @@ describe('unexpectedMitm', function() {
           'to equal',
           'expected\n' +
             'function () {\n' +
-            '  return expect.promise(function (resolve, reject) {\n' +
-            "    http.get('http://www.google.com/foo').on('error', function () {\n" +
+            '  return expect.promise(function(resolve, reject) {\n' +
+            "    http.get('http://www.google.com/foo').on('error', function() {\n" +
             "      throw new Error('darn');\n" +
             '    });\n' +
             '  });\n' +
@@ -3221,8 +3229,8 @@ describe('unexpectedMitm', function() {
           'to equal',
           'expected\n' +
             'function (cb) {\n' +
-            "  http.get('http://www.google.com/foo').on('error', function () {\n" +
-            '    setImmediate(function () {\n' +
+            "  http.get('http://www.google.com/foo').on('error', function() {\n" +
+            '    setImmediate(function() {\n' +
             "      throw new Error('darn');\n" +
             '    });\n' +
             '  });\n' +
