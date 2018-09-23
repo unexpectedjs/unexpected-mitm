@@ -3165,9 +3165,7 @@ describe('unexpectedMitm', () => {
     err.statusCode = 404;
     return expect(
       expect(
-        cb => {
-          setImmediate(cb);
-        },
+        setImmediate,
         'with http mocked out',
         { request: 'GET /', response: err },
         'to call the callback without error'
