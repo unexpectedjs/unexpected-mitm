@@ -53,7 +53,7 @@ describe('unexpectedMitm', () => {
         expect.args.splice(1, 0, 'with http recorded with extra info');
         return expect
           .promise(() => expect.shift())
-          .spread((value, recordedExchanges) => {
+          .then(([value, recordedExchanges]) => {
             expect(recordedExchanges, 'to equal', expectedRecordedExchanges);
             return value;
           });
@@ -69,7 +69,7 @@ describe('unexpectedMitm', () => {
 
         return expect
           .promise(() => expect.shift(requestObject))
-          .spread((recordedExchanges, _, __, recordedFile) => {
+          .then(([recordedExchanges, _, __, recordedFile]) => {
             testFile = recordedFile;
 
             return expect(() => {
@@ -99,7 +99,7 @@ describe('unexpectedMitm', () => {
 
         return expect
           .promise(() => expect.shift(drivingRequest))
-          .spread(({ httpExchange }) =>
+          .then(([{ httpExchange }]) =>
             expect(httpExchange, 'to satisfy', expectedRecordedExchanges)
           );
       }
@@ -1609,7 +1609,7 @@ describe('unexpectedMitm', () => {
         {
           body: expectedBuffer
         }
-      ).spread((fulfilmentValue, { exchanges }) => {
+      ).then(([fulfilmentValue, { exchanges }]) => {
         expect(exchanges[0], 'to have a response with body', expectedBuffer);
       });
     });
@@ -1637,7 +1637,7 @@ describe('unexpectedMitm', () => {
         {
           body: expectedArray
         }
-      ).spread((fulfilmentValue, { exchanges }) => {
+      ).then(([fulfilmentValue, { exchanges }]) => {
         expect(exchanges[0], 'to have a response with body', expectedArray);
       });
     });
@@ -1667,7 +1667,7 @@ describe('unexpectedMitm', () => {
         {
           body: expectedBody
         }
-      ).spread((fulfilmentValue, { exchanges }) => {
+      ).then(([fulfilmentValue, { exchanges }]) => {
         expect(exchanges[0], 'to have a response with body', expectedBody);
       });
     });
@@ -1694,7 +1694,7 @@ describe('unexpectedMitm', () => {
         {
           body: expectedBody
         }
-      ).spread((fulfilmentValue, { exchanges }) => {
+      ).then(([fulfilmentValue, { exchanges }]) => {
         expect(exchanges[0], 'to have a response with body', expectedBody);
       });
     });
@@ -1721,7 +1721,7 @@ describe('unexpectedMitm', () => {
         {
           body: expectedBuffer
         }
-      ).spread((fulfilmentValue, { exchanges }) => {
+      ).then(([fulfilmentValue, { exchanges }]) => {
         expect(exchanges[0], 'to have a response with body', expectedBuffer);
       });
     });
@@ -2480,7 +2480,7 @@ describe('unexpectedMitm', () => {
         },
         'to yield response',
         200
-      ).spread((fulfilmentValue, { exchanges }) => {
+      ).then(([fulfilmentValue, { exchanges }]) => {
         const httpResponse = exchanges[0].response;
 
         expect(httpResponse.headers.getNames(), 'to contain', 'X-Is-Test');
