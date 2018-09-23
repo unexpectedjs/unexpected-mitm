@@ -1,21 +1,21 @@
 /*global describe, it, __dirname, beforeEach, afterEach, setTimeout, setImmediate*/
-var pathModule = require('path');
-var childProcess = require('child_process');
-var fs = require('fs');
-var http = require('http');
-var https = require('https');
-var messy = require('messy');
-var pem = require('pem');
-var stream = require('stream');
-var semver = require('semver');
-var sinon = require('sinon');
-var socketErrors = require('socketerrors-papandreou');
+const pathModule = require('path');
+const childProcess = require('child_process');
+const fs = require('fs');
+const http = require('http');
+const https = require('https');
+const messy = require('messy');
+const pem = require('pem');
+const stream = require('stream');
+const semver = require('semver');
+const sinon = require('sinon');
+const socketErrors = require('socketerrors-papandreou');
 
 function issueGetAndConsume(url, callback) {
   http
     .get(url)
     .on('response', response => {
-      var chunks = [];
+      const chunks = [];
 
       response
         .on('data', chunk => {
@@ -40,7 +40,7 @@ function trimDiff(message) {
 }
 
 describe('unexpectedMitm', () => {
-  var expect = require('unexpected')
+  const expect = require('unexpected')
     .use(require('../lib/unexpectedMitm'))
     .use(require('unexpected-http'))
     .use(require('unexpected-sinon'))
@@ -63,9 +63,9 @@ describe('unexpectedMitm', () => {
       '<any> was written correctly on <object> <assertion>',
       (expect, subject, requestObject) => {
         expect.errorMode = 'bubble';
-        var expectedRecordedExchanges = subject;
-        var testFile;
-        var writtenExchanges;
+        const expectedRecordedExchanges = subject;
+        let testFile;
+        let writtenExchanges;
 
         return expect
           .promise(() => expect.shift(requestObject))
@@ -95,7 +95,7 @@ describe('unexpectedMitm', () => {
       '<any> was read correctly on <object> <assertion>',
       (expect, subject, drivingRequest) => {
         expect.errorMode = 'bubble';
-        var expectedRecordedExchanges = subject;
+        const expectedRecordedExchanges = subject;
 
         return expect
           .promise(() => expect.shift(drivingRequest))
@@ -110,21 +110,21 @@ describe('unexpectedMitm', () => {
       '<string> when injected becomes <string>',
       (expect, subject, expectedFileName) => {
         expect.errorMode = 'nested';
-        var basePath = pathModule.join(__dirname, '..');
-        var testPath = pathModule.join(basePath, 'testdata');
+        const basePath = pathModule.join(__dirname, '..');
+        const testPath = pathModule.join(basePath, 'testdata');
 
-        var commandPath = pathModule.join(
+        const commandPath = pathModule.join(
           basePath,
           'node_modules',
           '.bin',
           'mocha'
         );
-        var inputFilePath = pathModule.join(testPath, subject + '.js');
-        var expectedFilePath = pathModule.join(
+        const inputFilePath = pathModule.join(testPath, subject + '.js');
+        const expectedFilePath = pathModule.join(
           testPath,
           expectedFileName + '.js'
         );
-        var outputFilePath = pathModule.join(testPath, '.' + subject + '.js');
+        const outputFilePath = pathModule.join(testPath, '.' + subject + '.js');
 
         return expect
           .promise(run => {
@@ -140,8 +140,8 @@ describe('unexpectedMitm', () => {
               },
               run(err => {
                 expect(err, 'to be falsy');
-                var inputFileData = fs.readFileSync(outputFilePath).toString();
-                var outputFileData = fs
+                const inputFileData = fs.readFileSync(outputFilePath).toString();
+                const outputFileData = fs
                   .readFileSync(expectedFilePath)
                   .toString();
 
@@ -160,7 +160,7 @@ describe('unexpectedMitm', () => {
     .addAssertion(
       '<messyHttpExchange> to have a response with body <any>',
       (expect, subject, value) => expect.promise(() => {
-        var response = subject.response;
+        const response = subject.response;
 
         if (!response.body) {
           throw new Error('Missing response body.');
@@ -234,7 +234,7 @@ describe('unexpectedMitm', () => {
   ));
 
   it('should clean up properly after a keep-alived request with a custom Agent instance', () => {
-    var agent = new http.Agent({ keepAlive: true });
+    const agent = new http.Agent({ keepAlive: true });
     return expect(
       () => expect.promise(run => {
         http.get({ host: 'example.com', agent }).on(
@@ -263,7 +263,7 @@ describe('unexpectedMitm', () => {
   });
 
   it('should clean up properly after a keep-alived request with the global agent', () => {
-    var originalKeepAliveValue = http.globalAgent.keepAlive;
+    const originalKeepAliveValue = http.globalAgent.keepAlive;
     http.globalAgent.keepAlive = true;
     return expect(
       () => expect.promise(run => {
@@ -363,7 +363,7 @@ describe('unexpectedMitm', () => {
         .get('http://www.examplestuff.com/')
         .on('error', cb)
         .on('response', response => {
-          var chunks = [];
+          const chunks = [];
           response
             .on('data', chunk => {
               chunks.push(chunk);
@@ -762,7 +762,7 @@ describe('unexpectedMitm', () => {
     ));
 
     it('should decode the stream as JSON', () => {
-      var responseBodyStream = new stream.Readable();
+      const responseBodyStream = new stream.Readable();
       responseBodyStream._read = (num, cb) => {
         responseBodyStream._read = () => {};
         setImmediate(() => {
@@ -831,7 +831,7 @@ describe('unexpectedMitm', () => {
 
     describe('that emits an error', () => {
       it('should propagate the error to the mocked-out HTTP response', () => {
-        var erroringStream = new stream.Readable();
+        const erroringStream = new stream.Readable();
         erroringStream._read = (num, cb) => {
           setImmediate(() => {
             erroringStream.emit('error', new Error('Fake error'));
@@ -855,7 +855,7 @@ describe('unexpectedMitm', () => {
       });
 
       it('should support a stream that emits some data, then errors out', () => {
-        var responseBodyStream = new stream.Readable();
+        const responseBodyStream = new stream.Readable();
         responseBodyStream._read = (num, cb) => {
           responseBodyStream._read = () => {};
           setImmediate(() => {
@@ -885,7 +885,7 @@ describe('unexpectedMitm', () => {
       });
 
       it('should recover from the error and replay the next request', () => {
-        var erroringStream = new stream.Readable();
+        const erroringStream = new stream.Readable();
         erroringStream._read = num => {
           erroringStream._read = () => {};
           erroringStream.push('yaddayadda');
@@ -893,7 +893,7 @@ describe('unexpectedMitm', () => {
             erroringStream.emit('error', new Error('Fake error'));
           });
         };
-        var firstResponseSpy = sinon.spy();
+        const firstResponseSpy = sinon.spy();
         return expect(
           () => expect.promise(run => {
             http
@@ -1130,7 +1130,7 @@ describe('unexpectedMitm', () => {
   ));
 
   it('should produce an error if a mocked request is not exercised and the second mock has a stream', () => {
-    var responseBodyStream = new stream.Readable();
+    const responseBodyStream = new stream.Readable();
     responseBodyStream._read = (num, cb) => {
       responseBodyStream._read = () => {};
       setImmediate(() => {
@@ -1183,7 +1183,7 @@ describe('unexpectedMitm', () => {
   });
 
   it('should decode the textual body if a mocked request is not exercised', () => {
-    var responseBodyStream = new stream.Readable();
+    const responseBodyStream = new stream.Readable();
     responseBodyStream._read = (num, cb) => {
       responseBodyStream._read = () => {};
       setImmediate(() => {
@@ -1240,7 +1240,7 @@ describe('unexpectedMitm', () => {
   });
 
   it('should produce an error if a mocked request is not exercised with an expected request stream', () => {
-    var requestBodyStream = new stream.Readable();
+    const requestBodyStream = new stream.Readable();
     requestBodyStream._read = (num, cb) => {
       requestBodyStream._read = () => {};
       setImmediate(() => {
@@ -1486,7 +1486,7 @@ describe('unexpectedMitm', () => {
   });
 
   it('should not mangle the requestDescriptions array', () => {
-    var requestDescriptions = [{ request: 'GET /', response: 200 }];
+    const requestDescriptions = [{ request: 'GET /', response: 200 }];
     return expect(
       'http://www.google.com/',
       'with http mocked out',
@@ -1527,7 +1527,7 @@ describe('unexpectedMitm', () => {
 
   describe('with response function', () => {
     it('should allow returning a response in callback', () => {
-      var cannedResponse = {
+      const cannedResponse = {
         statusCode: 404
       };
 
@@ -1549,7 +1549,7 @@ describe('unexpectedMitm', () => {
     });
 
     it('should allow returning a response with a body Buffer', () => {
-      var expectedBuffer = new Buffer([0xc3, 0xa6, 0xc3, 0xb8, 0xc3, 0xa5]);
+      const expectedBuffer = new Buffer([0xc3, 0xa6, 0xc3, 0xb8, 0xc3, 0xa5]);
 
       return expect(
         '/200',
@@ -1577,7 +1577,7 @@ describe('unexpectedMitm', () => {
     });
 
     it('should allow returning a response with a body Array', () => {
-      var expectedArray = [null, {}, { foo: 'bar' }];
+      const expectedArray = [null, {}, { foo: 'bar' }];
 
       return expect(
         '/200',
@@ -1609,7 +1609,7 @@ describe('unexpectedMitm', () => {
     });
 
     it('should allow returning a response with a body Object', () => {
-      var expectedBody = {
+      const expectedBody = {
         foo: 'bar'
       };
 
@@ -1643,7 +1643,7 @@ describe('unexpectedMitm', () => {
     });
 
     it('should allow consuming the request body', () => {
-      var expectedBody = {
+      const expectedBody = {
         foo: 'bar'
       };
 
@@ -1674,7 +1674,7 @@ describe('unexpectedMitm', () => {
     });
 
     it('should allow the use of pipe() internally', () => {
-      var expectedBuffer = new Buffer('foobar', 'utf-8');
+      const expectedBuffer = new Buffer('foobar', 'utf-8');
 
       return expect(
         {
@@ -1705,7 +1705,7 @@ describe('unexpectedMitm', () => {
     });
 
     it('should report if the response function returns an error', () => {
-      var err = new Error('bailed');
+      const err = new Error('bailed');
 
       return expect(
         expect(
@@ -1731,7 +1731,7 @@ describe('unexpectedMitm', () => {
 
     describe('with documentation response function', () => {
       function documentationHandler(req, res) {
-        var myMessage;
+        let myMessage;
 
         if (req.url === '/thatOneExpectedThing') {
           myMessage = '<h1>to be expected</h1>';
@@ -1843,11 +1843,11 @@ describe('unexpectedMitm', () => {
   });
 
   describe('in recording mode against a local HTTP server', () => {
-    var handleRequest;
-    var server;
-    var serverAddress;
-    var serverHostname;
-    var serverUrl;
+    let handleRequest;
+    let server;
+    let serverAddress;
+    let serverHostname;
+    let serverUrl;
     beforeEach(() => {
       handleRequest = undefined;
       server = http
@@ -1957,15 +1957,15 @@ describe('unexpectedMitm', () => {
     });
 
     it('should record an error', () => {
-      var expectedError;
+      let expectedError;
       // I do not know the exact version where this change was introduced. Hopefully this is enough to get
       // it working on Travis (0.10.36 presently):
-      var nodeJsVersion = process.version.replace(/^v/, '');
+      const nodeJsVersion = process.version.replace(/^v/, '');
       if (nodeJsVersion === '0.10.29') {
         expectedError = new Error('getaddrinfo EADDRINFO');
         expectedError.code = expectedError.errno = 'EADDRINFO';
       } else if (semver.satisfies(nodeJsVersion, '>=0.12.0')) {
-        var message =
+        const message =
           'getaddrinfo ENOTFOUND www.icwqjecoiqwjecoiwqjecoiwqjceoiwq.com';
         if (semver.satisfies(nodeJsVersion, '>=9.7.0 <10')) {
           expectedError = new Error();
@@ -2009,7 +2009,7 @@ describe('unexpectedMitm', () => {
         res.destroy();
       };
 
-      var expectedError = new Error('socket hang up');
+      const expectedError = new Error('socket hang up');
       expectedError.code = 'ECONNRESET';
 
       return expect(
@@ -2094,11 +2094,11 @@ describe('unexpectedMitm', () => {
   });
 
   describe('in recording mode against a local HTTPS server', () => {
-    var handleRequest;
-    var server;
-    var serverAddress;
-    var serverHostname;
-    var serverUrl;
+    let handleRequest;
+    let server;
+    let serverAddress;
+    let serverHostname;
+    let serverUrl;
 
     beforeEach(() => createPemCertificate({ days: 1, selfSigned: true }).then(
       serverKeys => {
@@ -2128,9 +2128,9 @@ describe('unexpectedMitm', () => {
     });
 
     describe('with a client certificate', () => {
-      var clientKeys;
+      let clientKeys;
 
-      var ca = new Buffer([1, 2, 3]); // Can apparently be bogus
+      const ca = new Buffer([1, 2, 3]); // Can apparently be bogus
 
       beforeEach(() => createPemCertificate({ days: 1, selfSigned: true }).then(
         keys => {
@@ -2182,11 +2182,11 @@ describe('unexpectedMitm', () => {
   });
 
   describe('in capturing mode', () => {
-    var handleRequest;
-    var server;
-    var serverAddress;
-    var serverHostname;
-    var serverUrl;
+    let handleRequest;
+    let server;
+    let serverAddress;
+    let serverHostname;
+    let serverUrl;
 
     beforeEach(() => {
       handleRequest = undefined;
@@ -2212,7 +2212,7 @@ describe('unexpectedMitm', () => {
         res.statusCode = 405;
         res.end();
       };
-      var outputFile = pathModule.resolve(
+      const outputFile = pathModule.resolve(
         __dirname,
         '..',
         'testdata',
@@ -2253,7 +2253,7 @@ describe('unexpectedMitm', () => {
         res.statusCode = 405;
         res.end();
       };
-      var outputFile = pathModule.resolve(
+      const outputFile = pathModule.resolve(
         __dirname,
         '..',
         'testdata',
@@ -2302,7 +2302,7 @@ describe('unexpectedMitm', () => {
 
   describe('in replaying mode', () => {
     it('should resolve with delegated fulfilment', () => {
-      var inputFile = '../testdata/replay.js';
+      const inputFile = '../testdata/replay.js';
 
       return expect(
         expect(
@@ -2321,7 +2321,7 @@ describe('unexpectedMitm', () => {
     });
 
     it('should replay the correct mocks', () => {
-      var inputFile = '../testdata/replay.js';
+      const inputFile = '../testdata/replay.js';
 
       return expect(
         {
@@ -2344,7 +2344,7 @@ describe('unexpectedMitm', () => {
     });
 
     it('should replay with delegated fulfilment', () => {
-      var inputFile = '../testdata/replay-from-function.js';
+      const inputFile = '../testdata/replay-from-function.js';
 
       return expect(
         {
@@ -2453,7 +2453,7 @@ describe('unexpectedMitm', () => {
       'to yield response',
       200
     ).spread((fulfilmentValue, httpConversation) => {
-      var httpResponse = httpConversation.exchanges[0].response;
+      const httpResponse = httpConversation.exchanges[0].response;
 
       expect(httpResponse.headers.getNames(), 'to contain', 'X-Is-Test');
     }));
@@ -2470,11 +2470,11 @@ describe('unexpectedMitm', () => {
   }));
 
   describe('when verifying', () => {
-    var handleRequest;
-    var server;
-    var serverAddress;
-    var serverHostname;
-    var serverUrl;
+    let handleRequest;
+    let server;
+    let serverAddress;
+    let serverHostname;
+    let serverUrl;
     beforeEach(() => {
       handleRequest = undefined;
       server = http
@@ -2756,7 +2756,7 @@ describe('unexpectedMitm', () => {
 
     describe('with a mock in a file', () => {
       it('should verify and resolve with delegated fulfilment', () => {
-        var testFile = pathModule.resolve(
+        const testFile = pathModule.resolve(
           __dirname,
           '..',
           'testdata',
@@ -2813,7 +2813,7 @@ describe('unexpectedMitm', () => {
       });
 
       it('should verify a mock in a file', () => {
-        var testFile = pathModule.resolve(
+        const testFile = pathModule.resolve(
           __dirname,
           '..',
           'testdata',
@@ -3085,8 +3085,8 @@ describe('unexpectedMitm', () => {
 
   it('should handle concurrent requests without confusing the Host headers', () => expect(
     () => expect.promise((resolve, reject) => {
-      var urls = ['http://www.google.com/', 'http://www.bing.com/'];
-      var numInFlight = 0;
+      const urls = ['http://www.google.com/', 'http://www.bing.com/'];
+      let numInFlight = 0;
       urls.forEach(url => {
         numInFlight += 1;
         issueGetAndConsume(url, () => {
@@ -3115,7 +3115,7 @@ describe('unexpectedMitm', () => {
   ));
 
   it('should be unaffected by modifications to the mocks array after initiating the assertion', () => {
-    var mocks = [];
+    const mocks = [];
 
     return expect(
       () => expect(
@@ -3133,7 +3133,7 @@ describe('unexpectedMitm', () => {
   });
 
   it('should not break when a response mocked out by an Error instance with extra properties is checked against the actual exchanges at the end', () => {
-    var err = new Error('foo');
+    const err = new Error('foo');
     err.bar = 123;
     err.statusCode = 404;
     return expect(
