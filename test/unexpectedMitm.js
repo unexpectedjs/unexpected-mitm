@@ -119,12 +119,12 @@ describe('unexpectedMitm', () => {
           '.bin',
           'mocha'
         );
-        const inputFilePath = pathModule.join(testPath, subject + '.js');
+        const inputFilePath = pathModule.join(testPath, `${subject}.js`);
         const expectedFilePath = pathModule.join(
           testPath,
-          expectedFileName + '.js'
+          `${expectedFileName}.js`
         );
-        const outputFilePath = pathModule.join(testPath, '.' + subject + '.js');
+        const outputFilePath = pathModule.join(testPath, `.${subject}.js`);
 
         return expect
           .promise(run => {
@@ -1859,7 +1859,7 @@ describe('unexpectedMitm', () => {
       serverAddress = server.address();
       serverHostname =
         serverAddress.address === '::' ? 'localhost' : serverAddress.address;
-      serverUrl = 'http://' + serverHostname + ':' + serverAddress.port + '/';
+      serverUrl = `http://${serverHostname}:${serverAddress.port}/`;
     });
 
     afterEach(() => {
@@ -1874,7 +1874,7 @@ describe('unexpectedMitm', () => {
       };
       return expect(
         {
-          url: 'POST ' + serverUrl,
+          url: `POST ${serverUrl}`,
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
           },
@@ -1888,7 +1888,7 @@ describe('unexpectedMitm', () => {
             url: 'POST /',
             headers: {
               'Content-Type': 'application/x-www-form-urlencoded',
-              Host: serverHostname + ':' + serverAddress.port
+              Host: `${serverHostname}:${serverAddress.port}`
             },
             body: 'foo=bar'
           },
@@ -2014,7 +2014,7 @@ describe('unexpectedMitm', () => {
 
       return expect(
         {
-          url: 'GET ' + serverUrl
+          url: `GET ${serverUrl}`
         },
         'with expected http recording',
         {
@@ -2023,7 +2023,7 @@ describe('unexpectedMitm', () => {
             host: serverHostname,
             port: serverAddress.port,
             headers: {
-              Host: serverHostname + ':' + serverAddress.port
+              Host: `${serverHostname}:${serverAddress.port}`
             }
           },
           response: expectedError
@@ -2039,7 +2039,7 @@ describe('unexpectedMitm', () => {
         res.end('{"foo": 123}');
       };
       return expect(
-        'GET ' + serverUrl,
+        `GET ${serverUrl}`,
         'with expected http recording',
         {
           request: {
@@ -2047,7 +2047,7 @@ describe('unexpectedMitm', () => {
             host: serverHostname,
             port: serverAddress.port,
             headers: {
-              Host: serverHostname + ':' + serverAddress.port
+              Host: `${serverHostname}:${serverAddress.port}`
             }
           },
           response: {
@@ -2119,7 +2119,7 @@ describe('unexpectedMitm', () => {
             ? 'localhost'
             : serverAddress.address;
         serverUrl =
-          'https://' + serverHostname + ':' + serverAddress.port + '/';
+          `https://${serverHostname}:${serverAddress.port}/`;
       }
     ));
 
@@ -2147,7 +2147,7 @@ describe('unexpectedMitm', () => {
 
         return expect(
           {
-            url: 'POST ' + serverUrl,
+            url: `POST ${serverUrl}`,
             rejectUnauthorized: false,
             cert: clientKeys.certificate,
             key: clientKeys.serviceKey,
@@ -2164,7 +2164,7 @@ describe('unexpectedMitm', () => {
               key: clientKeys.serviceKey,
               ca,
               headers: {
-                Host: serverHostname + ':' + serverAddress.port
+                Host: `${serverHostname}:${serverAddress.port}`
               }
             },
             response: {
@@ -2199,7 +2199,7 @@ describe('unexpectedMitm', () => {
       serverAddress = server.address();
       serverHostname =
         serverAddress.address === '::' ? 'localhost' : serverAddress.address;
-      serverUrl = 'http://' + serverHostname + ':' + serverAddress.port + '/';
+      serverUrl = `http://${serverHostname}:${serverAddress.port}/`;
     });
 
     afterEach(() => {
@@ -2230,7 +2230,7 @@ describe('unexpectedMitm', () => {
             url: 'GET /',
             headers: {
               'Content-Type': 'application/x-www-form-urlencoded',
-              Host: serverHostname + ':' + serverAddress.port
+              Host: `${serverHostname}:${serverAddress.port}`
             },
             body: 'foo=bar'
           },
@@ -2271,7 +2271,7 @@ describe('unexpectedMitm', () => {
             url: 'POST /',
             headers: {
               'Content-Type': 'application/x-www-form-urlencoded',
-              Host: serverHostname + ':' + serverAddress.port
+              Host: `${serverHostname}:${serverAddress.port}`
             },
             body: 'foo=bar'
           },
@@ -2284,7 +2284,7 @@ describe('unexpectedMitm', () => {
         },
         'was written correctly on',
         {
-          url: 'POST ' + serverUrl,
+          url: `POST ${serverUrl}`,
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
           },
@@ -2485,7 +2485,7 @@ describe('unexpectedMitm', () => {
       serverAddress = server.address();
       serverHostname =
         serverAddress.address === '::' ? 'localhost' : serverAddress.address;
-      serverUrl = 'http://' + serverHostname + ':' + serverAddress.port + '/';
+      serverUrl = `http://${serverHostname}:${serverAddress.port}/`;
     });
 
     afterEach(() => {
@@ -2501,7 +2501,7 @@ describe('unexpectedMitm', () => {
       return expect(
         expect(
           {
-            url: 'GET ' + serverUrl
+            url: `GET ${serverUrl}`
           },
           'with http mocked out and verified',
           {
@@ -2525,7 +2525,7 @@ describe('unexpectedMitm', () => {
       return expect(
         expect(
           {
-            url: 'GET ' + serverUrl
+            url: `GET ${serverUrl}`
           },
           'with http mocked out and verified with extra info',
           {
@@ -2567,7 +2567,7 @@ describe('unexpectedMitm', () => {
       return expect(
         expect(
           {
-            url: 'GET ' + serverUrl
+            url: `GET ${serverUrl}`
           },
           'with http mocked out and verified',
           {
@@ -2606,7 +2606,7 @@ describe('unexpectedMitm', () => {
       return expect(
         expect(
           {
-            url: 'GET ' + serverUrl
+            url: `GET ${serverUrl}`
           },
           'with http mocked out and verified',
           {
@@ -2642,7 +2642,7 @@ describe('unexpectedMitm', () => {
       return expect(
         expect(
           {
-            url: 'GET ' + serverUrl
+            url: `GET ${serverUrl}`
           },
           'with http mocked out and verified',
           {
@@ -2717,7 +2717,7 @@ describe('unexpectedMitm', () => {
       return expect(
         expect(
           {
-            url: 'GET ' + serverUrl
+            url: `GET ${serverUrl}`
           },
           'with http mocked out and verified',
           {
@@ -2732,23 +2732,7 @@ describe('unexpectedMitm', () => {
           expect(
             trimDiff(message),
             'to equal',
-            'Explicit failure\n' +
-              '\n' +
-              'The mock and service have diverged.\n' +
-              '\n' +
-              "expected { url: 'GET " +
-              serverUrl +
-              "' } with http mocked out and verified { response: 405 } to yield response 405\n" +
-              '\n' +
-              'GET / HTTP/1.1\n' +
-              'Host: ' +
-              serverHostname +
-              ':59891\n' +
-              '\n' +
-              'HTTP/1.1 405 Method Not Allowed // should be 406 Not Acceptable\n' +
-              '                                //\n' +
-              '                                // -HTTP/1.1 405 Method Not Allowed\n' +
-              '                                // +HTTP/1.1 406 Not Acceptable\n'
+            `Explicit failure\n\nThe mock and service have diverged.\n\nexpected { url: 'GET ${serverUrl}' } with http mocked out and verified { response: 405 } to yield response 405\n\nGET / HTTP/1.1\nHost: ${serverHostname}:59891\n\nHTTP/1.1 405 Method Not Allowed // should be 406 Not Acceptable\n                                //\n                                // -HTTP/1.1 405 Method Not Allowed\n                                // +HTTP/1.1 406 Not Acceptable\n`
           );
         }
       );
@@ -2771,7 +2755,7 @@ describe('unexpectedMitm', () => {
         return expect(
           expect(
             {
-              url: 'GET ' + serverUrl
+              url: `GET ${serverUrl}`
             },
             'with http mocked out by file and verified',
             testFile,
@@ -2797,7 +2781,7 @@ describe('unexpectedMitm', () => {
         return expect(
           expect(
             {
-              url: 'GET ' + serverUrl
+              url: `GET ${serverUrl}`
             },
             'with http mocked out',
             {
@@ -2831,7 +2815,7 @@ describe('unexpectedMitm', () => {
         return expect(
           expect(
             {
-              url: 'GET ' + serverUrl
+              url: `GET ${serverUrl}`
             },
             'with http mocked out by file',
             testFile,
