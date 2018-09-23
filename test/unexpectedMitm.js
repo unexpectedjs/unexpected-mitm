@@ -2357,7 +2357,12 @@ describe('unexpectedMitm', function() {
         res.statusCode = 405;
         res.end();
       };
-      var outputFile = __dirname + '/../testdata/capture.js';
+      var outputFile = pathModule.resolve(
+        __dirname,
+        '..',
+        'testdata',
+        'capture.js'
+      );
 
       // set env for write mode
       process.env.UNEXPECTED_MITM_WRITE = 'true';
@@ -2393,7 +2398,12 @@ describe('unexpectedMitm', function() {
         res.statusCode = 405;
         res.end();
       };
-      var outputFile = __dirname + '/../testdata/capture.js';
+      var outputFile = pathModule.resolve(
+        __dirname,
+        '..',
+        'testdata',
+        'capture.js'
+      );
 
       // set env for write mode
       process.env.UNEXPECTED_MITM_WRITE = 'true';
@@ -2897,7 +2907,12 @@ describe('unexpectedMitm', function() {
 
     describe('with a mock in a file', function() {
       it('should verify and resolve with delegated fulfilment', function() {
-        var testFile = __dirname + '/../testdata/replay-and-verify.js';
+        var testFile = pathModule.resolve(
+          __dirname,
+          '..',
+          'testdata',
+          'replay-and-verify.js'
+        );
         handleRequest = function(req, res) {
           res.statusCode = 202;
           res.setHeader('X-Is-Test', 'yes');
@@ -2949,7 +2964,12 @@ describe('unexpectedMitm', function() {
       });
 
       it('should verify a mock in a file', function() {
-        var testFile = __dirname + '/../testdata/replay-and-verify.js';
+        var testFile = pathModule.resolve(
+          __dirname,
+          '..',
+          'testdata',
+          'replay-and-verify.js'
+        );
         handleRequest = function(req, res) {
           res.statusCode = 201;
           res.setHeader('X-Is-Test', 'yes');
@@ -2996,7 +3016,7 @@ describe('unexpectedMitm', function() {
                   issueGetAndConsume(
                     'http://www.google.com/',
                     run(function() {
-                      throw 'Oh no';
+                      throw new Error('Oh no');
                     })
                   );
                 })
