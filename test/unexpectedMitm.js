@@ -1536,7 +1536,7 @@ describe('unexpectedMitm', () => {
         'with http mocked out',
         {
           request: 'GET /404',
-          response: function(req, res) {
+          response(req, res) {
             res.statusCode =
               req.url === '/404' ? cannedResponse.statusCode : 200;
 
@@ -1559,7 +1559,7 @@ describe('unexpectedMitm', () => {
             method: 'GET',
             url: '/200'
           },
-          response: function(req, res) {
+          response(req, res) {
             res.end(expectedBuffer);
           }
         },
@@ -1587,7 +1587,7 @@ describe('unexpectedMitm', () => {
             method: 'GET',
             url: '/200'
           },
-          response: function(req, res) {
+          response(req, res) {
             res.writeHead(200, {
               'Content-Type': 'application/json'
             });
@@ -1621,7 +1621,7 @@ describe('unexpectedMitm', () => {
             method: 'GET',
             url: '/200'
           },
-          response: function(req, res) {
+          response(req, res) {
             res.writeHead(200, {
               'Content-Type': 'application/json; charset=utf8'
             });
@@ -1687,7 +1687,7 @@ describe('unexpectedMitm', () => {
             url: '/stream',
             body: expectedBuffer
           },
-          response: function(req, res) {
+          response(req, res) {
             req.pipe(res);
           }
         },
@@ -1716,7 +1716,7 @@ describe('unexpectedMitm', () => {
               method: 'GET',
               url: '/404'
             },
-            response: function(req, res) {
+            response(req, res) {
               throw err;
             }
           },
