@@ -237,7 +237,7 @@ describe('unexpectedMitm', () => {
     var agent = new http.Agent({ keepAlive: true });
     return expect(
       () => expect.promise(run => {
-        http.get({ host: 'example.com', agent: agent }).on(
+        http.get({ host: 'example.com', agent }).on(
           'response',
           run(response => {
             response.on('data', () => {}).on('end', run());
@@ -249,7 +249,7 @@ describe('unexpectedMitm', () => {
       'not to error'
     ).then(() => expect(
       () => expect.promise(run => {
-        http.get({ host: 'example.com', agent: agent }).on(
+        http.get({ host: 'example.com', agent }).on(
           'response',
           run(response => {
             response.on('data', () => {}).on('end', run(() => {}));
@@ -2143,7 +2143,7 @@ describe('unexpectedMitm', () => {
             rejectUnauthorized: false,
             cert: clientKeys.certificate,
             key: clientKeys.serviceKey,
-            ca: ca
+            ca
           },
           'with expected http recording',
           {
@@ -2154,7 +2154,7 @@ describe('unexpectedMitm', () => {
               rejectUnauthorized: false,
               cert: clientKeys.certificate,
               key: clientKeys.serviceKey,
-              ca: ca,
+              ca,
               headers: {
                 Host: serverHostname + ':' + serverAddress.port
               }
