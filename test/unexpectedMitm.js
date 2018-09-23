@@ -110,7 +110,6 @@ describe('unexpectedMitm', () => {
         expect.errorMode = 'nested';
         const basePath = pathModule.join(__dirname, '..');
         const testPath = pathModule.join(basePath, 'testdata');
-
         const commandPath = pathModule.join(
           basePath,
           'node_modules',
