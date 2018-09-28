@@ -1505,10 +1505,10 @@ describe('unexpectedMitm', () => {
             'to equal',
             'expected\n' +
               '() =>\n' +
-              "            expect('http://www.google.com/foo', 'to yield response', 200).then(\n" +
-              '              () =>\n' +
-              "                expect('http://www.google.com/foo', 'to yield response', 200)\n" +
-              '            )\n' +
+              "  expect('http://www.google.com/foo', 'to yield response', 200).then(\n" +
+              '    () =>\n' +
+              "      expect('http://www.google.com/foo', 'to yield response', 200)\n" +
+              '  )\n' +
               'with http mocked out [] not to error\n' +
               '\n' +
               '// should be removed:\n' +
@@ -1958,13 +1958,13 @@ describe('unexpectedMitm', () => {
             'to equal',
             'expected\n' +
               '() =>\n' +
-              '            expect.promise\n' +
-              '              .fromNode(cb => {\n' +
-              '                issueGetAndConsume(serverUrl, cb);\n' +
-              '              })\n' +
-              '              .then(buffer => {\n' +
-              "                expect(buffer.toString('utf-8'), 'to equal', 'hello world');\n" +
-              '              })\n' +
+              '  expect.promise\n' +
+              '    .fromNode(cb => {\n' +
+              '      issueGetAndConsume(serverUrl, cb);\n' +
+              '    })\n' +
+              '    .then(buffer => {\n' +
+              "      expect(buffer.toString('utf-8'), 'to equal', 'hello world');\n" +
+              '    })\n' +
               'with http recorded not to error\n' +
               '  expected function not to error\n' +
               "    returned promise rejected with: expected 'hello' to equal 'hello world'\n" +
@@ -2908,19 +2908,19 @@ describe('unexpectedMitm', () => {
           'to equal',
           'expected\n' +
             '() =>\n' +
-            '            expect.promise(run => {\n' +
-            '              issueGetAndConsume(\n' +
-            "                'http://www.google.com/foo',\n" +
-            '                run(() => {\n' +
-            '                  issueGetAndConsume(\n' +
-            "                    'http://www.google.com/',\n" +
-            '                    run(() => {\n' +
-            "                      throw new Error('Oh no');\n" +
-            '                    })\n' +
-            '                  );\n' +
-            '                })\n' +
-            '              );\n' +
-            '            })\n' +
+            '  expect.promise(run => {\n' +
+            '    issueGetAndConsume(\n' +
+            "      'http://www.google.com/foo',\n" +
+            '      run(() => {\n' +
+            '        issueGetAndConsume(\n' +
+            "          'http://www.google.com/',\n" +
+            '          run(() => {\n' +
+            "            throw new Error('Oh no');\n" +
+            '          })\n' +
+            '        );\n' +
+            '      })\n' +
+            '    );\n' +
+            '  })\n' +
             'with http mocked out\n' +
             '[\n' +
             "  { request: 'GET http://www.google.com/', response: { headers: ..., body: 'hello' } },\n" +
@@ -2975,14 +2975,14 @@ describe('unexpectedMitm', () => {
           'to equal',
           'expected\n' +
             'run =>\n' +
-            '            expect.promise(run => {\n' +
-            "              http.get('http://www.google.com/foo').on(\n" +
-            "                'error',\n" +
-            '                run(() => {\n' +
-            '                  // Ignore error\n' +
-            '                })\n' +
-            '              );\n' +
-            '            })\n' +
+            '  expect.promise(run => {\n' +
+            "    http.get('http://www.google.com/foo').on(\n" +
+            "      'error',\n" +
+            '      run(() => {\n' +
+            '        // Ignore error\n' +
+            '      })\n' +
+            '    );\n' +
+            '  })\n' +
             "with http mocked out [ { request: 'GET http://www.google.com/', response: { headers: ..., body: 'hello' } } ] not to error\n" +
             '\n' +
             'GET /foo HTTP/1.1 // should be GET /\n' +
@@ -3030,11 +3030,11 @@ describe('unexpectedMitm', () => {
           'to equal',
           'expected\n' +
             '() =>\n' +
-            '            expect.promise((resolve, reject) => {\n' +
-            "              http.get('http://www.google.com/foo').on('error', () => {\n" +
-            "                throw new Error('darn');\n" +
-            '              });\n' +
-            '            })\n' +
+            '  expect.promise((resolve, reject) => {\n' +
+            "    http.get('http://www.google.com/foo').on('error', () => {\n" +
+            "      throw new Error('darn');\n" +
+            '    });\n' +
+            '  })\n' +
             "with http mocked out [ { request: 'GET http://www.google.com/', response: { headers: ..., body: 'hello' } } ] not to error\n" +
             '\n' +
             'GET /foo HTTP/1.1 // should be GET /\n' +
