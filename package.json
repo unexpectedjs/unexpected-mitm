@@ -28,7 +28,7 @@
     "coveralls": "^3.0.0",
     "eslint": "^5.6.0",
     "eslint-config-pretty-standard": "^2.0.0",
-    "eslint-plugin-prettier": "^2.6.2",
+    "eslint-plugin-prettier": "^3.0.0",
     "express": "^4.16.3",
     "mocha": "^4.1.0",
     "nyc": "^13.0.1",
