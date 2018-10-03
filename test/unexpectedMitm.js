@@ -41,6 +41,7 @@ function trimDiff(message) {
 
 describe('unexpectedMitm', () => {
   const expect = require('unexpected')
+    .clone()
     .use(require('../lib/unexpectedMitm'))
     .use(require('unexpected-http'))
     .use(require('unexpected-sinon'))
