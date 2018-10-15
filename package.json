@@ -36,7 +36,7 @@
     "prettier": "~1.14.3",
     "request": "^2.53.0",
     "semver": "^5.0.1",
-    "sinon": "^6.0.0",
+    "sinon": "^7.0.0",
     "socketerrors-papandreou": "^0.2.0-patch2",
     "unexpected": "^10.39.1",
     "unexpected-documentation-site-generator": "^4.0.0",
