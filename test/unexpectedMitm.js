@@ -2126,6 +2126,13 @@ describe('unexpectedMitm', () => {
           );
         }
       ));
+
+    it('should not break when the assertion being delegated to throws synchronously', () =>
+      expect(
+        expect('http://www.google.com/', 'with http recorded', 'to foobarquux'),
+        'to be rejected with',
+        /^Unknown assertion 'to foobarquux'/
+      ));
   });
 
   describe('in injecting mode against a local HTTP server', () => {
