@@ -49,8 +49,7 @@ describe('unexpectedMitm', () => {
     .addAssertion(
       '<any> with expected http recording <object> <assertion>',
       (expect, subject, expectedRecordedExchanges) => {
-        // ...
-        expect.errorMode = 'nested';
+        expect.errorMode = 'bubble';
         expect.args.splice(1, 0, 'with http recorded with extra info');
         return expect
           .promise(() => expect.shift())
@@ -2098,6 +2097,35 @@ describe('unexpectedMitm', () => {
         200
       );
     });
+
+    it('should output the error if the assertion being delegated to fails', () =>
+      expect(
+        expect(
+          'http://www.google.com/foo',
+          'with expected http recording',
+          {
+            request: 'GET /foo',
+            response: 404
+          },
+          'to yield response',
+          412
+        ),
+        'when rejected',
+        'to have message',
+        message => {
+          expect(
+            trimDiff(message),
+            'to begin with',
+            "expected 'http://www.google.com/foo' with http recorded with extra info to yield response 412\n" +
+              "  expected 'http://www.google.com/foo' to yield response 412\n" +
+              '\n' +
+              '  GET /foo HTTP/1.1\n' +
+              '  Host: www.google.com\n' +
+              '\n' +
+              '  HTTP/1.1 404 Not Found // should be 412 Precondition Failed\n'
+          );
+        }
+      ));
   });
 
   describe('in injecting mode against a local HTTP server', () => {
