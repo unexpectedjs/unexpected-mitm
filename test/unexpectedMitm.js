@@ -49,8 +49,7 @@ describe('unexpectedMitm', () => {
     .addAssertion(
       '<any> with expected http recording <object> <assertion>',
       (expect, subject, expectedRecordedExchanges) => {
-        // ...
-        expect.errorMode = 'nested';
+        expect.errorMode = 'bubble';
         expect.args.splice(1, 0, 'with http recorded with extra info');
         return expect
           .promise(() => expect.shift())
@@ -2098,6 +2097,42 @@ describe('unexpectedMitm', () => {
         200
       );
     });
+
+    it('should output the error if the assertion being delegated to fails', () =>
+      expect(
+        expect(
+          'http://www.google.com/foo',
+          'with expected http recording',
+          {
+            request: 'GET /foo',
+            response: 404
+          },
+          'to yield response',
+          412
+        ),
+        'when rejected',
+        'to have message',
+        message => {
+          expect(
+            trimDiff(message),
+            'to begin with',
+            "expected 'http://www.google.com/foo' with http recorded with extra info to yield response 412\n" +
+              "  expected 'http://www.google.com/foo' to yield response 412\n" +
+              '\n' +
+              '  GET /foo HTTP/1.1\n' +
+              '  Host: www.google.com\n' +
+              '\n' +
+              '  HTTP/1.1 404 Not Found // should be 412 Precondition Failed\n'
+          );
+        }
+      ));
+
+    it('should not break when the assertion being delegated to throws synchronously', () =>
+      expect(
+        expect('http://www.google.com/', 'with http recorded', 'to foobarquux'),
+        'to be rejected with',
+        /^Unknown assertion 'to foobarquux'/
+      ));
   });
 
   describe('in injecting mode against a local HTTP server', () => {
@@ -2327,6 +2362,71 @@ describe('unexpectedMitm', () => {
         outputFile,
         'to yield response',
         405
+      ).finally(() => {
+        delete process.env.UNEXPECTED_MITM_WRITE;
+      });
+    });
+
+    it('should output the error if the assertion being delegated to fails', () => {
+      const outputFile = pathModule.resolve(
+        __dirname,
+        '..',
+        'replay',
+        'capture.js'
+      );
+
+      // set env for write mode
+      process.env.UNEXPECTED_MITM_WRITE = 'true';
+
+      return expect(
+        expect(
+          'http://www.google.com/foo',
+          'with http mocked out by file',
+          outputFile,
+          'to yield response',
+          412
+        ),
+        'when rejected',
+        'to have message',
+        message => {
+          expect(
+            trimDiff(message),
+            'to begin with',
+            "expected 'http://www.google.com/foo'\n" +
+              `with http mocked out by file '${outputFile}' to yield response 412\n` +
+              "  expected 'http://www.google.com/foo' to yield response 412\n" +
+              '\n' +
+              '  GET /foo HTTP/1.1\n' +
+              '  Host: www.google.com\n' +
+              '\n' +
+              '  HTTP/1.1 404 Not Found // should be 412 Precondition Failed\n'
+          );
+        }
+      ).finally(() => {
+        delete process.env.UNEXPECTED_MITM_WRITE;
+      });
+    });
+
+    it('should not break when the assertion being delegated to throws synchronously', () => {
+      const outputFile = pathModule.resolve(
+        __dirname,
+        '..',
+        'replay',
+        'capture.js'
+      );
+
+      // set env for write mode
+      process.env.UNEXPECTED_MITM_WRITE = 'true';
+
+      return expect(
+        expect(
+          'http://www.google.com/',
+          'with http mocked out by file',
+          outputFile,
+          'to foobarquux'
+        ),
+        'to be rejected with',
+        /^Unknown assertion 'to foobarquux'/
       ).finally(() => {
         delete process.env.UNEXPECTED_MITM_WRITE;
       });
