@@ -93,16 +93,30 @@ describe('unexpectedMitm', () => {
       }
     )
     .addAssertion(
-      '<any> was read correctly on <object> <assertion>',
+      '<any> was read correctly [from file] [with extra info] as <object> <assertion>',
       (expect, subject, drivingRequest) => {
         expect.errorMode = 'bubble';
         const expectedRecordedExchanges = subject;
 
         return expect
           .promise(() => expect.shift(drivingRequest))
-          .then(([{ httpExchange }]) =>
-            expect(httpExchange, 'to satisfy', expectedRecordedExchanges)
-          );
+          .then(result => {
+            if (expect.flags['with extra info']) {
+              expect(
+                result,
+                'to have length',
+                expect.flags['from file'] ? 4 : 3
+              );
+            }
+
+            const { httpExchange } = result[0];
+
+            return expect(
+              httpExchange,
+              'to satisfy',
+              expectedRecordedExchanges
+            );
+          });
       }
     )
     .addAssertion(
@@ -2351,7 +2365,7 @@ describe('unexpectedMitm', () => {
             }
           }
         },
-        'was read correctly on',
+        'was read correctly from file with extra info as',
         {
           url: 'GET /'
         },
@@ -2377,7 +2391,7 @@ describe('unexpectedMitm', () => {
             }
           }
         },
-        'was read correctly on',
+        'was read correctly from file with extra info as',
         {
           url: 'POST /',
           headers: {
