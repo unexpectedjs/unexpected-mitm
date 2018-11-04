@@ -2393,7 +2393,7 @@ describe('unexpectedMitm', () => {
             trimDiff(message),
             'to begin with',
             "expected 'http://www.google.com/foo'\n" +
-              "with http mocked out by file '/Users/alex/Documents/projects/unexpected-mitm/replay/capture.js' to yield response 412\n" +
+              `with http mocked out by file '${outputFile}' to yield response 412\n` +
               "  expected 'http://www.google.com/foo' to yield response 412\n" +
               '\n' +
               '  GET /foo HTTP/1.1\n' +
