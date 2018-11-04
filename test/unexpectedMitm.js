@@ -2366,6 +2366,71 @@ describe('unexpectedMitm', () => {
         delete process.env.UNEXPECTED_MITM_WRITE;
       });
     });
+
+    it('should output the error if the assertion being delegated to fails', () => {
+      const outputFile = pathModule.resolve(
+        __dirname,
+        '..',
+        'replay',
+        'capture.js'
+      );
+
+      // set env for write mode
+      process.env.UNEXPECTED_MITM_WRITE = 'true';
+
+      return expect(
+        expect(
+          'http://www.google.com/foo',
+          'with http mocked out by file',
+          outputFile,
+          'to yield response',
+          412
+        ),
+        'when rejected',
+        'to have message',
+        message => {
+          expect(
+            trimDiff(message),
+            'to begin with',
+            "expected 'http://www.google.com/foo'\n" +
+              "with http mocked out by file '/Users/alex/Documents/projects/unexpected-mitm/replay/capture.js' to yield response 412\n" +
+              "  expected 'http://www.google.com/foo' to yield response 412\n" +
+              '\n' +
+              '  GET /foo HTTP/1.1\n' +
+              '  Host: www.google.com\n' +
+              '\n' +
+              '  HTTP/1.1 404 Not Found // should be 412 Precondition Failed\n'
+          );
+        }
+      ).finally(() => {
+        delete process.env.UNEXPECTED_MITM_WRITE;
+      });
+    });
+
+    it('should not break when the assertion being delegated to throws synchronously', () => {
+      const outputFile = pathModule.resolve(
+        __dirname,
+        '..',
+        'replay',
+        'capture.js'
+      );
+
+      // set env for write mode
+      process.env.UNEXPECTED_MITM_WRITE = 'true';
+
+      return expect(
+        expect(
+          'http://www.google.com/',
+          'with http mocked out by file',
+          outputFile,
+          'to foobarquux'
+        ),
+        'to be rejected with',
+        /^Unknown assertion 'to foobarquux'/
+      ).finally(() => {
+        delete process.env.UNEXPECTED_MITM_WRITE;
+      });
+    });
   });
 
   describe('in replaying mode', () => {
