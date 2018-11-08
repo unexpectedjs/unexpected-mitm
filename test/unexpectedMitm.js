@@ -2190,7 +2190,8 @@ describe('unexpectedMitm', () => {
               : serverAddress.address;
           serverUrl = `https://${serverHostname}:${serverAddress.port}/`;
         }
-      ));
+      )
+    );
 
     afterEach(() => {
       server.close();
@@ -2204,7 +2205,8 @@ describe('unexpectedMitm', () => {
       beforeEach(() =>
         createPemCertificate({ days: 1, selfSigned: true }).then(keys => {
           clientKeys = keys;
-        }));
+        })
+      );
 
       it('should record a client certificate', () => {
         handleRequest = (req, res) => {
