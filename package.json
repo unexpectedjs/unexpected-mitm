@@ -23,6 +23,9 @@
   "peerDependencies": {
     "unexpected": "^10.27.0"
   },
+  "optionalDependencies": {
+    "unexpected-documentation-site-generator": "^5.0.0"
+  },
   "devDependencies": {
     "body-parser": "^1.18.2",
     "coveralls": "^3.0.0",
@@ -39,7 +42,6 @@
     "sinon": "^7.0.0",
     "socketerrors-papandreou": "^0.2.0-patch2",
     "unexpected": "^10.39.1",
-    "unexpected-documentation-site-generator": "^5.0.0",
     "unexpected-express": "^11.0.0",
     "unexpected-http": "^6.0.0",
     "unexpected-markdown": "^1.4.0",
