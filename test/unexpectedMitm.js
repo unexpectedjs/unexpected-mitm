@@ -11,20 +11,22 @@ const semver = require('semver');
 const sinon = require('sinon');
 const socketErrors = require('socketerrors-papandreou');
 
+function consumeResponse(response, callback) {
+  const chunks = [];
+
+  response
+    .on('data', chunk => {
+      chunks.push(Buffer.isBuffer(chunk) ? chunk : new Buffer(chunk));
+    })
+    .on('end', () => {
+      callback(null, Buffer.concat(chunks));
+    });
+}
+
 function issueGetAndConsume(url, callback) {
   http
     .get(url)
-    .on('response', response => {
-      const chunks = [];
-
-      response
-        .on('data', chunk => {
-          chunks.push(Buffer.isBuffer(chunk) ? chunk : new Buffer(chunk));
-        })
-        .on('end', () => {
-          callback(null, Buffer.concat(chunks));
-        });
-    })
+    .on('response', response => consumeResponse(response, callback))
     .on('error', callback)
     .end();
 }
@@ -2876,6 +2878,157 @@ describe('unexpectedMitm', () => {
           );
         }
       );
+    });
+
+    describe('with a POST in the presence of a request body', () => {
+      it('should verify when it is an array', () => {
+        handleRequest = (req, res) => {
+          consumeResponse(req, (_err, buffer) => {
+            res.statusCode = 201;
+            let output;
+            try {
+              output = JSON.parse(buffer.toString('utf-8'));
+            } catch (e) {
+              output = [':-('];
+            }
+            res.setHeader('Content-Type', 'text/plain');
+            res.end(output[0]);
+          });
+        };
+
+        return expect(
+          expect(
+            {
+              method: 'POST',
+              url: serverUrl,
+              body: [':-)']
+            },
+            'with http mocked out and verified',
+            {
+              request: {
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: [':-)']
+              },
+              response: {
+                statusCode: 201,
+                headers: {
+                  'Content-Type': 'text/plain'
+                },
+                body: ':-)'
+              }
+            },
+            'to yield response',
+            {
+              statusCode: 201,
+              body: ':-)'
+            }
+          ),
+          'to be fulfilled'
+        );
+      });
+
+      it('should verify when it is an object', () => {
+        handleRequest = (req, res) => {
+          consumeResponse(req, (_err, buffer) => {
+            res.statusCode = 201;
+            let output;
+            try {
+              output = JSON.parse(buffer.toString('utf-8'));
+            } catch (e) {
+              output = { foo: ':-(' };
+            }
+            res.setHeader('Content-Type', 'text/plain');
+            res.end(output.foo);
+          });
+        };
+
+        return expect(
+          expect(
+            {
+              method: 'POST',
+              url: serverUrl,
+              body: {
+                foo: ':-)'
+              }
+            },
+            'with http mocked out and verified',
+            {
+              request: {
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: {
+                  foo: ':-)'
+                }
+              },
+              response: {
+                statusCode: 201,
+                headers: {
+                  'Content-Type': 'text/plain'
+                },
+                body: ':-)'
+              }
+            },
+            'to yield response',
+            {
+              statusCode: 201,
+              body: ':-)'
+            }
+          ),
+          'to be fulfilled'
+        );
+      });
+
+      it('should verify when it is a string', () => {
+        handleRequest = (req, res) => {
+          consumeResponse(req, (_err, buffer) => {
+            res.statusCode = 201;
+            let body;
+            try {
+              body = buffer.toString('utf8');
+            } catch (e) {
+              body = null;
+            }
+            res.setHeader('Content-Type', 'text/plain');
+            res.end(body === 'foo' ? ':-)' : ':-(');
+          });
+        };
+
+        return expect(
+          expect(
+            {
+              method: 'POST',
+              url: serverUrl,
+              // TODO: unexpected-http does not infer text plain
+              headers: {
+                'Content-Type': 'text/plain'
+              },
+              body: 'foo'
+            },
+            'with http mocked out and verified',
+            {
+              request: {
+                body: 'foo'
+              },
+              response: {
+                statusCode: 201,
+                headers: {
+                  'Content-Type': 'text/plain'
+                },
+                body: ':-)'
+              }
+            },
+            'to yield response',
+            {
+              statusCode: 201,
+              body: ':-)'
+            }
+          ),
+          'to be fulfilled'
+        );
+      });
     });
 
     describe('with a mock in a file', () => {
