@@ -489,7 +489,7 @@ describe('unexpectedMitm', () => {
         ),
         'when rejected',
         'to have message',
-        message => {
+        expect.it(message =>
           expect(
             trimDiff(message),
             'to equal',
@@ -514,8 +514,8 @@ describe('unexpectedMitm', () => {
               '\n' +
               '<!DOCTYPE html>\n' +
               '<html></html>'
-          );
-        }
+          )
+        )
       ));
   });
 
@@ -559,7 +559,7 @@ describe('unexpectedMitm', () => {
           ),
           'when rejected',
           'to have message',
-          message => {
+          expect.it(message =>
             expect(
               trimDiff(message),
               'to equal',
@@ -570,8 +570,8 @@ describe('unexpectedMitm', () => {
                 '// expected an encrypted request\n' +
                 '\n' +
                 'HTTP/1.1 200 OK'
-            );
-          }
+            )
+          )
         ));
     });
 
@@ -602,7 +602,7 @@ describe('unexpectedMitm', () => {
           ),
           'when rejected',
           'to have message',
-          message => {
+          expect.it(message =>
             expect(
               trimDiff(message),
               'to equal',
@@ -613,8 +613,8 @@ describe('unexpectedMitm', () => {
                 '// expected an encrypted request\n' +
                 '\n' +
                 'HTTP/1.1 200 OK'
-            );
-          }
+            )
+          )
         ));
     });
   });
@@ -646,7 +646,7 @@ describe('unexpectedMitm', () => {
         ),
         'when rejected',
         'to have message',
-        message => {
+        expect.it(message =>
           expect(
             trimDiff(message),
             'to equal',
@@ -666,8 +666,8 @@ describe('unexpectedMitm', () => {
               '// +www.example.com\n' +
               '\n' +
               'HTTP/1.1 200 OK'
-          );
-        }
+          )
+        )
       ));
   });
 
@@ -1057,7 +1057,7 @@ describe('unexpectedMitm', () => {
         ),
         'when rejected',
         'to have message',
-        message => {
+        expect.it(message =>
           expect(
             trimDiff(message),
             'to equal',
@@ -1073,8 +1073,8 @@ describe('unexpectedMitm', () => {
               '}\n' +
               '\n' +
               'HTTP/1.1 200 OK'
-          );
-        }
+          )
+        )
       ));
   });
 
@@ -1128,7 +1128,7 @@ describe('unexpectedMitm', () => {
       ),
       'when rejected',
       'to have message',
-      message => {
+      expect.it(message =>
         expect(
           trimDiff(message),
           'to equal',
@@ -1141,8 +1141,8 @@ describe('unexpectedMitm', () => {
             'Host: www.google.com\n' +
             '\n' +
             'HTTP/1.1 200 OK'
-        );
-      }
+        )
+      )
     ));
 
   it('should produce an error if a mocked request is not exercised', () =>
@@ -1165,7 +1165,7 @@ describe('unexpectedMitm', () => {
       ),
       'when rejected',
       'to have message',
-      message => {
+      expect.it(message =>
         expect(
           trimDiff(message),
           'to equal',
@@ -1181,8 +1181,8 @@ describe('unexpectedMitm', () => {
             '// GET /foo\n' +
             '//\n' +
             '// HTTP/1.1 200 OK'
-        );
-      }
+        )
+      )
     ));
 
   it('should produce an error if a mocked request is not exercised and the second mock has a stream', () => {
@@ -1215,7 +1215,7 @@ describe('unexpectedMitm', () => {
       ),
       'when rejected',
       'to have message',
-      message => {
+      expect.it(message =>
         expect(
           trimDiff(message),
           'to equal',
@@ -1233,8 +1233,8 @@ describe('unexpectedMitm', () => {
             '// HTTP/1.1 200 OK\n' +
             '//\n' +
             '// Buffer([0x66, 0x6F, 0x6F, 0x62, 0x61, 0x72, 0x71, 0x75, 0x75, 0x78])'
-        );
-      }
+        )
+      )
     );
   });
 
@@ -1271,7 +1271,7 @@ describe('unexpectedMitm', () => {
       ),
       'when rejected',
       'to have message',
-      message => {
+      expect.it(message =>
         expect(
           trimDiff(message),
           'to equal',
@@ -1290,8 +1290,8 @@ describe('unexpectedMitm', () => {
             '// Content-Type: text/plain\n' +
             '//\n' +
             '// foobarquux'
-        );
-      }
+        )
+      )
     );
   });
 
@@ -1352,7 +1352,7 @@ describe('unexpectedMitm', () => {
       ),
       'when rejected',
       'to have message',
-      message => {
+      expect.it(message =>
         expect(
           trimDiff(message),
           'to equal',
@@ -1371,8 +1371,8 @@ describe('unexpectedMitm', () => {
           "//      // expected '' to match /bar/\n" + // Hmm, this is not ideal
             '//\n' +
             '// HTTP/1.1 200 OK'
-        );
-      }
+        )
+      )
     ));
 
   it('should produce an error if a mocked request is not exercised and there are failing async expects', () =>
@@ -1406,7 +1406,7 @@ describe('unexpectedMitm', () => {
       ),
       'when rejected',
       'to have message',
-      message => {
+      expect.it(message =>
         expect(
           trimDiff(message),
           'to equal',
@@ -1432,8 +1432,8 @@ describe('unexpectedMitm', () => {
             "//      // expected '' to match /bar/\n" +
             '//\n' +
             '// HTTP/1.1 200 OK'
-        );
-      }
+        )
+      )
     ));
 
   describe('when the test suite issues more requests than have been mocked out', () => {
@@ -1448,7 +1448,7 @@ describe('unexpectedMitm', () => {
         ),
         'when rejected',
         'to have message',
-        message => {
+        expect.it(message =>
           expect(
             message.replace(/^\/\/ Connection:.*\n/m, ''),
             'to equal',
@@ -1460,8 +1460,8 @@ describe('unexpectedMitm', () => {
               '// Content-Length: 0\n' +
               '//\n' +
               '// <no response>'
-          );
-        }
+          )
+        )
       ));
 
     it('should produce an error and decode the textual body', () =>
@@ -1481,7 +1481,7 @@ describe('unexpectedMitm', () => {
         ),
         'when rejected',
         'to have message',
-        message => {
+        expect.it(message =>
           expect(
             message.replace(/^\/\/ Connection:.*\n/m, ''),
             'to equal',
@@ -1497,8 +1497,8 @@ describe('unexpectedMitm', () => {
               '// quux & xuuq\n' +
               '//\n' +
               '// <no response>'
-          );
-        }
+          )
+        )
       ));
 
     it('should produce an error as soon as the first request is issued, even when the test issues more requests later', () =>
@@ -1515,7 +1515,7 @@ describe('unexpectedMitm', () => {
         ),
         'when rejected',
         'to have message',
-        message => {
+        expect.it(message =>
           expect(
             message.replace(/^\/\/ Connection:.*\n/m, ''),
             'to equal',
@@ -1533,8 +1533,8 @@ describe('unexpectedMitm', () => {
               '// Content-Length: 0\n' +
               '//\n' +
               '// <no response>'
-          );
-        }
+          )
+        )
       ));
   });
 
@@ -1565,7 +1565,7 @@ describe('unexpectedMitm', () => {
       ),
       'when rejected',
       'to have message',
-      message => {
+      expect.it(message =>
         expect(
           trimDiff(message),
           'to equal',
@@ -1575,8 +1575,8 @@ describe('unexpectedMitm', () => {
             'Host: www.google.com\n' +
             '\n' +
             'HTTP/1.1 200 OK // should be 412 Precondition Failed\n'
-        );
-      }
+        )
+      )
     ));
 
   describe('with response function', () => {
@@ -1858,7 +1858,7 @@ describe('unexpectedMitm', () => {
           ),
           'when rejected',
           'to have message',
-          message => {
+          expect.it(message =>
             expect(
               trimDiff(message),
               'to equal',
@@ -1873,8 +1873,8 @@ describe('unexpectedMitm', () => {
                 '// +05                                               │.│\n' +
                 '\n' +
                 'HTTP/1.1 200 OK'
-            );
-          }
+            )
+          )
         ));
     });
   });
@@ -1968,7 +1968,7 @@ describe('unexpectedMitm', () => {
         ),
         'when rejected',
         'to have message',
-        message => {
+        expect.it(message =>
           expect(
             message,
             'to equal',
@@ -1987,8 +1987,8 @@ describe('unexpectedMitm', () => {
               '\n' +
               '    -hello\n' +
               '    +hello world'
-          );
-        }
+          )
+        )
       );
     });
 
@@ -2114,7 +2114,7 @@ describe('unexpectedMitm', () => {
         ),
         'when rejected',
         'to have message',
-        message => {
+        expect.it(message =>
           expect(
             trimDiff(message),
             'to begin with',
@@ -2125,8 +2125,8 @@ describe('unexpectedMitm', () => {
               '  Host: www.google.com\n' +
               '\n' +
               '  HTTP/1.1 404 Not Found // should be 412 Precondition Failed\n'
-          );
-        }
+          )
+        )
       ));
 
     it('should not break when the assertion being delegated to throws synchronously', () =>
@@ -2392,7 +2392,7 @@ describe('unexpectedMitm', () => {
         ),
         'when rejected',
         'to have message',
-        message => {
+        expect.it(message =>
           expect(
             trimDiff(message),
             'to begin with',
@@ -2404,8 +2404,8 @@ describe('unexpectedMitm', () => {
               '  Host: www.google.com\n' +
               '\n' +
               '  HTTP/1.1 404 Not Found // should be 412 Precondition Failed\n'
-          );
-        }
+          )
+        )
       ).finally(() => {
         delete process.env.UNEXPECTED_MITM_WRITE;
       });
@@ -2870,13 +2870,13 @@ describe('unexpectedMitm', () => {
         ),
         'when rejected',
         'to have message',
-        message => {
+        expect.it(message =>
           expect(
             trimDiff(message),
             'to equal',
             `Explicit failure\n\nThe mock and service have diverged.\n\nexpected { url: 'GET ${serverUrl}' } with http mocked out and verified { response: 405 } to yield response 405\n\nGET / HTTP/1.1\nHost: ${serverHostname}:59891\n\nHTTP/1.1 405 Method Not Allowed // should be 406 Not Acceptable\n                                //\n                                // -HTTP/1.1 405 Method Not Allowed\n                                // +HTTP/1.1 406 Not Acceptable\n`
-          );
-        }
+          )
+        )
       );
     });
 
@@ -3117,12 +3117,12 @@ describe('unexpectedMitm', () => {
           ),
           'when rejected',
           'to have message',
-          message => {
+          expect.it(message =>
             expect(trimDiff(message), 'to begin with', 'Explicit failure').and(
               'to contain',
               'The mock and service have diverged.'
-            );
-          }
+            )
+          )
         ).finally(() => {
           delete process.env.UNEXPECTED_MITM_VERIFY;
         });
@@ -3171,10 +3171,11 @@ describe('unexpectedMitm', () => {
           ],
           'not to error'
         ),
-      'to be rejected with',
-      err => {
+      'when rejected',
+      'to have message',
+      expect.it(message =>
         expect(
-          trimDiff(err.getErrorMessage('text').toString()),
+          trimDiff(message),
           'to equal',
           'expected\n' +
             '() =>\n' +
@@ -3207,8 +3208,8 @@ describe('unexpectedMitm', () => {
             'Content-Type: text/plain\n' +
             '\n' +
             'hello'
-        );
-      }
+        )
+      )
     ));
 
   it('should fail a test as soon as an unexpected request is made, even if the code being tested ignores the request failing', () =>
@@ -3238,10 +3239,11 @@ describe('unexpectedMitm', () => {
           ],
           'not to error'
         ),
-      'to be rejected with',
-      err => {
+      'when rejected',
+      'to have message',
+      expect.it(message =>
         expect(
-          trimDiff(err.getErrorMessage('text').toString()),
+          trimDiff(message),
           'to equal',
           'expected\n' +
             'run =>\n' +
@@ -3265,8 +3267,8 @@ describe('unexpectedMitm', () => {
             'Content-Type: text/plain\n' +
             '\n' +
             'hello'
-        );
-      }
+        )
+      )
     ));
 
   it('should fail a test as soon as an unexpected request is made, even if the code being tested ignores the request failing and fails with another error', () =>
@@ -3293,10 +3295,11 @@ describe('unexpectedMitm', () => {
           ],
           'not to error'
         ),
-      'to be rejected with',
-      err => {
+      'when rejected',
+      'to have message',
+      expect.it(message =>
         expect(
-          trimDiff(err.getErrorMessage('text').toString()),
+          trimDiff(message),
           'to equal',
           'expected\n' +
             '() =>\n' +
@@ -3317,8 +3320,8 @@ describe('unexpectedMitm', () => {
             'Content-Type: text/plain\n' +
             '\n' +
             'hello'
-        );
-      }
+        )
+      )
     ));
 
   it('should fail a test as soon as an unexpected request is made, even if the code being tested ignores the request failing and fails with an uncaught exception', () =>
@@ -3346,10 +3349,11 @@ describe('unexpectedMitm', () => {
           ],
           'to call the callback without error'
         ),
-      'to be rejected with',
-      err => {
+      'when rejected',
+      'to have message',
+      expect.it(message =>
         expect(
-          trimDiff(err.getErrorMessage('text').toString()),
+          trimDiff(message),
           'to equal',
           'expected\n' +
             'cb => {\n' +
@@ -3371,8 +3375,8 @@ describe('unexpectedMitm', () => {
             'Content-Type: text/plain\n' +
             '\n' +
             'hello'
-        );
-      }
+        )
+      )
     ));
 
   it('should handle concurrent requests without confusing the Host headers', () =>
@@ -3422,7 +3426,7 @@ describe('unexpectedMitm', () => {
           mocks,
           'to call the callback without error'
         ),
-      'to error with',
+      'to be rejected with',
       /\/\/ should be removed:/
     );
   });
