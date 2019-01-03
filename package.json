@@ -21,7 +21,7 @@
     "deploy-site": "deploy-site.sh"
   },
   "peerDependencies": {
-    "unexpected": "^10.27.0"
+    "unexpected": "^10.27.0 || ^11.0.0-3"
   },
   "optionalDependencies": {
     "unexpected-documentation-site-generator": "^5.0.0"
