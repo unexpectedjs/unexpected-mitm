@@ -44,7 +44,7 @@
     "unexpected": "^11.0.0-3",
     "unexpected-express": "^11.0.0",
     "unexpected-http": "^6.0.0",
-    "unexpected-markdown": "^2.0.0",
+    "unexpected-markdown": "^3.0.0",
     "unexpected-sinon": "^10.1.1"
   },
   "dependencies": {
