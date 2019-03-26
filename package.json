@@ -30,7 +30,7 @@
     "eslint-config-pretty-standard": "^2.0.0",
     "eslint-plugin-prettier": "^3.0.0",
     "express": "^4.16.3",
-    "mocha": "^4.1.0",
+    "mocha": "^6.0.2",
     "nyc": "^13.0.1",
     "pem": "^1.13.1",
     "prettier": "~1.16.0",
