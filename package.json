@@ -35,7 +35,7 @@
     "pem": "^1.13.1",
     "prettier": "~1.16.0",
     "request": "^2.53.0",
-    "semver": "^5.0.1",
+    "semver": "^6.0.0",
     "sinon": "^7.0.0",
     "socketerrors-papandreou": "^0.2.0-patch2",
     "unexpected": "^11.0.0-3",
