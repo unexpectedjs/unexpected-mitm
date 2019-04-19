@@ -29,7 +29,7 @@ describe('example with http recorded and injected file', function () {
 
     it('should record a buffer', function () {
         handleRequest = function (req, res) {
-            res.end(new Buffer([71, 75, 75, 78]));
+            res.end(Buffer.from([71, 75, 75, 78]));
         };
         return expect({
             url: 'GET ' + serverUrl
@@ -40,7 +40,7 @@ describe('example with http recorded and injected file', function () {
                 host: 'localhost',
                 port: 59891
             },
-            response: { body: new Buffer([0x47, 0x4B, 0x4B, 0x4E]) }
+            response: { body: Buffer.from([0x47, 0x4B, 0x4B, 0x4E]) }
         }, 'to yield response', 200);
     });
 });

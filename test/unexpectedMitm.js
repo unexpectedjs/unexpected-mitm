@@ -16,7 +16,7 @@ function consumeResponse(response, callback) {
 
   response
     .on('data', chunk => {
-      chunks.push(Buffer.isBuffer(chunk) ? chunk : new Buffer(chunk));
+      chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
     })
     .on('end', () => {
       callback(null, Buffer.concat(chunks));
@@ -236,7 +236,7 @@ describe('unexpectedMitm', () => {
           headers: {
             'Content-Type': 'application/octet-stream'
           },
-          body: new Buffer([0x00, 0x01, 0xef, 0xff])
+          body: Buffer.from([0x00, 0x01, 0xef, 0xff])
         }
       },
       'to yield response',
@@ -245,7 +245,7 @@ describe('unexpectedMitm', () => {
         headers: {
           'Content-Type': 'application/octet-stream'
         },
-        body: new Buffer([0x00, 0x01, 0xef, 0xff])
+        body: Buffer.from([0x00, 0x01, 0xef, 0xff])
       }
     ));
 
@@ -381,7 +381,7 @@ describe('unexpectedMitm', () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        unchunkedBody: new Buffer('!==!=', 'utf-8')
+        unchunkedBody: Buffer.from('!==!=', 'utf-8')
       }
     ));
 
@@ -780,7 +780,7 @@ describe('unexpectedMitm', () => {
         'to yield response',
         {
           statusCode: 200,
-          body: new Buffer('Contents of foo.txt\n', 'utf-8')
+          body: Buffer.from('Contents of foo.txt\n', 'utf-8')
         }
       ));
 
@@ -848,7 +848,7 @@ describe('unexpectedMitm', () => {
             headers: {
               'content-length': 5
             },
-            body: new Buffer('hello')
+            body: Buffer.from('hello')
           }
         },
         'to yield response',
@@ -1602,7 +1602,7 @@ describe('unexpectedMitm', () => {
     });
 
     it('should allow returning a response with a body Buffer', () => {
-      const expectedBuffer = new Buffer([0xc3, 0xa6, 0xc3, 0xb8, 0xc3, 0xa5]);
+      const expectedBuffer = Buffer.from([0xc3, 0xa6, 0xc3, 0xb8, 0xc3, 0xa5]);
 
       return expect(
         '/200',
@@ -1641,7 +1641,7 @@ describe('unexpectedMitm', () => {
               'Content-Type': 'application/json'
             });
 
-            res.end(new Buffer(JSON.stringify(expectedArray)));
+            res.end(Buffer.from(JSON.stringify(expectedArray)));
           }
         },
         'to yield response',
@@ -1671,7 +1671,7 @@ describe('unexpectedMitm', () => {
               'Content-Type': 'application/json; charset=utf8'
             });
 
-            res.end(new Buffer(JSON.stringify(expectedBody)));
+            res.end(Buffer.from(JSON.stringify(expectedBody)));
           }
         },
         'to yield response',
@@ -1711,7 +1711,7 @@ describe('unexpectedMitm', () => {
     });
 
     it('should allow the use of pipe() internally', () => {
-      const expectedBuffer = new Buffer('foobar', 'utf-8');
+      const expectedBuffer = Buffer.from('foobar', 'utf-8');
 
       return expect(
         {
@@ -1816,17 +1816,17 @@ describe('unexpectedMitm', () => {
         expect(
           {
             url: 'https://www.google.com/foo',
-            cert: new Buffer([1]),
-            key: new Buffer([2]),
-            ca: new Buffer([3])
+            cert: Buffer.from([1]),
+            key: Buffer.from([2]),
+            ca: Buffer.from([3])
           },
           'with http mocked out',
           {
             request: {
               url: 'GET /foo',
-              cert: new Buffer([1]),
-              key: new Buffer([2]),
-              ca: new Buffer([3])
+              cert: Buffer.from([1]),
+              key: Buffer.from([2]),
+              ca: Buffer.from([3])
             },
             response: 200
           },
@@ -1839,17 +1839,17 @@ describe('unexpectedMitm', () => {
           expect(
             {
               url: 'https://www.google.com/foo',
-              cert: new Buffer([1]),
-              key: new Buffer([2]),
-              ca: new Buffer([3])
+              cert: Buffer.from([1]),
+              key: Buffer.from([2]),
+              ca: Buffer.from([3])
             },
             'with http mocked out',
             {
               request: {
                 url: 'GET /foo',
-                cert: new Buffer([1]),
-                key: new Buffer([5]),
-                ca: new Buffer([3])
+                cert: Buffer.from([1]),
+                key: Buffer.from([5]),
+                ca: Buffer.from([3])
               },
               response: 200
             },
@@ -2202,7 +2202,7 @@ describe('unexpectedMitm', () => {
     describe('with a client certificate', () => {
       let clientKeys;
 
-      const ca = new Buffer([1, 2, 3]); // Can apparently be bogus
+      const ca = Buffer.from([1, 2, 3]); // Can apparently be bogus
 
       beforeEach(() =>
         createPemCertificate({ days: 1, selfSigned: true }).then(keys => {
@@ -2553,7 +2553,7 @@ describe('unexpectedMitm', () => {
         headers: {
           'Content-Type': 'application/octet-stream'
         },
-        body: new Buffer('{"foo":"bar"}', 'utf-8')
+        body: Buffer.from('{"foo":"bar"}', 'utf-8')
       }
     ));
 
@@ -2691,7 +2691,7 @@ describe('unexpectedMitm', () => {
         res.statusCode = 200;
         res.setHeader('Content-Type', 'text/html; charset=ISO-8859-1');
         res.end(
-          new Buffer([
+          Buffer.from([
             0x62,
             0x6c,
             0xe5,
@@ -2717,7 +2717,7 @@ describe('unexpectedMitm', () => {
               headers: {
                 'Content-Type': 'text/html; charset=ISO-8859-1'
               },
-              body: new Buffer([
+              body: Buffer.from([
                 0x62,
                 0x6c,
                 0xe5,
@@ -2742,7 +2742,7 @@ describe('unexpectedMitm', () => {
       handleRequest = (req, res) => {
         res.statusCode = 201;
         res.setHeader('Content-Type', 'application/json');
-        res.end(new Buffer(JSON.stringify({ foo: 'bar' })));
+        res.end(Buffer.from(JSON.stringify({ foo: 'bar' })));
       };
 
       return expect(
