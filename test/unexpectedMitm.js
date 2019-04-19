@@ -3324,61 +3324,6 @@ describe('unexpectedMitm', () => {
       )
     ));
 
-  it('should fail a test as soon as an unexpected request is made, even if the code being tested ignores the request failing and fails with an uncaught exception', () =>
-    expect(
-      () =>
-        expect(
-          cb => {
-            http.get('http://www.google.com/foo').on('error', () => {
-              setImmediate(() => {
-                throw new Error('darn');
-              });
-            });
-          },
-          'with http mocked out',
-          [
-            {
-              request: 'GET http://www.google.com/',
-              response: {
-                headers: {
-                  'Content-Type': 'text/plain'
-                },
-                body: 'hello'
-              }
-            }
-          ],
-          'to call the callback without error'
-        ),
-      'when rejected',
-      'to have message',
-      expect.it(message =>
-        expect(
-          trimDiff(message),
-          'to equal',
-          'expected\n' +
-            'cb => {\n' +
-            "  http.get('http://www.google.com/foo').on('error', () => {\n" +
-            '    setImmediate(() => {\n' +
-            "      throw new Error('darn');\n" +
-            '    });\n' +
-            '  });\n' +
-            '}\n' +
-            "with http mocked out [ { request: 'GET http://www.google.com/', response: { headers: ..., body: 'hello' } } ] to call the callback without error\n" +
-            '\n' +
-            'GET /foo HTTP/1.1 // should be GET /\n' +
-            '                  //\n' +
-            '                  // -GET /foo HTTP/1.1\n' +
-            '                  // +GET / HTTP/1.1\n' +
-            'Host: www.google.com\n' +
-            '\n' +
-            'HTTP/1.1 200 OK\n' +
-            'Content-Type: text/plain\n' +
-            '\n' +
-            'hello'
-        )
-      )
-    ));
-
   it('should handle concurrent requests without confusing the Host headers', () =>
     expect(
       () =>
