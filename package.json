@@ -13,7 +13,7 @@
   ],
   "scripts": {
     "lint": "eslint .",
-    "test": "mocha --compilers md:unexpected-markdown test/*.js `find documentation -name '*.md'` && npm run lint",
+    "test": "mocha --require unexpected-markdown test/*.js `find documentation -name '*.md'` && npm run lint",
     "travis": "npm test && npm run coverage && (<coverage/lcov.info coveralls || true)",
     "coverage": "NODE_ENV=development nyc --reporter=lcov --reporter=text --all -- mocha --compilers md:unexpected-markdown test/*.js `find documentation -name '*.md'` && echo google-chrome coverage/lcov-report/index.html",
     "generate-site": "generate-site --require ./bootstrap-unexpected-markdown.js",
