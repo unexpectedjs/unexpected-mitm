@@ -34,14 +34,6 @@ describe('example with http recorded and injected file', function () {
         };
         return expect({
             url: 'GET ' + serverUrl
-        }, 'with http mocked out', {
-            request: {
-                url: 'GET /',
-                headers: { Host: 'localhost:59891' },
-                host: 'localhost',
-                port: 59891
-            },
-            response: 405
-        }, 'to yield response', 405);
+        }, 'with http mocked out', { request: { url: 'GET /', headers: { Host: 'localhost:59891' }, host: 'localhost', port: 59891 }, response: 405 }, 'to yield response', 405);
     });
 });
