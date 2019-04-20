@@ -2396,15 +2396,19 @@ describe('unexpectedMitm', () => {
           expect(
             trimDiff(message),
             'to begin with',
-            "expected 'http://www.google.com/foo'\n" +
-              `with http mocked out by file '${outputFile}' to yield response 412\n` +
-              "  expected 'http://www.google.com/foo' to yield response 412\n" +
-              '\n' +
-              '  GET /foo HTTP/1.1\n' +
-              '  Host: www.google.com\n' +
-              '\n' +
-              '  HTTP/1.1 404 Not Found // should be 412 Precondition Failed\n'
+            "expected 'http://www.google.com/foo'"
           )
+            .and('to contain', `with http mocked out by file '${outputFile}'`)
+            .and(
+              'to contain',
+              'to yield response 412\n' +
+                "  expected 'http://www.google.com/foo' to yield response 412\n" +
+                '\n' +
+                '  GET /foo HTTP/1.1\n' +
+                '  Host: www.google.com\n' +
+                '\n' +
+                '  HTTP/1.1 404 Not Found // should be 412 Precondition Failed\n'
+            )
         )
       ).finally(() => {
         delete process.env.UNEXPECTED_MITM_WRITE;
