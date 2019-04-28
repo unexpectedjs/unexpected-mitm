@@ -2443,7 +2443,12 @@ describe('unexpectedMitm', () => {
 
   describe('in replaying mode', () => {
     it('should resolve with delegated fulfilment', () => {
-      const inputFile = '../testdata/replay.js';
+      const inputFile = pathModule.resolve(
+        __dirname,
+        '..',
+        'testdata',
+        'replay.js'
+      );
 
       return expect(
         expect(
@@ -2462,7 +2467,12 @@ describe('unexpectedMitm', () => {
     });
 
     it('should replay the correct mocks', () => {
-      const inputFile = '../testdata/replay.js';
+      const inputFile = pathModule.resolve(
+        __dirname,
+        '..',
+        'testdata',
+        'replay.js'
+      );
 
       return expect(
         {
@@ -2484,8 +2494,13 @@ describe('unexpectedMitm', () => {
       );
     });
 
-    it('should replay with delegated fulfilment', () => {
-      const inputFile = '../testdata/replay-from-function.js';
+    it('should replay the correct mocks (defined by a function)', () => {
+      const inputFile = pathModule.resolve(
+        __dirname,
+        '..',
+        'testdata',
+        'replay-from-function.js'
+      );
 
       return expect(
         {
