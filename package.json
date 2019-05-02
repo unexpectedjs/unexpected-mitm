@@ -48,7 +48,7 @@
   "dependencies": {
     "callsite": "^1.0.0",
     "createerror": "1.1.0",
-    "detect-indent": "^5.0.0",
+    "detect-indent": "^6.0.0",
     "memoizesync": "^1.1.1",
     "messy": "^6.16.0",
     "mitm-papandreou": "^1.7.0-patch1",
