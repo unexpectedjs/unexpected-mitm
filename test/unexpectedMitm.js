@@ -1232,7 +1232,7 @@ describe('unexpectedMitm', () => {
             '//\n' +
             '// HTTP/1.1 200 OK\n' +
             '//\n' +
-            '// Buffer([0x66, 0x6F, 0x6F, 0x62, 0x61, 0x72, 0x71, 0x75, 0x75, 0x78])'
+            '// Buffer.from([0x66, 0x6F, 0x6F, 0x62, 0x61, 0x72, 0x71, 0x75, 0x75, 0x78])'
         )
       )
     );
@@ -1862,12 +1862,12 @@ describe('unexpectedMitm', () => {
             expect(
               trimDiff(message),
               'to equal',
-              "expected { url: 'https://www.google.com/foo', cert: Buffer([0x01]), key: Buffer([0x02]), ca: Buffer([0x03]) }\n" +
-                "with http mocked out { request: { url: 'GET /foo', cert: Buffer([0x01]), key: Buffer([0x05]), ca: Buffer([0x03]) }, response: 200 } to yield response 200\n" +
+              "expected { url: 'https://www.google.com/foo', cert: Buffer.from([0x01]), key: Buffer.from([0x02]), ca: Buffer.from([0x03]) }\n" +
+                "with http mocked out { request: { url: 'GET /foo', cert: Buffer.from([0x01]), key: Buffer.from([0x05]), ca: Buffer.from([0x03]) }, response: 200 } to yield response 200\n" +
                 '\n' +
                 'GET /foo HTTP/1.1\n' +
                 'Host: www.google.com\n' +
-                '// key: expected Buffer([0x02]) to equal Buffer([0x05])\n' +
+                '// key: expected Buffer.from([0x02]) to equal Buffer.from([0x05])\n' +
                 '//\n' +
                 '// -02                                               │.│\n' +
                 '// +05                                               │.│\n' +

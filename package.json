@@ -38,7 +38,7 @@
     "semver": "^6.0.0",
     "sinon": "^7.0.0",
     "socketerrors-papandreou": "^0.2.0-patch2",
-    "unexpected": "^11.0.0-3",
+    "unexpected": "^11.5.0",
     "unexpected-documentation-site-generator": "^5.0.0",
     "unexpected-express": "^11.0.0",
     "unexpected-http": "^6.0.0",
