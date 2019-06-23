@@ -1,4 +1,3 @@
-/*global describe, it, __dirname, beforeEach, afterEach, setTimeout, setImmediate*/
 const pathModule = require('path');
 const childProcess = require('child_process');
 const fs = require('fs');
