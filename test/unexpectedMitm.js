@@ -2009,7 +2009,10 @@ describe('unexpectedMitm', () => {
         } else {
           expectedError = new Error(message);
         }
-        if (semver.satisfies(nodeJsVersion, '>=2.0.0') && semver.satisfies(nodeJsVersion, '<12')) {
+        if (
+          semver.satisfies(nodeJsVersion, '>=2.0.0') &&
+          semver.satisfies(nodeJsVersion, '<12')
+        ) {
           expectedError.message +=
             ' www.icwqjecoiqwjecoiwqjecoiwqjceoiwq.com:80';
           expectedError.host = 'www.icwqjecoiqwjecoiwqjecoiwqjceoiwq.com';
