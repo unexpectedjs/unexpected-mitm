@@ -42,7 +42,7 @@
     "unexpected-documentation-site-generator": "^5.0.0",
     "unexpected-express": "^11.0.0",
     "unexpected-http": "^7.0.0",
-    "unexpected-markdown": "^3.0.0",
+    "unexpected-markdown": "^4.0.0",
     "unexpected-sinon": "^10.1.1"
   },
   "dependencies": {
