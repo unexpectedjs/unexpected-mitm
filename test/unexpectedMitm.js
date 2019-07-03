@@ -362,6 +362,25 @@ describe('unexpectedMitm', () => {
       }
     ));
 
+  it('should mock out an application/json response containing null', () =>
+    expect(
+      'http://www.google.com/',
+      'with http mocked out',
+      {
+        request: 'GET /',
+        response: {
+          body: null
+        }
+      },
+      'to yield response',
+      {
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: null
+      }
+    ));
+
   it('should mock out an application/json response with invalid JSON', () =>
     expect(
       'http://www.google.com/',
