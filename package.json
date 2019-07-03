@@ -1,6 +1,6 @@
 {
   "name": "unexpected-mitm",
-  "version": "13.0.0",
+  "version": "13.0.1",
   "description": "Unexpected plugin for the mitm library",
   "author": "Andreas Lind <andreaslindpetersen@gmail.com>",
   "repository": {
