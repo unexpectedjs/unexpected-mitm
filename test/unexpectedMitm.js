@@ -550,6 +550,40 @@ describe('unexpectedMitm', () => {
       /^Unknown assertion 'to foobarquux'/
     ));
 
+  it('should not break when the assertion being delegated to rejects asynchronously', () =>
+    expect(
+      expect(
+        () => {
+          const error = new Error('boom');
+          error.statusCode = 501;
+          return Promise.reject(error);
+        },
+        'with http mocked out',
+        [],
+        'to be rejected with'
+      ),
+      'to be rejected with',
+      'expected\n' +
+        '() => {\n' +
+        "  const error = new Error('boom');\n" +
+        '  error.statusCode = 501;\n' +
+        '  return Promise.reject(error);\n' +
+        '}\n' +
+        'with http mocked out [] to be rejected with\n' +
+        '  expected\n' +
+        '  () => {\n' +
+        "    const error = new Error('boom');\n" +
+        '    error.statusCode = 501;\n' +
+        '    return Promise.reject(error);\n' +
+        '  }\n' +
+        '  to be rejected with\n' +
+        '    The assertion does not have a matching signature for:\n' +
+        '      <function> to be rejected with\n' +
+        '    did you mean:\n' +
+        '      <Promise> to be rejected with <any>\n' +
+        '      <function> to be rejected with <any>'
+    ));
+
   describe('when mocking out an https request and asserting that the request is https', () => {
     describe('when https is specified as part of the request url', () => {
       it('should succeed', () =>
