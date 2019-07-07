@@ -2547,6 +2547,39 @@ describe('unexpectedMitm', () => {
         405
       );
     });
+
+    it('should produce an error if the request conditions are not satisfied', () => {
+      const inputFile = pathModule.resolve(
+        __dirname,
+        '..',
+        'testdata',
+        'replay.js'
+      );
+
+      return expect(
+        expect(
+          {
+            url: 'POST /'
+          },
+          'with http mocked out by file',
+          inputFile,
+          'to yield response',
+          405
+        ),
+        'to be rejected with',
+        "expected { url: 'POST /' }\n" +
+          "with http mocked out with extra info { request: { method: 'GET' }, response: { statusCode: 405, headers: { Allow: 'GET, HEAD' } } } to yield response 405\n" +
+          '\n' +
+          'POST / HTTP/1.1 // should be GET\n' +
+          '                //\n' +
+          '                // -POST / HTTP/1.1\n' +
+          '                // +GET / HTTP/1.1\n' +
+          'Host: localhost\n' +
+          '\n' +
+          'HTTP/1.1 405 Method Not Allowed\n' +
+          'Allow: GET, HEAD'
+      );
+    });
   });
 
   it('should not overwrite an explicitly defined Host header in the expected request properties', () =>
