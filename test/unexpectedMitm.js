@@ -65,6 +65,15 @@ describe('unexpectedMitm', () => {
       (expect, subject, requestObject) => {
         expect.errorMode = 'bubble';
         const expectedRecordedExchanges = subject;
+        // account for the way url is written to disk
+        const expectedWrittenExchanges = {
+          ...expectedRecordedExchanges,
+          request: { ...expectedRecordedExchanges.request }
+        };
+        expectedWrittenExchanges.request.url = `${expectedRecordedExchanges.request.method} ${expectedRecordedExchanges.request.path}`;
+        delete expectedWrittenExchanges.request.method;
+        delete expectedWrittenExchanges.request.path;
+
         let testFile;
         let writtenExchanges;
 
@@ -78,10 +87,10 @@ describe('unexpectedMitm', () => {
             }, 'not to throw').then(() =>
               expect(
                 recordedExchanges,
-                'to equal',
+                'to satisfy',
                 expectedRecordedExchanges
               ).then(() =>
-                expect(writtenExchanges, 'to equal', expectedRecordedExchanges)
+                expect(writtenExchanges, 'to equal', expectedWrittenExchanges)
               )
             );
           })
@@ -2418,9 +2427,10 @@ describe('unexpectedMitm', () => {
       return expect(
         {
           request: {
+            method: 'POST',
+            path: '/',
             host: serverHostname,
             port: serverAddress.port,
-            url: 'POST /',
             headers: {
               'Content-Type': 'application/x-www-form-urlencoded',
               Host: `${serverHostname}:${serverAddress.port}`
