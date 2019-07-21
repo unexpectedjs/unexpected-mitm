@@ -1,4 +1,4 @@
-/*global unexpected:true*/
+/* global unexpected:true */
 unexpected = require('unexpected');
 unexpected.output.preferredWidth = 150;
 unexpected = unexpected.clone();
