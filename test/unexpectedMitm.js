@@ -2245,6 +2245,9 @@ describe('unexpectedMitm', () => {
         'longbufferfile-injected'
       ));
 
+    it('should correctly handle many mocks', () =>
+      expect('manymocks', 'when injected becomes', 'manymocks-injected'));
+
     it('should correctly handle error injections', () =>
       expect('errorfile', 'when injected becomes', 'errorfile-injected'));
 
