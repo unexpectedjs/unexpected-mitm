@@ -55,7 +55,7 @@ describe('unexpectedMitm', () => {
         return expect
           .promise(() => expect.shift())
           .then(([value, recordedExchanges]) => {
-            expect(recordedExchanges, 'to equal', expectedRecordedExchanges);
+            expect(recordedExchanges, 'to satisfy', expectedRecordedExchanges);
             return value;
           });
       }
@@ -1393,7 +1393,8 @@ describe('unexpectedMitm', () => {
           },
           {
             request: {
-              url: 'GET /foo',
+              method: 'GET',
+              path: '/foo',
               headers: { Foo: expect.it('to match', /bar/) }
             },
             response: 200
@@ -1409,7 +1410,7 @@ describe('unexpectedMitm', () => {
           trimDiff(message),
           'to equal',
           "expected 'http://www.google.com/foo'\n" +
-          "with http mocked out [ { request: 'GET /foo', response: 200 }, { request: { url: 'GET /foo', headers: ... }, response: 200 } ] to yield response 200\n" +
+          "with http mocked out [ { request: 'GET /foo', response: 200 }, { request: { method: 'GET', path: '/foo', headers: ... }, response: 200 } ] to yield response 200\n" +
           '\n' +
           'GET /foo HTTP/1.1\n' +
           'Host: www.google.com\n' +
@@ -1991,9 +1992,10 @@ describe('unexpectedMitm', () => {
         'with expected http recording',
         {
           request: {
+            method: 'POST',
+            path: '/',
             host: serverHostname,
             port: serverAddress.port,
-            url: 'POST /',
             headers: {
               'Content-Type': 'application/x-www-form-urlencoded',
               Host: `${serverHostname}:${serverAddress.port}`
@@ -2102,9 +2104,10 @@ describe('unexpectedMitm', () => {
         'with expected http recording',
         {
           request: {
+            method: 'GET',
+            path: '/',
             host: 'www.icwqjecoiqwjecoiwqjecoiwqjceoiwq.com',
             port: 80,
-            url: 'GET /',
             headers: { Host: 'www.icwqjecoiqwjecoiwqjecoiwqjceoiwq.com' }
           },
           response: expectedError
@@ -2129,7 +2132,8 @@ describe('unexpectedMitm', () => {
         'with expected http recording',
         {
           request: {
-            url: 'GET /',
+            method: 'GET',
+            path: '/',
             host: serverHostname,
             port: serverAddress.port,
             headers: {
@@ -2153,7 +2157,8 @@ describe('unexpectedMitm', () => {
         'with expected http recording',
         {
           request: {
-            url: 'GET /',
+            method: 'GET',
+            path: '/',
             host: serverHostname,
             port: serverAddress.port,
             headers: {
@@ -2302,7 +2307,8 @@ describe('unexpectedMitm', () => {
           'with expected http recording',
           {
             request: {
-              url: 'POST /',
+              method: 'POST',
+              path: '/',
               host: serverHostname,
               port: serverAddress.port,
               rejectUnauthorized: false,
