@@ -1588,6 +1588,25 @@ describe('unexpectedMitm', () => {
           )
         )
       ));
+
+    it('should be unaffected by modifications to the mocks array after initiating the assertion', () => {
+      const mocks = [];
+
+      return expect(
+        () =>
+          expect(
+            cb => {
+              mocks.push({ request: 'GET /', response: 200 });
+              issueGetAndConsume('http://www.example.com/', cb);
+            },
+            'with http mocked out',
+            mocks,
+            'to call the callback without error'
+          ),
+        'to be rejected with',
+        /\/\/ should be removed:/
+      );
+    });
   });
 
   it('should not mangle the requestDescriptions array', () => {
@@ -3463,25 +3482,6 @@ describe('unexpectedMitm', () => {
       ],
       'not to error'
     ));
-
-  it('should be unaffected by modifications to the mocks array after initiating the assertion', () => {
-    const mocks = [];
-
-    return expect(
-      () =>
-        expect(
-          cb => {
-            mocks.push({ request: 'GET /', response: 200 });
-            issueGetAndConsume('http://www.example.com/', cb);
-          },
-          'with http mocked out',
-          mocks,
-          'to call the callback without error'
-        ),
-      'to be rejected with',
-      /\/\/ should be removed:/
-    );
-  });
 
   it('should not break when a response mocked out by an Error instance with extra properties is checked against the actual exchanges at the end', () => {
     const err = new Error('foo');
