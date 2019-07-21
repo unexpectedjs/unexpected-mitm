@@ -1,5 +1,5 @@
 /node_modules
 /coverage
 /site-build
-/nyc_output
+/.nyc_output
 /testdata
