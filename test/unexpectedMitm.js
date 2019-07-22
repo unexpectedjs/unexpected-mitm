@@ -2232,6 +2232,9 @@ describe('unexpectedMitm', () => {
     it('should record and inject textual injections', () =>
       expect('utf8file', 'when injected becomes', 'utf8file-injected'));
 
+    it('should record and inject JSON injections', () =>
+      expect('jsonfile', 'when injected becomes', 'jsonfile-injected'));
+
     it('should record and inject into a compound assertion', () =>
       expect('compound', 'when injected becomes', 'compound-injected'));
 

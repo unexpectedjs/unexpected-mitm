@@ -89,6 +89,24 @@ describe('formatRecordedExchange', () => {
     });
   });
 
+  it('should serialise a JSON body and remove the standard header', () => {
+    const request = new messy.HttpRequest({ url: '/', method: 'GET' });
+    const response = new messy.HttpResponse({
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: Buffer.from(JSON.stringify({ foo: true }), 'utf8')
+    });
+    const exchange = new messy.HttpExchange({ request, response });
+
+    expect(formatRecordedExchange(exchange), 'to equal', {
+      request: 'GET /',
+      response: {
+        body: { foo: true }
+      }
+    });
+  });
+
   it('should not serialise an empty body', () => {
     const request = new messy.HttpRequest({ url: '/', method: 'GET' });
     const response = new messy.HttpResponse({
