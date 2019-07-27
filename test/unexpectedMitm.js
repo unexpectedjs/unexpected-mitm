@@ -55,7 +55,7 @@ describe('unexpectedMitm', () => {
         return expect
           .promise(() => expect.shift())
           .then(([value, recordedExchanges]) => {
-            expect(recordedExchanges, 'to equal', expectedRecordedExchanges);
+            expect(recordedExchanges, 'to satisfy', expectedRecordedExchanges);
             return value;
           });
       }
@@ -65,6 +65,15 @@ describe('unexpectedMitm', () => {
       (expect, subject, requestObject) => {
         expect.errorMode = 'bubble';
         const expectedRecordedExchanges = subject;
+        // account for the way url is written to disk
+        const expectedWrittenExchanges = {
+          ...expectedRecordedExchanges,
+          request: { ...expectedRecordedExchanges.request }
+        };
+        expectedWrittenExchanges.request.url = `${expectedRecordedExchanges.request.method} ${expectedRecordedExchanges.request.path}`;
+        delete expectedWrittenExchanges.request.method;
+        delete expectedWrittenExchanges.request.path;
+
         let testFile;
         let writtenExchanges;
 
@@ -78,10 +87,10 @@ describe('unexpectedMitm', () => {
             }, 'not to throw').then(() =>
               expect(
                 recordedExchanges,
-                'to equal',
+                'to satisfy',
                 expectedRecordedExchanges
               ).then(() =>
-                expect(writtenExchanges, 'to equal', expectedRecordedExchanges)
+                expect(writtenExchanges, 'to equal', expectedWrittenExchanges)
               )
             );
           })
@@ -1393,7 +1402,8 @@ describe('unexpectedMitm', () => {
           },
           {
             request: {
-              url: 'GET /foo',
+              method: 'GET',
+              path: '/foo',
               headers: { Foo: expect.it('to match', /bar/) }
             },
             response: 200
@@ -1409,7 +1419,7 @@ describe('unexpectedMitm', () => {
           trimDiff(message),
           'to equal',
           "expected 'http://www.google.com/foo'\n" +
-          "with http mocked out [ { request: 'GET /foo', response: 200 }, { request: { url: 'GET /foo', headers: ... }, response: 200 } ] to yield response 200\n" +
+          "with http mocked out [ { request: 'GET /foo', response: 200 }, { request: { method: 'GET', path: '/foo', headers: ... }, response: 200 } ] to yield response 200\n" +
           '\n' +
           'GET /foo HTTP/1.1\n' +
           'Host: www.google.com\n' +
@@ -1991,9 +2001,10 @@ describe('unexpectedMitm', () => {
         'with expected http recording',
         {
           request: {
+            method: 'POST',
+            path: '/',
             host: serverHostname,
             port: serverAddress.port,
-            url: 'POST /',
             headers: {
               'Content-Type': 'application/x-www-form-urlencoded',
               Host: `${serverHostname}:${serverAddress.port}`
@@ -2102,9 +2113,10 @@ describe('unexpectedMitm', () => {
         'with expected http recording',
         {
           request: {
+            method: 'GET',
+            path: '/',
             host: 'www.icwqjecoiqwjecoiwqjecoiwqjceoiwq.com',
             port: 80,
-            url: 'GET /',
             headers: { Host: 'www.icwqjecoiqwjecoiwqjecoiwqjceoiwq.com' }
           },
           response: expectedError
@@ -2129,7 +2141,8 @@ describe('unexpectedMitm', () => {
         'with expected http recording',
         {
           request: {
-            url: 'GET /',
+            method: 'GET',
+            path: '/',
             host: serverHostname,
             port: serverAddress.port,
             headers: {
@@ -2153,7 +2166,8 @@ describe('unexpectedMitm', () => {
         'with expected http recording',
         {
           request: {
-            url: 'GET /',
+            method: 'GET',
+            path: '/',
             host: serverHostname,
             port: serverAddress.port,
             headers: {
@@ -2218,6 +2232,9 @@ describe('unexpectedMitm', () => {
     it('should record and inject textual injections', () =>
       expect('utf8file', 'when injected becomes', 'utf8file-injected'));
 
+    it('should record and inject JSON injections', () =>
+      expect('jsonfile', 'when injected becomes', 'jsonfile-injected'));
+
     it('should record and inject into a compound assertion', () =>
       expect('compound', 'when injected becomes', 'compound-injected'));
 
@@ -2230,6 +2247,9 @@ describe('unexpectedMitm', () => {
         'when injected becomes',
         'longbufferfile-injected'
       ));
+
+    it('should correctly handle many mocks', () =>
+      expect('manymocks', 'when injected becomes', 'manymocks-injected'));
 
     it('should correctly handle error injections', () =>
       expect('errorfile', 'when injected becomes', 'errorfile-injected'));
@@ -2302,7 +2322,8 @@ describe('unexpectedMitm', () => {
           'with expected http recording',
           {
             request: {
-              url: 'POST /',
+              method: 'POST',
+              path: '/',
               host: serverHostname,
               port: serverAddress.port,
               rejectUnauthorized: false,
@@ -2412,9 +2433,10 @@ describe('unexpectedMitm', () => {
       return expect(
         {
           request: {
+            method: 'POST',
+            path: '/',
             host: serverHostname,
             port: serverAddress.port,
-            url: 'POST /',
             headers: {
               'Content-Type': 'application/x-www-form-urlencoded',
               Host: `${serverHostname}:${serverAddress.port}`
