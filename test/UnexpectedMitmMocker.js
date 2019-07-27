@@ -4,13 +4,13 @@ const OrderedMockStrategy = require('../lib/mockstrategies/OrderedMockStrategy')
 const UnexpectedMitmMocker = require('../lib/UnexpectedMitmMocker');
 
 describe('UnexpectedMitmMocker', () => {
-  it('should throw if not supplied request descriptions', () => {
+  it('should throw if supplied no strategy or request descriptions', () => {
     expect(
       () => {
         new UnexpectedMitmMocker();
       },
       'to throw',
-      'UnexpectedMitmMocker: missing request descriptions'
+      'UnexpectedMitmMocker: missing strategy or request descriptions'
     );
   });
 
@@ -19,6 +19,15 @@ describe('UnexpectedMitmMocker', () => {
 
     expect(mocker, 'to satisfy', {
       strategy: expect.it('to be an', OrderedMockStrategy)
+    });
+  });
+
+  it('should create an mocker with the specific strategy', () => {
+    const strategy = {};
+    const mocker = new UnexpectedMitmMocker({ strategy });
+
+    expect(mocker, 'to satisfy', {
+      strategy: expect.it('to be', strategy)
     });
   });
 });
