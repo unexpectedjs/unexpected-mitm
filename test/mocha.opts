@@ -1,4 +1,5 @@
--R spec
+--reporter spec
 --check-leaks
 --timeout 120000
 --require ./bootstrap-unexpected-markdown
+--require unexpected-markdown
