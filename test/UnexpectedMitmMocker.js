@@ -1,7 +1,32 @@
 const expect = require('unexpected');
+const http = require('http');
+const messy = require('messy');
 
+const errors = require('../lib/errors');
 const OrderedMockStrategy = require('../lib/mockstrategies/OrderedMockStrategy');
 const UnexpectedMitmMocker = require('../lib/UnexpectedMitmMocker');
+
+function consumeResponse(response, callback) {
+  const chunks = [];
+
+  response
+    .on('data', chunk => {
+      chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+    })
+    .on('end', () => {
+      callback(null, Buffer.concat(chunks));
+    });
+}
+
+function issueGetAndConsume(url) {
+  return new Promise((resolve, reject) => {
+    http
+      .get(url)
+      .on('response', response => consumeResponse(response, resolve))
+      .on('error', reject)
+      .end();
+  });
+}
 
 describe('UnexpectedMitmMocker', () => {
   it('should throw if supplied no strategy or request descriptions', () => {
@@ -28,6 +53,63 @@ describe('UnexpectedMitmMocker', () => {
 
     expect(mocker, 'to satisfy', {
       strategy: expect.it('to be', strategy)
+    });
+  });
+
+  describe('when there are no remaining requests', () => {
+    it('should reject with an unexpected requests error', () => {
+      const strategy = {
+        hasDescriptionsRemaining: () => false
+      };
+      const mocker = new UnexpectedMitmMocker({ strategy });
+
+      return mocker
+        .mock(() => {
+          return issueGetAndConsume('http://example.com/foo').catch(e => {});
+        })
+        .then(({ timeline }) => {
+          expect(timeline, 'to satisfy', [
+            { exchange: expect.it('to be a', messy.HttpExchange), spec: null },
+            expect.it('to be an', errors.SawUnexpectedRequestsError)
+          ]);
+        });
+    });
+  });
+
+  describe('when the request does not match expectations', () => {
+    it('should reject with an unexpected requests error', () => {
+      const strategy = {
+        // return true for the first call
+        hasDescriptionsRemaining: (() => {
+          let unread = true;
+          return () => {
+            const ret = unread;
+            unread = false;
+            return ret;
+          };
+        })(),
+        nextDescriptionForIncomingRequest: () =>
+          Promise.resolve({
+            request: {
+              url: '/bar'
+            }
+          })
+      };
+      const mocker = new UnexpectedMitmMocker({ strategy });
+
+      return mocker
+        .mock(() => {
+          return issueGetAndConsume('http://example.com/foo').catch(() => {});
+        })
+        .then(({ timeline }) => {
+          expect(timeline, 'to satisfy', [
+            {
+              exchange: expect.it('to be a', messy.HttpExchange),
+              spec: expect.it('not to be null')
+            },
+            expect.it('to be an', errors.EarlyExitError)
+          ]);
+        });
     });
   });
 });
