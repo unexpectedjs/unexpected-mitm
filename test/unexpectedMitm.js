@@ -1175,284 +1175,224 @@ describe('unexpectedMitm', () => {
       }
     ));
 
-  it('should produce an error if a mocked request is not exercised', () =>
-    expect(
+  describe('with unexercised mocks', () => {
+    it('should produce an error if a mocked request is not exercised', () =>
       expect(
-        'http://www.google.com/foo',
-        'with http mocked out',
-        [
-          {
-            request: 'GET /foo',
-            response: 200
-          },
-          {
-            request: 'GET /foo',
-            response: 200
-          }
-        ],
-        'to yield response',
-        200
-      ),
-      'when rejected',
-      'to have message',
-      expect.it(message =>
         expect(
-          trimDiff(message),
-          'to equal',
-          "expected 'http://www.google.com/foo'\n" +
-            "with http mocked out [ { request: 'GET /foo', response: 200 }, { request: 'GET /foo', response: 200 } ] to yield response 200\n" +
-            '\n' +
-            'GET /foo HTTP/1.1\n' +
-            'Host: www.google.com\n' +
-            '\n' +
-            'HTTP/1.1 200 OK\n' +
-            '\n' +
-            '// missing:\n' +
-            '// GET /foo\n' +
-            '//\n' +
-            '// HTTP/1.1 200 OK'
-        )
-      )
-    ));
-
-  it('should produce an error if a mocked request is not exercised and the second mock has a stream', () => {
-    const responseBodyStream = new stream.Readable();
-    responseBodyStream._read = (num, cb) => {
-      responseBodyStream._read = () => {};
-      setImmediate(() => {
-        responseBodyStream.push('foobarquux');
-        responseBodyStream.push(null);
-      });
-    };
-    return expect(
-      expect(
-        'http://www.google.com/foo',
-        'with http mocked out',
-        [
-          {
-            request: 'GET /foo',
-            response: 200
-          },
-          {
-            request: 'GET /foo',
-            response: {
-              body: responseBodyStream
+          'http://www.google.com/foo',
+          'with http mocked out',
+          [
+            {
+              request: 'GET /foo',
+              response: 200
+            },
+            {
+              request: 'GET /foo',
+              response: 200
             }
-          }
-        ],
-        'to yield response',
-        200
-      ),
-      'when rejected',
-      'to have message',
-      expect.it(message =>
-        expect(
-          trimDiff(message),
-          'to equal',
-          "expected 'http://www.google.com/foo'\n" +
-            "with http mocked out [ { request: 'GET /foo', response: 200 }, { request: 'GET /foo', response: { body: ... } } ] to yield response 200\n" +
-            '\n' +
-            'GET /foo HTTP/1.1\n' +
-            'Host: www.google.com\n' +
-            '\n' +
-            'HTTP/1.1 200 OK\n' +
-            '\n' +
-            '// missing:\n' +
-            '// GET /foo\n' +
-            '//\n' +
-            '// HTTP/1.1 200 OK\n' +
-            '//\n' +
-            '// Buffer.from([0x66, 0x6F, 0x6F, 0x62, 0x61, 0x72, 0x71, 0x75, 0x75, 0x78])'
+          ],
+          'to yield response',
+          200
+        ),
+        'when rejected',
+        'to have message',
+        expect.it(message =>
+          expect(
+            trimDiff(message),
+            'to equal',
+            "expected 'http://www.google.com/foo'\n" +
+              "with http mocked out [ { request: 'GET /foo', response: 200 }, { request: 'GET /foo', response: 200 } ] to yield response 200\n" +
+              '\n' +
+              'GET /foo HTTP/1.1\n' +
+              'Host: www.google.com\n' +
+              '\n' +
+              'HTTP/1.1 200 OK\n' +
+              '\n' +
+              '// missing:\n' +
+              '// GET /foo\n' +
+              '//\n' +
+              '// HTTP/1.1 200 OK'
+          )
         )
-      )
-    );
-  });
+      ));
 
-  it('should decode the textual body if a mocked request is not exercised', () => {
-    const responseBodyStream = new stream.Readable();
-    responseBodyStream._read = (num, cb) => {
-      responseBodyStream._read = () => {};
-      setImmediate(() => {
-        responseBodyStream.push('foobarquux');
-        responseBodyStream.push(null);
-      });
-    };
-    return expect(
-      expect(
-        'http://www.google.com/foo',
-        'with http mocked out',
-        [
-          {
-            request: 'GET /foo',
-            response: 200
-          },
-          {
-            request: 'GET /foo',
-            response: {
-              headers: {
-                'Content-Type': 'text/plain'
+    it('should produce an error if a mocked request is not exercised and the second mock has a stream', () => {
+      const responseBodyStream = new stream.Readable();
+      responseBodyStream._read = (num, cb) => {
+        responseBodyStream._read = () => {};
+        setImmediate(() => {
+          responseBodyStream.push('foobarquux');
+          responseBodyStream.push(null);
+        });
+      };
+      return expect(
+        expect(
+          'http://www.google.com/foo',
+          'with http mocked out',
+          [
+            {
+              request: 'GET /foo',
+              response: 200
+            },
+            {
+              request: 'GET /foo',
+              response: {
+                body: responseBodyStream
+              }
+            }
+          ],
+          'to yield response',
+          200
+        ),
+        'when rejected',
+        'to have message',
+        expect.it(message =>
+          expect(
+            trimDiff(message),
+            'to equal',
+            "expected 'http://www.google.com/foo'\n" +
+              "with http mocked out [ { request: 'GET /foo', response: 200 }, { request: 'GET /foo', response: { body: ... } } ] to yield response 200\n" +
+              '\n' +
+              'GET /foo HTTP/1.1\n' +
+              'Host: www.google.com\n' +
+              '\n' +
+              'HTTP/1.1 200 OK\n' +
+              '\n' +
+              '// missing:\n' +
+              '// GET /foo\n' +
+              '//\n' +
+              '// HTTP/1.1 200 OK\n' +
+              '//\n' +
+              '// Buffer.from([0x66, 0x6F, 0x6F, 0x62, 0x61, 0x72, 0x71, 0x75, 0x75, 0x78])'
+          )
+        )
+      );
+    });
+
+    it('should produce an error and decode the textual body if a mocked request is not exercised', () => {
+      const responseBodyStream = new stream.Readable();
+      responseBodyStream._read = (num, cb) => {
+        responseBodyStream._read = () => {};
+        setImmediate(() => {
+          responseBodyStream.push('foobarquux');
+          responseBodyStream.push(null);
+        });
+      };
+      return expect(
+        expect(
+          'http://www.google.com/foo',
+          'with http mocked out',
+          [
+            {
+              request: 'GET /foo',
+              response: 200
+            },
+            {
+              request: 'GET /foo',
+              response: {
+                headers: {
+                  'Content-Type': 'text/plain'
+                },
+                body: responseBodyStream
+              }
+            }
+          ],
+          'to yield response',
+          200
+        ),
+        'when rejected',
+        'to have message',
+        expect.it(message =>
+          expect(
+            trimDiff(message),
+            'to equal',
+            "expected 'http://www.google.com/foo'\n" +
+              "with http mocked out [ { request: 'GET /foo', response: 200 }, { request: 'GET /foo', response: { headers: ..., body: ... } } ] to yield response 200\n" +
+              '\n' +
+              'GET /foo HTTP/1.1\n' +
+              'Host: www.google.com\n' +
+              '\n' +
+              'HTTP/1.1 200 OK\n' +
+              '\n' +
+              '// missing:\n' +
+              '// GET /foo\n' +
+              '//\n' +
+              '// HTTP/1.1 200 OK\n' +
+              '// Content-Type: text/plain\n' +
+              '//\n' +
+              '// foobarquux'
+          )
+        )
+      );
+    });
+
+    it('should produce an error if a mocked request is not exercised with an expected request stream', () => {
+      const requestBodyStream = new stream.Readable();
+      requestBodyStream._read = (num, cb) => {
+        requestBodyStream._read = () => {};
+        setImmediate(() => {
+          requestBodyStream.push('foobarquux');
+          requestBodyStream.push(null);
+        });
+      };
+      return expect(
+        expect(
+          'http://www.google.com/foo',
+          'with http mocked out',
+          [
+            {
+              request: 'GET /foo',
+              response: 200
+            },
+            {
+              request: {
+                body: requestBodyStream
               },
-              body: responseBodyStream
+              response: 200
             }
-          }
-        ],
-        'to yield response',
-        200
-      ),
-      'when rejected',
-      'to have message',
-      expect.it(message =>
+          ],
+          'to yield response',
+          200
+        ),
+        'when rejected',
+        'to have message',
+        'unexpected-mitm: a stream cannot be used to verify the request body, please specify the buffer instead.'
+      );
+    });
+
+    it('should produce an error if a mocked request is not exercised and there are non-trivial assertions on it', () =>
+      expect(
         expect(
-          trimDiff(message),
-          'to equal',
-          "expected 'http://www.google.com/foo'\n" +
-            "with http mocked out [ { request: 'GET /foo', response: 200 }, { request: 'GET /foo', response: { headers: ..., body: ... } } ] to yield response 200\n" +
+          'http://www.google.com/foo',
+          'with http mocked out',
+          [
+            {
+              request: 'GET /foo',
+              response: 200
+            },
+            {
+              request: {
+                method: 'GET',
+                path: '/foo',
+                headers: { Foo: expect.it('to match', /bar/) }
+              },
+              response: 200
+            }
+          ],
+          'to yield response',
+          200
+        ),
+        'when rejected',
+        'to have message',
+        expect.it(message =>
+          expect(
+            trimDiff(message),
+            'to equal',
+            "expected 'http://www.google.com/foo'\n" +
+            "with http mocked out [ { request: 'GET /foo', response: 200 }, { request: { method: 'GET', path: '/foo', headers: ... }, response: 200 } ] to yield response 200\n" +
             '\n' +
             'GET /foo HTTP/1.1\n' +
             'Host: www.google.com\n' +
-            '\n' +
-            'HTTP/1.1 200 OK\n' +
-            '\n' +
-            '// missing:\n' +
-            '// GET /foo\n' +
-            '//\n' +
-            '// HTTP/1.1 200 OK\n' +
-            '// Content-Type: text/plain\n' +
-            '//\n' +
-            '// foobarquux'
-        )
-      )
-    );
-  });
-
-  it('should produce an error if a mocked request is not exercised with an expected request stream', () => {
-    const requestBodyStream = new stream.Readable();
-    requestBodyStream._read = (num, cb) => {
-      requestBodyStream._read = () => {};
-      setImmediate(() => {
-        requestBodyStream.push('foobarquux');
-        requestBodyStream.push(null);
-      });
-    };
-    return expect(
-      expect(
-        'http://www.google.com/foo',
-        'with http mocked out',
-        [
-          {
-            request: 'GET /foo',
-            response: 200
-          },
-          {
-            request: {
-              body: requestBodyStream
-            },
-            response: 200
-          }
-        ],
-        'to yield response',
-        200
-      ),
-      'when rejected',
-      'to have message',
-      'unexpected-mitm: a stream cannot be used to verify the request body, please specify the buffer instead.'
-    );
-  });
-
-  it('should produce an error if a mocked request is not exercised and there are non-trivial assertions on it', () =>
-    expect(
-      expect(
-        'http://www.google.com/foo',
-        'with http mocked out',
-        [
-          {
-            request: 'GET /foo',
-            response: 200
-          },
-          {
-            request: {
-              method: 'GET',
-              path: '/foo',
-              headers: { Foo: expect.it('to match', /bar/) }
-            },
-            response: 200
-          }
-        ],
-        'to yield response',
-        200
-      ),
-      'when rejected',
-      'to have message',
-      expect.it(message =>
-        expect(
-          trimDiff(message),
-          'to equal',
-          "expected 'http://www.google.com/foo'\n" +
-          "with http mocked out [ { request: 'GET /foo', response: 200 }, { request: { method: 'GET', path: '/foo', headers: ... }, response: 200 } ] to yield response 200\n" +
-          '\n' +
-          'GET /foo HTTP/1.1\n' +
-          'Host: www.google.com\n' +
-          '\n' +
-          'HTTP/1.1 200 OK\n' +
-          '\n' +
-          '// missing:\n' +
-          '// GET /foo\n' +
-          "// Foo: // should satisfy expect.it('to match', /bar/)\n" +
-          '//      //\n' +
-          "//      // expected '' to match /bar/\n" + // Hmm, this is not ideal
-            '//\n' +
-            '// HTTP/1.1 200 OK'
-        )
-      )
-    ));
-
-  it('should produce an error if a mocked request is not exercised and there are failing async expects', () =>
-    expect(
-      expect(
-        {
-          url: 'POST http://www.google.com/foo',
-          body: { foo: 123 }
-        },
-        'with http mocked out',
-        [
-          {
-            request: {
-              url: 'POST /foo',
-              body: expect.it('when delayed a little bit', 'to equal', {
-                foo: 123
-              })
-            },
-            response: 200
-          },
-          {
-            request: {
-              url: 'GET /foo',
-              headers: { Foo: expect.it('to match', /bar/) }
-            },
-            response: 200
-          }
-        ],
-        'to yield response',
-        200
-      ),
-      'when rejected',
-      'to have message',
-      expect.it(message =>
-        expect(
-          trimDiff(message),
-          'to equal',
-          "expected { url: 'POST http://www.google.com/foo', body: { foo: 123 } } with http mocked out\n" +
-            '[\n' +
-            "  { request: { url: 'POST /foo', body: expect.it('when delayed a little bit', 'to equal', ...) }, response: 200 },\n" +
-            "  { request: { url: 'GET /foo', headers: ... }, response: 200 }\n" +
-            '] to yield response 200\n' +
-            '\n' +
-            'POST /foo HTTP/1.1\n' +
-            'Host: www.google.com\n' +
-            'Content-Type: application/json\n' +
-            'Content-Length: 11\n' +
-            '\n' +
-            '{ foo: 123 }\n' +
             '\n' +
             'HTTP/1.1 200 OK\n' +
             '\n' +
@@ -1460,12 +1400,74 @@ describe('unexpectedMitm', () => {
             '// GET /foo\n' +
             "// Foo: // should satisfy expect.it('to match', /bar/)\n" +
             '//      //\n' +
-            "//      // expected '' to match /bar/\n" +
-            '//\n' +
-            '// HTTP/1.1 200 OK'
+            "//      // expected '' to match /bar/\n" + // Hmm, this is not ideal
+              '//\n' +
+              '// HTTP/1.1 200 OK'
+          )
         )
-      )
-    ));
+      ));
+
+    it('should produce an error if a mocked request is not exercised and there are failing async expects', () =>
+      expect(
+        expect(
+          {
+            url: 'POST http://www.google.com/foo',
+            body: { foo: 123 }
+          },
+          'with http mocked out',
+          [
+            {
+              request: {
+                url: 'POST /foo',
+                body: expect.it('when delayed a little bit', 'to equal', {
+                  foo: 123
+                })
+              },
+              response: 200
+            },
+            {
+              request: {
+                url: 'GET /foo',
+                headers: { Foo: expect.it('to match', /bar/) }
+              },
+              response: 200
+            }
+          ],
+          'to yield response',
+          200
+        ),
+        'when rejected',
+        'to have message',
+        expect.it(message =>
+          expect(
+            trimDiff(message),
+            'to equal',
+            "expected { url: 'POST http://www.google.com/foo', body: { foo: 123 } } with http mocked out\n" +
+              '[\n' +
+              "  { request: { url: 'POST /foo', body: expect.it('when delayed a little bit', 'to equal', ...) }, response: 200 },\n" +
+              "  { request: { url: 'GET /foo', headers: ... }, response: 200 }\n" +
+              '] to yield response 200\n' +
+              '\n' +
+              'POST /foo HTTP/1.1\n' +
+              'Host: www.google.com\n' +
+              'Content-Type: application/json\n' +
+              'Content-Length: 11\n' +
+              '\n' +
+              '{ foo: 123 }\n' +
+              '\n' +
+              'HTTP/1.1 200 OK\n' +
+              '\n' +
+              '// missing:\n' +
+              '// GET /foo\n' +
+              "// Foo: // should satisfy expect.it('to match', /bar/)\n" +
+              '//      //\n' +
+              "//      // expected '' to match /bar/\n" +
+              '//\n' +
+              '// HTTP/1.1 200 OK'
+          )
+        )
+      ));
+  });
 
   describe('when the test suite issues more requests than have been mocked out', () => {
     it('should produce an error', () =>
