@@ -290,6 +290,34 @@ describe('unexpectedMitm', () => {
     );
   });
 
+  it('should produce an error if the request errors', () => {
+    const requestBodyStream = new stream.Readable();
+    requestBodyStream._read = (num, cb) => {
+      requestBodyStream._read = () => {};
+      setImmediate(() => {
+        requestBodyStream.push('foobarquux');
+        setImmediate(() => {
+          requestBodyStream.emit('error', new Error('Fake error'));
+        });
+      });
+    };
+
+    return expect(
+      () => {
+        const req = http.get('http://localhost/');
+        requestBodyStream.pipe(req);
+        requestBodyStream.on('error', err => req.emit('error', err));
+      },
+      'with http mocked out',
+      {
+        request: 'GET http://localhost/',
+        response: 200
+      },
+      'to be rejected with',
+      null // just to see what error comes out
+    );
+  });
+
   it('should clean up properly after a keep-alived request with the global agent', () => {
     const originalKeepAliveValue = http.globalAgent.keepAlive;
     http.globalAgent.keepAlive = true;
