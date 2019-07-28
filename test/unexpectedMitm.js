@@ -291,22 +291,12 @@ describe('unexpectedMitm', () => {
   });
 
   it('should produce an error if the request errors', () => {
-    const requestBodyStream = new stream.Readable();
-    requestBodyStream._read = (num, cb) => {
-      requestBodyStream._read = () => {};
-      setImmediate(() => {
-        requestBodyStream.push('foobarquux');
-        setImmediate(() => {
-          requestBodyStream.emit('error', new Error('Fake error'));
-        });
-      });
-    };
-
     return expect(
       () => {
         const req = http.get('http://localhost/');
-        requestBodyStream.pipe(req);
-        requestBodyStream.on('error', err => req.emit('error', err));
+        setImmediate(() => {
+          req.emit('error', new Error('Fake error'));
+        });
       },
       'with http mocked out',
       {
