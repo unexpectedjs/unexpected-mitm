@@ -1175,37 +1175,6 @@ describe('unexpectedMitm', () => {
       }
     ));
 
-  it('should produce an error if the request conditions are not satisfied', () =>
-    expect(
-      expect(
-        'http://www.google.com/foo',
-        'with http mocked out',
-        {
-          request: 'GET /bar',
-          response: 200
-        },
-        'to yield response',
-        200
-      ),
-      'when rejected',
-      'to have message',
-      expect.it(message =>
-        expect(
-          trimDiff(message),
-          'to equal',
-          "expected 'http://www.google.com/foo' with http mocked out { request: 'GET /bar', response: 200 } to yield response 200\n" +
-            '\n' +
-            'GET /foo HTTP/1.1 // should be GET /bar\n' +
-            '                  //\n' +
-            '                  // -GET /foo HTTP/1.1\n' +
-            '                  // +GET /bar HTTP/1.1\n' +
-            'Host: www.google.com\n' +
-            '\n' +
-            'HTTP/1.1 200 OK'
-        )
-      )
-    ));
-
   it('should produce an error if a mocked request is not exercised', () =>
     expect(
       expect(
@@ -1958,6 +1927,233 @@ describe('unexpectedMitm', () => {
           )
         ));
     });
+  });
+
+  describe('with requests that do not match expectations (early exit)', () => {
+    it('should produce an error if the request conditions are not satisfied', () =>
+      expect(
+        expect(
+          'http://www.google.com/foo',
+          'with http mocked out',
+          {
+            request: 'GET /bar',
+            response: 200
+          },
+          'to yield response',
+          200
+        ),
+        'when rejected',
+        'to have message',
+        expect.it(message =>
+          expect(
+            trimDiff(message),
+            'to equal',
+            "expected 'http://www.google.com/foo' with http mocked out { request: 'GET /bar', response: 200 } to yield response 200\n" +
+              '\n' +
+              'GET /foo HTTP/1.1 // should be GET /bar\n' +
+              '                  //\n' +
+              '                  // -GET /foo HTTP/1.1\n' +
+              '                  // +GET /bar HTTP/1.1\n' +
+              'Host: www.google.com\n' +
+              '\n' +
+              'HTTP/1.1 200 OK'
+          )
+        )
+      ));
+
+    it('should fail as soon as the request is made, even if the code being tested ignores the request failing', () =>
+      expect(
+        () =>
+          expect(
+            run =>
+              expect.promise(run => {
+                http.get('http://www.google.com/foo').on(
+                  'error',
+                  run(() => {
+                    // Ignore error
+                  })
+                );
+              }),
+            'with http mocked out',
+            [
+              {
+                request: 'GET http://www.google.com/',
+                response: {
+                  headers: {
+                    'Content-Type': 'text/plain'
+                  },
+                  body: 'hello'
+                }
+              }
+            ],
+            'not to error'
+          ),
+        'when rejected',
+        'to have message',
+        expect.it(message =>
+          expect(
+            trimDiff(message),
+            'to equal',
+            'expected\n' +
+              'run =>\n' +
+              '  expect.promise(run => {\n' +
+              "    http.get('http://www.google.com/foo').on(\n" +
+              "      'error',\n" +
+              '      run(() => {\n' +
+              '        // Ignore error\n' +
+              '      })\n' +
+              '    );\n' +
+              '  })\n' +
+              "with http mocked out [ { request: 'GET http://www.google.com/', response: { headers: ..., body: 'hello' } } ] not to error\n" +
+              '\n' +
+              'GET /foo HTTP/1.1 // should be GET /\n' +
+              '                  //\n' +
+              '                  // -GET /foo HTTP/1.1\n' +
+              '                  // +GET / HTTP/1.1\n' +
+              'Host: www.google.com\n' +
+              '\n' +
+              'HTTP/1.1 200 OK\n' +
+              'Content-Type: text/plain\n' +
+              '\n' +
+              'hello'
+          )
+        )
+      ));
+
+    it('should fail as soon as the request is made, even if the code being tested ignores the request failing and fails with another error', () =>
+      expect(
+        () =>
+          expect(
+            () =>
+              expect.promise((resolve, reject) => {
+                http.get('http://www.google.com/foo').on('error', () => {
+                  throw new Error('darn');
+                });
+              }),
+            'with http mocked out',
+            [
+              {
+                request: 'GET http://www.google.com/',
+                response: {
+                  headers: {
+                    'Content-Type': 'text/plain'
+                  },
+                  body: 'hello'
+                }
+              }
+            ],
+            'not to error'
+          ),
+        'when rejected',
+        'to have message',
+        expect.it(message =>
+          expect(
+            trimDiff(message),
+            'to equal',
+            'expected\n' +
+              '() =>\n' +
+              '  expect.promise((resolve, reject) => {\n' +
+              "    http.get('http://www.google.com/foo').on('error', () => {\n" +
+              "      throw new Error('darn');\n" +
+              '    });\n' +
+              '  })\n' +
+              "with http mocked out [ { request: 'GET http://www.google.com/', response: { headers: ..., body: 'hello' } } ] not to error\n" +
+              '\n' +
+              'GET /foo HTTP/1.1 // should be GET /\n' +
+              '                  //\n' +
+              '                  // -GET /foo HTTP/1.1\n' +
+              '                  // +GET / HTTP/1.1\n' +
+              'Host: www.google.com\n' +
+              '\n' +
+              'HTTP/1.1 200 OK\n' +
+              'Content-Type: text/plain\n' +
+              '\n' +
+              'hello'
+          )
+        )
+      ));
+
+    it('should fail as soon as the request is made, even when there are unexercised mocks', () =>
+      expect(
+        () =>
+          expect(
+            () =>
+              expect.promise(run => {
+                issueGetAndConsume(
+                  'http://www.google.com/foo',
+                  run(() => {
+                    issueGetAndConsume(
+                      'http://www.google.com/',
+                      run(() => {
+                        throw new Error('Oh no');
+                      })
+                    );
+                  })
+                );
+              }),
+            'with http mocked out',
+            [
+              {
+                request: 'GET http://www.google.com/',
+                response: {
+                  headers: {
+                    'Content-Type': 'text/plain'
+                  },
+                  body: 'hello'
+                }
+              },
+              {
+                request: 'GET http://www.google.com/',
+                response: {
+                  headers: {
+                    'Content-Type': 'text/plain'
+                  },
+                  body: 'world'
+                }
+              }
+            ],
+            'not to error'
+          ),
+        'when rejected',
+        'to have message',
+        expect.it(message =>
+          expect(
+            trimDiff(message),
+            'to equal',
+            'expected\n' +
+              '() =>\n' +
+              '  expect.promise(run => {\n' +
+              '    issueGetAndConsume(\n' +
+              "      'http://www.google.com/foo',\n" +
+              '      run(() => {\n' +
+              '        issueGetAndConsume(\n' +
+              "          'http://www.google.com/',\n" +
+              '          run(() => {\n' +
+              "            throw new Error('Oh no');\n" +
+              '          })\n' +
+              '        );\n' +
+              '      })\n' +
+              '    );\n' +
+              '  })\n' +
+              'with http mocked out\n' +
+              '[\n' +
+              "  { request: 'GET http://www.google.com/', response: { headers: ..., body: 'hello' } },\n" +
+              "  { request: 'GET http://www.google.com/', response: { headers: ..., body: 'world' } }\n" +
+              '] not to error\n' +
+              '\n' +
+              'GET /foo HTTP/1.1 // should be GET /\n' +
+              '                  //\n' +
+              '                  // -GET /foo HTTP/1.1\n' +
+              '                  // +GET / HTTP/1.1\n' +
+              'Host: www.google.com\n' +
+              '\n' +
+              'HTTP/1.1 200 OK\n' +
+              'Content-Type: text/plain\n' +
+              '\n' +
+              'hello'
+          )
+        )
+      ));
   });
 
   describe('in recording mode against a local HTTP server', () => {
@@ -3277,200 +3473,6 @@ describe('unexpectedMitm', () => {
       });
     });
   });
-
-  it('should fail early, even when there are unexercised mocks', () =>
-    expect(
-      () =>
-        expect(
-          () =>
-            expect.promise(run => {
-              issueGetAndConsume(
-                'http://www.google.com/foo',
-                run(() => {
-                  issueGetAndConsume(
-                    'http://www.google.com/',
-                    run(() => {
-                      throw new Error('Oh no');
-                    })
-                  );
-                })
-              );
-            }),
-          'with http mocked out',
-          [
-            {
-              request: 'GET http://www.google.com/',
-              response: {
-                headers: {
-                  'Content-Type': 'text/plain'
-                },
-                body: 'hello'
-              }
-            },
-            {
-              request: 'GET http://www.google.com/',
-              response: {
-                headers: {
-                  'Content-Type': 'text/plain'
-                },
-                body: 'world'
-              }
-            }
-          ],
-          'not to error'
-        ),
-      'when rejected',
-      'to have message',
-      expect.it(message =>
-        expect(
-          trimDiff(message),
-          'to equal',
-          'expected\n' +
-            '() =>\n' +
-            '  expect.promise(run => {\n' +
-            '    issueGetAndConsume(\n' +
-            "      'http://www.google.com/foo',\n" +
-            '      run(() => {\n' +
-            '        issueGetAndConsume(\n' +
-            "          'http://www.google.com/',\n" +
-            '          run(() => {\n' +
-            "            throw new Error('Oh no');\n" +
-            '          })\n' +
-            '        );\n' +
-            '      })\n' +
-            '    );\n' +
-            '  })\n' +
-            'with http mocked out\n' +
-            '[\n' +
-            "  { request: 'GET http://www.google.com/', response: { headers: ..., body: 'hello' } },\n" +
-            "  { request: 'GET http://www.google.com/', response: { headers: ..., body: 'world' } }\n" +
-            '] not to error\n' +
-            '\n' +
-            'GET /foo HTTP/1.1 // should be GET /\n' +
-            '                  //\n' +
-            '                  // -GET /foo HTTP/1.1\n' +
-            '                  // +GET / HTTP/1.1\n' +
-            'Host: www.google.com\n' +
-            '\n' +
-            'HTTP/1.1 200 OK\n' +
-            'Content-Type: text/plain\n' +
-            '\n' +
-            'hello'
-        )
-      )
-    ));
-
-  it('should fail a test as soon as an unexpected request is made, even if the code being tested ignores the request failing', () =>
-    expect(
-      () =>
-        expect(
-          run =>
-            expect.promise(run => {
-              http.get('http://www.google.com/foo').on(
-                'error',
-                run(() => {
-                  // Ignore error
-                })
-              );
-            }),
-          'with http mocked out',
-          [
-            {
-              request: 'GET http://www.google.com/',
-              response: {
-                headers: {
-                  'Content-Type': 'text/plain'
-                },
-                body: 'hello'
-              }
-            }
-          ],
-          'not to error'
-        ),
-      'when rejected',
-      'to have message',
-      expect.it(message =>
-        expect(
-          trimDiff(message),
-          'to equal',
-          'expected\n' +
-            'run =>\n' +
-            '  expect.promise(run => {\n' +
-            "    http.get('http://www.google.com/foo').on(\n" +
-            "      'error',\n" +
-            '      run(() => {\n' +
-            '        // Ignore error\n' +
-            '      })\n' +
-            '    );\n' +
-            '  })\n' +
-            "with http mocked out [ { request: 'GET http://www.google.com/', response: { headers: ..., body: 'hello' } } ] not to error\n" +
-            '\n' +
-            'GET /foo HTTP/1.1 // should be GET /\n' +
-            '                  //\n' +
-            '                  // -GET /foo HTTP/1.1\n' +
-            '                  // +GET / HTTP/1.1\n' +
-            'Host: www.google.com\n' +
-            '\n' +
-            'HTTP/1.1 200 OK\n' +
-            'Content-Type: text/plain\n' +
-            '\n' +
-            'hello'
-        )
-      )
-    ));
-
-  it('should fail a test as soon as an unexpected request is made, even if the code being tested ignores the request failing and fails with another error', () =>
-    expect(
-      () =>
-        expect(
-          () =>
-            expect.promise((resolve, reject) => {
-              http.get('http://www.google.com/foo').on('error', () => {
-                throw new Error('darn');
-              });
-            }),
-          'with http mocked out',
-          [
-            {
-              request: 'GET http://www.google.com/',
-              response: {
-                headers: {
-                  'Content-Type': 'text/plain'
-                },
-                body: 'hello'
-              }
-            }
-          ],
-          'not to error'
-        ),
-      'when rejected',
-      'to have message',
-      expect.it(message =>
-        expect(
-          trimDiff(message),
-          'to equal',
-          'expected\n' +
-            '() =>\n' +
-            '  expect.promise((resolve, reject) => {\n' +
-            "    http.get('http://www.google.com/foo').on('error', () => {\n" +
-            "      throw new Error('darn');\n" +
-            '    });\n' +
-            '  })\n' +
-            "with http mocked out [ { request: 'GET http://www.google.com/', response: { headers: ..., body: 'hello' } } ] not to error\n" +
-            '\n' +
-            'GET /foo HTTP/1.1 // should be GET /\n' +
-            '                  //\n' +
-            '                  // -GET /foo HTTP/1.1\n' +
-            '                  // +GET / HTTP/1.1\n' +
-            'Host: www.google.com\n' +
-            '\n' +
-            'HTTP/1.1 200 OK\n' +
-            'Content-Type: text/plain\n' +
-            '\n' +
-            'hello'
-        )
-      )
-    ));
 
   it('should handle concurrent requests without confusing the Host headers', () =>
     expect(
