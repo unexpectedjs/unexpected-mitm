@@ -59,7 +59,7 @@ describe('UnexpectedMitmMocker', () => {
   describe('when there are no remaining requests', () => {
     it('should reject with an unexpected requests error', () => {
       const strategy = {
-        hasDescriptionsRemaining: () => false,
+        firstDescriptionRemaining: () => Promise.resolve(null),
         nextDescriptionForIncomingRequest: () => Promise.resolve(null)
       };
       const mocker = new UnexpectedMitmMocker({ strategy });
@@ -80,7 +80,7 @@ describe('UnexpectedMitmMocker', () => {
   describe('when the request does not match expectations', () => {
     it('should reject with an unexpected requests error', () => {
       const strategy = {
-        hasDescriptionsRemaining: () => false,
+        firstDescriptionRemaining: () => Promise.resolve(null),
         nextDescriptionForIncomingRequest: () =>
           Promise.resolve({
             request: {
