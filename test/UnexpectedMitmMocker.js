@@ -56,6 +56,25 @@ describe('UnexpectedMitmMocker', () => {
     });
   });
 
+  describe('when handling a request', () => {
+    it('should reject with an unexpected requests error', () => {
+      const strategy = {
+        firstDescriptionRemaining: () => Promise.resolve(null),
+        nextDescriptionForIncomingRequest: () =>
+          Promise.reject(new Error('fail'))
+      };
+      const mocker = new UnexpectedMitmMocker({ strategy });
+
+      return mocker
+        .mock(() => {
+          return issueGetAndConsume('http://example.com/foo').catch(e => {});
+        })
+        .then(({ fulfilmentValue, timeline }) => {
+          expect(timeline, 'to satisfy', [new Error('fail')]);
+        });
+    });
+  });
+
   describe('when there are no remaining requests', () => {
     it('should reject with an unexpected requests error', () => {
       const strategy = {
