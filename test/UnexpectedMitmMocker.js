@@ -134,11 +134,7 @@ describe('UnexpectedMitmMocker', () => {
       const strategy = {
         firstDescriptionRemaining: () => Promise.resolve(null),
         nextDescriptionForIncomingRequest: () =>
-          Promise.resolve({
-            request: {
-              url: '/bar'
-            }
-          })
+          Promise.reject(new errors.EarlyExitError())
       };
       const mocker = new UnexpectedMitmMocker({ strategy });
 
