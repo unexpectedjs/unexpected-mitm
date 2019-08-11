@@ -56,6 +56,39 @@ describe('UnexpectedMitmMocker', () => {
     });
   });
 
+  it('should call nextDescriptionForIncomingRequest with the correct args', () => {
+    let nextDescriptionForIncomingRequestArgs;
+    const strategy = {
+      firstDescriptionRemaining: () => Promise.resolve(null),
+      nextDescriptionForIncomingRequest: (...args) => {
+        nextDescriptionForIncomingRequestArgs = args;
+
+        return Promise.resolve(null);
+      }
+    };
+    const mocker = new UnexpectedMitmMocker({ strategy });
+
+    return mocker
+      .mock(() => {
+        return issueGetAndConsume('http://example.com/foo').catch(e => {});
+      })
+      .then(({ fulfilmentValue, timeline }) => {
+        expect(
+          nextDescriptionForIncomingRequestArgs,
+          'to exhaustively satisfy',
+          [
+            {
+              request: expect.it('to be a', messy.HttpRequest),
+              error: undefined,
+              chunks: expect.it('to be an array'),
+              properties: expect.it('to be an object'),
+              spec: undefined
+            }
+          ]
+        );
+      });
+  });
+
   describe('when handling a request', () => {
     it('should reject with an unexpected requests error', () => {
       const strategy = {
