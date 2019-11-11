@@ -197,7 +197,10 @@ describe('unexpectedMitm', () => {
       '<any> when delayed a little bit <assertion>',
       (expect, subject) =>
         expect.promise(run => {
-          setTimeout(run(() => expect.shift()), 1);
+          setTimeout(
+            run(() => expect.shift()),
+            1
+          );
         })
     );
 
@@ -279,7 +282,12 @@ describe('unexpectedMitm', () => {
             http.get({ host: 'example.com', agent }).on(
               'response',
               run(response => {
-                response.on('data', () => {}).on('end', run(() => {}));
+                response
+                  .on('data', () => {})
+                  .on(
+                    'end',
+                    run(() => {})
+                  );
               })
             );
           }),
@@ -314,7 +322,12 @@ describe('unexpectedMitm', () => {
               http.get({ host: 'example.com' }).on(
                 'response',
                 run(response => {
-                  response.on('data', () => {}).on('end', run(() => {}));
+                  response
+                    .on('data', () => {})
+                    .on(
+                      'end',
+                      run(() => {})
+                    );
                 })
               );
             }),
@@ -796,7 +809,10 @@ describe('unexpectedMitm', () => {
             issueGetAndConsume(
               'http://www.google.com/',
               run(() => {
-                issueGetAndConsume('http://www.google.com/', run(() => {}));
+                issueGetAndConsume(
+                  'http://www.google.com/',
+                  run(() => {})
+                );
               })
             );
           }),
@@ -920,7 +936,10 @@ describe('unexpectedMitm', () => {
       expect(
         () =>
           expect.promise(run => {
-            issueGetAndConsume('http://www.google.com/', run(() => {}));
+            issueGetAndConsume(
+              'http://www.google.com/',
+              run(() => {})
+            );
           }),
         'with http mocked out',
         {
@@ -1021,7 +1040,10 @@ describe('unexpectedMitm', () => {
                       .on('error', () => {
                         expect.fail('request unexpectedly errored');
                       })
-                      .on('response', run(() => {}))
+                      .on(
+                        'response',
+                        run(() => {})
+                      )
                       .end();
                   })
                 )
@@ -1538,9 +1560,12 @@ describe('unexpectedMitm', () => {
       expect(
         expect(
           () =>
-            expect('http://www.google.com/foo', 'to yield response', 200).then(
-              () =>
-                expect('http://www.google.com/foo', 'to yield response', 200)
+            expect(
+              'http://www.google.com/foo',
+              'to yield response',
+              200
+            ).then(() =>
+              expect('http://www.google.com/foo', 'to yield response', 200)
             ),
           'with http mocked out',
           [],
