@@ -40,6 +40,45 @@ function trimDiff(message) {
   return message;
 }
 
+// :scream_cat:
+function createGetAddrInfoError(host, port) {
+  var getaddrinfoError;
+  // Different versions of node have shuffled around the properties of error instances:
+  var nodeJsVersion = process.version.replace(/^v/, '');
+  if (nodeJsVersion === '0.10.29') {
+    getaddrinfoError = new Error('getaddrinfo EADDRINFO');
+    getaddrinfoError.code = getaddrinfoError.errno = 'EADDRINFO';
+  } else if (semver.satisfies(nodeJsVersion, '>=0.12.0')) {
+    var message =
+      'getaddrinfo ENOTFOUND www.icwqjecoiqwjecoiwqjecoiwqjceoiwq.com';
+    if (semver.satisfies(nodeJsVersion, '>=9.7.0 <10')) {
+      // https://github.com/nodejs/node/issues/19716
+      getaddrinfoError = new Error();
+      getaddrinfoError.message = message;
+    } else {
+      getaddrinfoError = new Error(message);
+    }
+    if (
+      semver.satisfies(nodeJsVersion, '>=2.0.0') &&
+      semver.satisfies(nodeJsVersion, '<12')
+    ) {
+      getaddrinfoError.message += ` ${host}:${port}`;
+      getaddrinfoError.host = host;
+      getaddrinfoError.port = port;
+    }
+    getaddrinfoError.code = getaddrinfoError.errno = 'ENOTFOUND';
+    if (semver.satisfies(nodeJsVersion, '>=13')) {
+      getaddrinfoError.errno = -3008;
+    }
+    getaddrinfoError.hostname = 'www.icwqjecoiqwjecoiwqjecoiwqjceoiwq.com';
+  } else {
+    getaddrinfoError = new Error('getaddrinfo ENOTFOUND');
+    getaddrinfoError.code = getaddrinfoError.errno = 'ENOTFOUND';
+  }
+  getaddrinfoError.syscall = 'getaddrinfo';
+  return getaddrinfoError;
+}
+
 describe('unexpectedMitm', () => {
   const expect = require('unexpected')
     .clone()
@@ -197,7 +236,10 @@ describe('unexpectedMitm', () => {
       '<any> when delayed a little bit <assertion>',
       (expect, subject) =>
         expect.promise(run => {
-          setTimeout(run(() => expect.shift()), 1);
+          setTimeout(
+            run(() => expect.shift()),
+            1
+          );
         })
     );
 
@@ -279,7 +321,12 @@ describe('unexpectedMitm', () => {
             http.get({ host: 'example.com', agent }).on(
               'response',
               run(response => {
-                response.on('data', () => {}).on('end', run(() => {}));
+                response
+                  .on('data', () => {})
+                  .on(
+                    'end',
+                    run(() => {})
+                  );
               })
             );
           }),
@@ -314,7 +361,12 @@ describe('unexpectedMitm', () => {
               http.get({ host: 'example.com' }).on(
                 'response',
                 run(response => {
-                  response.on('data', () => {}).on('end', run(() => {}));
+                  response
+                    .on('data', () => {})
+                    .on(
+                      'end',
+                      run(() => {})
+                    );
                 })
               );
             }),
@@ -796,7 +848,10 @@ describe('unexpectedMitm', () => {
             issueGetAndConsume(
               'http://www.google.com/',
               run(() => {
-                issueGetAndConsume('http://www.google.com/', run(() => {}));
+                issueGetAndConsume(
+                  'http://www.google.com/',
+                  run(() => {})
+                );
               })
             );
           }),
@@ -920,7 +975,10 @@ describe('unexpectedMitm', () => {
       expect(
         () =>
           expect.promise(run => {
-            issueGetAndConsume('http://www.google.com/', run(() => {}));
+            issueGetAndConsume(
+              'http://www.google.com/',
+              run(() => {})
+            );
           }),
         'with http mocked out',
         {
@@ -1021,7 +1079,10 @@ describe('unexpectedMitm', () => {
                       .on('error', () => {
                         expect.fail('request unexpectedly errored');
                       })
-                      .on('response', run(() => {}))
+                      .on(
+                        'response',
+                        run(() => {})
+                      )
                       .end();
                   })
                 )
@@ -1538,9 +1599,12 @@ describe('unexpectedMitm', () => {
       expect(
         expect(
           () =>
-            expect('http://www.google.com/foo', 'to yield response', 200).then(
-              () =>
-                expect('http://www.google.com/foo', 'to yield response', 200)
+            expect(
+              'http://www.google.com/foo',
+              'to yield response',
+              200
+            ).then(() =>
+              expect('http://www.google.com/foo', 'to yield response', 200)
             ),
           'with http mocked out',
           [],
@@ -1554,9 +1618,12 @@ describe('unexpectedMitm', () => {
             'to equal',
             'expected\n' +
               '() =>\n' +
-              "  expect('http://www.google.com/foo', 'to yield response', 200).then(\n" +
-              '    () =>\n' +
-              "      expect('http://www.google.com/foo', 'to yield response', 200)\n" +
+              '  expect(\n' +
+              "    'http://www.google.com/foo',\n" +
+              "    'to yield response',\n" +
+              '    200\n' +
+              '  ).then(() =>\n' +
+              "    expect('http://www.google.com/foo', 'to yield response', 200)\n" +
               '  )\n' +
               'with http mocked out [] not to error\n' +
               '\n' +
@@ -2273,39 +2340,10 @@ describe('unexpectedMitm', () => {
     });
 
     it('should record an error', () => {
-      let expectedError;
-      // I do not know the exact version where this change was introduced. Hopefully this is enough to get
-      // it working on Travis (0.10.36 presently):
-      const nodeJsVersion = process.version.replace(/^v/, '');
-      if (nodeJsVersion === '0.10.29') {
-        expectedError = new Error('getaddrinfo EADDRINFO');
-        expectedError.code = expectedError.errno = 'EADDRINFO';
-      } else if (semver.satisfies(nodeJsVersion, '>=0.12.0')) {
-        const message =
-          'getaddrinfo ENOTFOUND www.icwqjecoiqwjecoiwqjecoiwqjceoiwq.com';
-        if (semver.satisfies(nodeJsVersion, '>=9.7.0 <10')) {
-          expectedError = new Error();
-          // explicitly set "message" to workaround an issue with enumerable properties
-          expectedError.message = message;
-        } else {
-          expectedError = new Error(message);
-        }
-        if (
-          semver.satisfies(nodeJsVersion, '>=2.0.0') &&
-          semver.satisfies(nodeJsVersion, '<12')
-        ) {
-          expectedError.message +=
-            ' www.icwqjecoiqwjecoiwqjecoiwqjceoiwq.com:80';
-          expectedError.host = 'www.icwqjecoiqwjecoiwqjecoiwqjceoiwq.com';
-          expectedError.port = 80;
-        }
-        expectedError.code = expectedError.errno = 'ENOTFOUND';
-        expectedError.hostname = 'www.icwqjecoiqwjecoiwqjecoiwqjceoiwq.com';
-      } else {
-        expectedError = new Error('getaddrinfo ENOTFOUND');
-        expectedError.code = expectedError.errno = 'ENOTFOUND';
-      }
-      expectedError.syscall = 'getaddrinfo';
+      const expectedError = createGetAddrInfoError(
+        'www.icwqjecoiqwjecoiwqjecoiwqjceoiwq.com',
+        80
+      );
       return expect(
         'http://www.icwqjecoiqwjecoiwqjecoiwqjceoiwq.com/',
         'with expected http recording',
