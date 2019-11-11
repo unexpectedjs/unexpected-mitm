@@ -1579,9 +1579,12 @@ describe('unexpectedMitm', () => {
             'to equal',
             'expected\n' +
               '() =>\n' +
-              "  expect('http://www.google.com/foo', 'to yield response', 200).then(\n" +
-              '    () =>\n' +
-              "      expect('http://www.google.com/foo', 'to yield response', 200)\n" +
+              '  expect(\n' +
+              "    'http://www.google.com/foo',\n" +
+              "    'to yield response',\n" +
+              '    200\n' +
+              '  ).then(() =>\n' +
+              "    expect('http://www.google.com/foo', 'to yield response', 200)\n" +
               '  )\n' +
               'with http mocked out [] not to error\n' +
               '\n' +
