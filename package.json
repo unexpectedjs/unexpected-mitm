@@ -40,7 +40,7 @@
     "pem": "^1.13.1",
     "prettier": "~1.19.1",
     "request": "^2.53.0",
-    "semver": "^6.0.0",
+    "semver": "^7.0.0",
     "sinon": "^7.0.0",
     "socketerrors-papandreou": "^0.2.0-patch2",
     "unexpected": "^11.5.0",
