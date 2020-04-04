@@ -2064,8 +2064,8 @@ describe('unexpectedMitm', () => {
             trimDiff(message),
             'to equal',
             'expected\n' +
-              'run =>\n' +
-              '  expect.promise(run => {\n' +
+              '(run) =>\n' +
+              '  expect.promise((run) => {\n' +
               "    http.get('http://www.google.com/foo').on(\n" +
               "      'error',\n" +
               '      run(() => {\n' +
@@ -2191,7 +2191,7 @@ describe('unexpectedMitm', () => {
             'to equal',
             'expected\n' +
               '() =>\n' +
-              '  expect.promise(run => {\n' +
+              '  expect.promise((run) => {\n' +
               '    issueGetAndConsume(\n' +
               "      'http://www.google.com/foo',\n" +
               '      run(() => {\n' +
@@ -2324,10 +2324,10 @@ describe('unexpectedMitm', () => {
             'expected\n' +
               '() =>\n' +
               '  expect.promise\n' +
-              '    .fromNode(cb => {\n' +
+              '    .fromNode((cb) => {\n' +
               '      issueGetAndConsume(serverUrl, cb);\n' +
               '    })\n' +
-              '    .then(buffer => {\n' +
+              '    .then((buffer) => {\n' +
               "      expect(buffer.toString('utf-8'), 'to equal', 'hello world');\n" +
               '    })\n' +
               'with http recorded not to error\n' +
@@ -3561,7 +3561,7 @@ describe('unexpectedMitm', () => {
         'to call the callback without error'
       ),
       'to be rejected with',
-      'expected cb => setImmediate(cb)\n' +
+      'expected (cb) => setImmediate(cb)\n' +
         "with http mocked out { request: 'GET /', response: Error({ message: 'foo', bar: 123, statusCode: 404 }) } to call the callback without error\n" +
         '\n' +
         '// missing:\n' +
