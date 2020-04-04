@@ -14,7 +14,7 @@ function consumeResponse(response, callback) {
   const chunks = [];
 
   response
-    .on('data', chunk => {
+    .on('data', (chunk) => {
       chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
     })
     .on('end', () => {
@@ -25,7 +25,7 @@ function consumeResponse(response, callback) {
 function issueGetAndConsume(url, callback) {
   http
     .get(url)
-    .on('response', response => consumeResponse(response, callback))
+    .on('response', (response) => consumeResponse(response, callback))
     .on('error', callback)
     .end();
 }
@@ -107,7 +107,7 @@ describe('unexpectedMitm', () => {
         // account for the way url is written to disk
         const expectedWrittenExchanges = {
           ...expectedRecordedExchanges,
-          request: { ...expectedRecordedExchanges.request }
+          request: { ...expectedRecordedExchanges.request },
         };
         expectedWrittenExchanges.request.url = `${expectedRecordedExchanges.request.method} ${expectedRecordedExchanges.request.path}`;
         delete expectedWrittenExchanges.request.method;
@@ -148,7 +148,7 @@ describe('unexpectedMitm', () => {
 
         return expect
           .promise(() => expect.shift(drivingRequest))
-          .then(result => {
+          .then((result) => {
             if (expect.flags['with extra info']) {
               expect(
                 result,
@@ -187,7 +187,7 @@ describe('unexpectedMitm', () => {
         const outputFilePath = pathModule.join(testPath, `.${subject}.js`);
 
         return expect
-          .promise(run => {
+          .promise((run) => {
             // create a temporary output file
             fs.writeFileSync(outputFilePath, fs.readFileSync(inputFilePath));
 
@@ -196,9 +196,9 @@ describe('unexpectedMitm', () => {
               commandPath,
               [outputFilePath],
               {
-                cwd: basePath
+                cwd: basePath,
               },
-              run(err => {
+              run((err) => {
                 expect(err, 'to be falsy');
                 const inputFileData = fs
                   .readFileSync(outputFilePath)
@@ -235,7 +235,7 @@ describe('unexpectedMitm', () => {
     .addAssertion(
       '<any> when delayed a little bit <assertion>',
       (expect, subject) =>
-        expect.promise(run => {
+        expect.promise((run) => {
           setTimeout(
             run(() => expect.shift()),
             1
@@ -246,7 +246,7 @@ describe('unexpectedMitm', () => {
   expect.output.preferredWidth = 150;
 
   function createPemCertificate(certOptions) {
-    return expect.promise.fromNode(cb => {
+    return expect.promise.fromNode((cb) => {
       pem.createCertificate(cb);
     });
   }
@@ -260,18 +260,18 @@ describe('unexpectedMitm', () => {
         response: {
           statusCode: 200,
           headers: {
-            'Content-Type': 'text/html; charset=UTF-8'
+            'Content-Type': 'text/html; charset=UTF-8',
           },
-          body: '<!DOCTYPE html>\n<html></html>'
-        }
+          body: '<!DOCTYPE html>\n<html></html>',
+        },
       },
       'to yield response',
       {
         statusCode: 200,
         headers: {
-          'Content-Type': 'text/html; charset=UTF-8'
+          'Content-Type': 'text/html; charset=UTF-8',
         },
-        body: '<!DOCTYPE html>\n<html></html>'
+        body: '<!DOCTYPE html>\n<html></html>',
       }
     ));
 
@@ -284,18 +284,18 @@ describe('unexpectedMitm', () => {
         response: {
           statusCode: 200,
           headers: {
-            'Content-Type': 'application/octet-stream'
+            'Content-Type': 'application/octet-stream',
           },
-          body: Buffer.from([0x00, 0x01, 0xef, 0xff])
-        }
+          body: Buffer.from([0x00, 0x01, 0xef, 0xff]),
+        },
       },
       'to yield response',
       {
         statusCode: 200,
         headers: {
-          'Content-Type': 'application/octet-stream'
+          'Content-Type': 'application/octet-stream',
         },
-        body: Buffer.from([0x00, 0x01, 0xef, 0xff])
+        body: Buffer.from([0x00, 0x01, 0xef, 0xff]),
       }
     ));
 
@@ -303,10 +303,10 @@ describe('unexpectedMitm', () => {
     const agent = new http.Agent({ keepAlive: true });
     return expect(
       () =>
-        expect.promise(run => {
+        expect.promise((run) => {
           http.get({ host: 'example.com', agent }).on(
             'response',
-            run(response => {
+            run((response) => {
               response.on('data', () => {}).on('end', run());
             })
           );
@@ -317,10 +317,10 @@ describe('unexpectedMitm', () => {
     ).then(() =>
       expect(
         () =>
-          expect.promise(run => {
+          expect.promise((run) => {
             http.get({ host: 'example.com', agent }).on(
               'response',
-              run(response => {
+              run((response) => {
                 response
                   .on('data', () => {})
                   .on(
@@ -342,10 +342,10 @@ describe('unexpectedMitm', () => {
     http.globalAgent.keepAlive = true;
     return expect(
       () =>
-        expect.promise(run => {
+        expect.promise((run) => {
           http.get({ host: 'example.com' }).on(
             'response',
-            run(response => {
+            run((response) => {
               response.on('data', () => {}).on('end', run());
             })
           );
@@ -357,10 +357,10 @@ describe('unexpectedMitm', () => {
       .then(() =>
         expect(
           () =>
-            expect.promise(run => {
+            expect.promise((run) => {
               http.get({ host: 'example.com' }).on(
                 'response',
-                run(response => {
+                run((response) => {
                   response
                     .on('data', () => {})
                     .on(
@@ -386,7 +386,7 @@ describe('unexpectedMitm', () => {
       'with http mocked out',
       {
         request: 'GET /',
-        response: new Error('foo')
+        response: new Error('foo'),
       },
       'to yield response',
       new Error('foo')
@@ -398,7 +398,7 @@ describe('unexpectedMitm', () => {
       'with http mocked out',
       {
         request: 'GET /',
-        response: new socketErrors.ECONNRESET()
+        response: new socketErrors.ECONNRESET(),
       },
       'to yield response',
       new socketErrors.ECONNRESET()
@@ -411,15 +411,15 @@ describe('unexpectedMitm', () => {
       {
         request: 'GET /',
         response: {
-          body: { abc: 123 }
-        }
+          body: { abc: 123 },
+        },
       },
       'to yield response',
       {
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: { abc: 123 }
+        body: { abc: 123 },
       }
     ));
 
@@ -430,15 +430,15 @@ describe('unexpectedMitm', () => {
       {
         request: 'GET /',
         response: {
-          body: null
-        }
+          body: null,
+        },
       },
       'to yield response',
       {
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: null
+        body: null,
       }
     ));
 
@@ -450,30 +450,30 @@ describe('unexpectedMitm', () => {
         request: 'GET /',
         response: {
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
           },
-          body: '!==!='
-        }
+          body: '!==!=',
+        },
       },
       'to yield response',
       {
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        unchunkedBody: Buffer.from('!==!=', 'utf-8')
+        unchunkedBody: Buffer.from('!==!=', 'utf-8'),
       }
     ));
 
   it('should preserve the original serialization of JSON provided as a string', () =>
     expect(
-      cb => {
+      (cb) => {
         http
           .get('http://www.examplestuff.com/')
           .on('error', cb)
-          .on('response', response => {
+          .on('response', (response) => {
             const chunks = [];
             response
-              .on('data', chunk => {
+              .on('data', (chunk) => {
                 chunks.push(chunk);
               })
               .on('end', () => {
@@ -492,11 +492,11 @@ describe('unexpectedMitm', () => {
         {
           response: {
             headers: {
-              'Content-Type': 'application/json'
+              'Content-Type': 'application/json',
             },
-            body: '{"foo":\n123\n}'
-          }
-        }
+            body: '{"foo":\n123\n}',
+          },
+        },
       ],
       'to call the callback without error'
     ));
@@ -506,31 +506,31 @@ describe('unexpectedMitm', () => {
       expect(
         {
           url: 'POST http://www.google.com/',
-          body: { foo: 123 }
+          body: { foo: 123 },
         },
         'with http mocked out',
         {
           request: {
             url: 'POST /',
             body: expect.it('when delayed a little bit', 'to equal', {
-              foo: 123
-            })
+              foo: 123,
+            }),
           },
           response: {
             statusCode: 200,
             headers: {
-              'Content-Type': 'text/html; charset=UTF-8'
+              'Content-Type': 'text/html; charset=UTF-8',
             },
-            body: '<!DOCTYPE html>\n<html></html>'
-          }
+            body: '<!DOCTYPE html>\n<html></html>',
+          },
         },
         'to yield response',
         {
           statusCode: 200,
           headers: {
-            'Content-Type': 'text/html; charset=UTF-8'
+            'Content-Type': 'text/html; charset=UTF-8',
           },
-          body: '<!DOCTYPE html>\n<html></html>'
+          body: '<!DOCTYPE html>\n<html></html>',
         }
       ));
 
@@ -539,36 +539,36 @@ describe('unexpectedMitm', () => {
         expect(
           {
             url: 'POST http://www.google.com/',
-            body: { foo: 123 }
+            body: { foo: 123 },
           },
           'with http mocked out',
           {
             request: {
               url: 'POST /',
               body: expect.it('when delayed a little bit', 'to equal', {
-                foo: 456
-              })
+                foo: 456,
+              }),
             },
             response: {
               statusCode: 200,
               headers: {
-                'Content-Type': 'text/html; charset=UTF-8'
+                'Content-Type': 'text/html; charset=UTF-8',
               },
-              body: '<!DOCTYPE html>\n<html></html>'
-            }
+              body: '<!DOCTYPE html>\n<html></html>',
+            },
           },
           'to yield response',
           {
             statusCode: 200,
             headers: {
-              'Content-Type': 'text/html; charset=UTF-8'
+              'Content-Type': 'text/html; charset=UTF-8',
             },
-            body: '<!DOCTYPE html>\n<html></html>'
+            body: '<!DOCTYPE html>\n<html></html>',
           }
         ),
         'when rejected',
         'to have message',
-        expect.it(message =>
+        expect.it((message) =>
           expect(
             trimDiff(message),
             'to equal',
@@ -652,7 +652,7 @@ describe('unexpectedMitm', () => {
           'with http mocked out',
           {
             request: 'GET https://www.google.com/',
-            response: 200
+            response: 200,
           },
           'to yield response',
           200
@@ -665,14 +665,14 @@ describe('unexpectedMitm', () => {
             'with http mocked out',
             {
               request: 'GET https://www.google.com/',
-              response: 200
+              response: 200,
             },
             'to yield response',
             200
           ),
           'when rejected',
           'to have message',
-          expect.it(message =>
+          expect.it((message) =>
             expect(
               trimDiff(message),
               'to equal',
@@ -695,7 +695,7 @@ describe('unexpectedMitm', () => {
           'with http mocked out',
           {
             request: { url: 'GET /', encrypted: true },
-            response: 200
+            response: 200,
           },
           'to yield response',
           200
@@ -708,14 +708,14 @@ describe('unexpectedMitm', () => {
             'with http mocked out',
             {
               request: { url: 'GET /', encrypted: true },
-              response: 200
+              response: 200,
             },
             'to yield response',
             200
           ),
           'when rejected',
           'to have message',
-          expect.it(message =>
+          expect.it((message) =>
             expect(
               trimDiff(message),
               'to equal',
@@ -739,7 +739,7 @@ describe('unexpectedMitm', () => {
         'with http mocked out',
         {
           request: 'GET http://www.google.com/',
-          response: 200
+          response: 200,
         },
         'to yield response',
         200
@@ -752,14 +752,14 @@ describe('unexpectedMitm', () => {
           'with http mocked out',
           {
             request: 'POST http://www.example.com/',
-            response: 200
+            response: 200,
           },
           'to yield response',
           200
         ),
         'when rejected',
         'to have message',
-        expect.it(message =>
+        expect.it((message) =>
           expect(
             trimDiff(message),
             'to equal',
@@ -790,11 +790,11 @@ describe('unexpectedMitm', () => {
       'with http mocked out',
       {
         request: 'GET /',
-        response: 412
+        response: 412,
       },
       'to yield response',
       {
-        statusCode: 412
+        statusCode: 412,
       }
     ));
 
@@ -803,7 +803,7 @@ describe('unexpectedMitm', () => {
       'http://www.google.com/',
       'with http mocked out',
       {
-        response: 412
+        response: 412,
       },
       'to yield response',
       412
@@ -812,7 +812,7 @@ describe('unexpectedMitm', () => {
   describe('with multiple mocks specified', () => {
     it("should succeed with 'to call the callback without error'", () =>
       expect(
-        cb => {
+        (cb) => {
           issueGetAndConsume('http://www.google.com/', () => {
             issueGetAndConsume('http://www.google.com/', cb);
           });
@@ -823,20 +823,20 @@ describe('unexpectedMitm', () => {
             request: 'GET http://www.google.com/',
             response: {
               headers: {
-                'Content-Type': 'text/plain'
+                'Content-Type': 'text/plain',
               },
-              body: 'hello'
-            }
+              body: 'hello',
+            },
           },
           {
             request: 'GET http://www.google.com/',
             response: {
               headers: {
-                'Content-Type': 'text/plain'
+                'Content-Type': 'text/plain',
               },
-              body: 'world'
-            }
-          }
+              body: 'world',
+            },
+          },
         ],
         'to call the callback without error'
       ));
@@ -844,7 +844,7 @@ describe('unexpectedMitm', () => {
     it("should succeed with 'not to error'", () =>
       expect(
         () =>
-          expect.promise(run => {
+          expect.promise((run) => {
             issueGetAndConsume(
               'http://www.google.com/',
               run(() => {
@@ -861,20 +861,20 @@ describe('unexpectedMitm', () => {
             request: 'GET http://www.google.com/',
             response: {
               headers: {
-                'Content-Type': 'text/plain'
+                'Content-Type': 'text/plain',
               },
-              body: 'hello'
-            }
+              body: 'hello',
+            },
           },
           {
             request: 'GET http://www.google.com/',
             response: {
               headers: {
-                'Content-Type': 'text/plain'
+                'Content-Type': 'text/plain',
               },
-              body: 'world'
-            }
-          }
+              body: 'world',
+            },
+          },
         ],
         'not to error'
       ));
@@ -890,13 +890,13 @@ describe('unexpectedMitm', () => {
           response: {
             body: fs.createReadStream(
               pathModule.resolve(__dirname, '..', 'testdata', 'foo.txt')
-            )
-          }
+            ),
+          },
         },
         'to yield response',
         {
           statusCode: 200,
-          body: Buffer.from('Contents of foo.txt\n', 'utf-8')
+          body: Buffer.from('Contents of foo.txt\n', 'utf-8'),
         }
       ));
 
@@ -908,17 +908,17 @@ describe('unexpectedMitm', () => {
           request: 'GET /',
           response: {
             headers: {
-              'Content-Type': 'text/plain; charset=UTF-8'
+              'Content-Type': 'text/plain; charset=UTF-8',
             },
             body: fs.createReadStream(
               pathModule.resolve(__dirname, '..', 'testdata', 'foo.txt')
-            )
-          }
+            ),
+          },
         },
         'to yield response',
         {
           statusCode: 200,
-          body: 'Contents of foo.txt\n'
+          body: 'Contents of foo.txt\n',
         }
       ));
 
@@ -939,17 +939,17 @@ describe('unexpectedMitm', () => {
           request: 'GET /',
           response: {
             headers: {
-              'Content-Type': 'application/json'
+              'Content-Type': 'application/json',
             },
-            body: responseBodyStream
-          }
+            body: responseBodyStream,
+          },
         },
         'to yield response',
         {
           statusCode: 200,
           body: {
-            foo: 'bar'
-          }
+            foo: 'bar',
+          },
         }
       );
     });
@@ -962,10 +962,10 @@ describe('unexpectedMitm', () => {
           request: 'GET /',
           response: {
             headers: {
-              'content-length': 5
+              'content-length': 5,
             },
-            body: Buffer.from('hello')
-          }
+            body: Buffer.from('hello'),
+          },
         },
         'to yield response',
         200
@@ -974,7 +974,7 @@ describe('unexpectedMitm', () => {
     it('should treat Transfer-Encoding case insentitively', () =>
       expect(
         () =>
-          expect.promise(run => {
+          expect.promise((run) => {
             issueGetAndConsume(
               'http://www.google.com/',
               run(() => {})
@@ -986,12 +986,12 @@ describe('unexpectedMitm', () => {
           response: {
             headers: {
               'transfer-encoding': 'chunked',
-              'content-length': 1
+              'content-length': 1,
             },
             body: fs.createReadStream(
               pathModule.resolve(__dirname, '..', 'testdata', 'foo.txt')
-            )
-          }
+            ),
+          },
         },
         'not to error'
       ));
@@ -1011,10 +1011,10 @@ describe('unexpectedMitm', () => {
             request: 'GET http://www.google.com/',
             response: {
               headers: {
-                'Content-Type': 'text/plain'
+                'Content-Type': 'text/plain',
               },
-              body: erroringStream
-            }
+              body: erroringStream,
+            },
           },
           'to yield response',
           new Error('Fake error')
@@ -1038,22 +1038,22 @@ describe('unexpectedMitm', () => {
             request: 'GET http://localhost/',
             response: {
               headers: {
-                'Content-Type': 'text/plain'
+                'Content-Type': 'text/plain',
               },
-              body: responseBodyStream
-            }
+              body: responseBodyStream,
+            },
           },
           'to yield response',
           {
             body: 'foobarquux',
-            error: new Error('Fake error')
+            error: new Error('Fake error'),
           }
         );
       });
 
       it('should recover from the error and replay the next request', () => {
         const erroringStream = new stream.Readable();
-        erroringStream._read = num => {
+        erroringStream._read = (num) => {
           erroringStream._read = () => {};
           erroringStream.push('yaddayadda');
           setImmediate(() => {
@@ -1063,7 +1063,7 @@ describe('unexpectedMitm', () => {
         const firstResponseSpy = sinon.spy();
         return expect(
           () =>
-            expect.promise(run => {
+            expect.promise((run) => {
               http
                 .get('http://www.google.com/')
                 .on(
@@ -1071,7 +1071,7 @@ describe('unexpectedMitm', () => {
                   run(() => {
                     expect(firstResponseSpy, 'to have calls satisfying', () => {
                       firstResponseSpy({
-                        headers: { 'content-type': 'text/plain' }
+                        headers: { 'content-type': 'text/plain' },
                       });
                     });
                     http
@@ -1095,20 +1095,20 @@ describe('unexpectedMitm', () => {
               request: 'GET http://www.google.com/',
               response: {
                 headers: {
-                  'Content-Type': 'text/plain'
+                  'Content-Type': 'text/plain',
                 },
-                body: erroringStream
-              }
+                body: erroringStream,
+              },
             },
             {
               request: 'GET http://www.google.com/',
               response: {
                 headers: {
-                  'Content-Type': 'text/plain'
+                  'Content-Type': 'text/plain',
                 },
-                body: 'abcdef'
-              }
-            }
+                body: 'abcdef',
+              },
+            },
           ],
           'not to error'
         );
@@ -1126,13 +1126,13 @@ describe('unexpectedMitm', () => {
             url: 'GET /',
             body: fs.createReadStream(
               pathModule.resolve(__dirname, '..', 'testdata', 'foo.txt')
-            )
+            ),
           },
-          response: 200
+          response: 200,
         },
         'to yield response',
         {
-          statusCode: 200
+          statusCode: 200,
         }
       ),
       'when rejected',
@@ -1145,15 +1145,15 @@ describe('unexpectedMitm', () => {
       expect(
         {
           url: 'POST http://www.google.com/',
-          body: { foo: 123 }
+          body: { foo: 123 },
         },
         'with http mocked out',
         {
           request: {
             url: 'POST /',
-            body: { foo: 123 }
+            body: { foo: 123 },
           },
-          response: 200
+          response: 200,
         },
         'to yield response',
         200
@@ -1164,22 +1164,22 @@ describe('unexpectedMitm', () => {
         expect(
           {
             url: 'POST http://www.google.com/',
-            body: { foo: 123 }
+            body: { foo: 123 },
           },
           'with http mocked out',
           {
             request: {
               url: 'POST /',
-              body: { foo: 456 }
+              body: { foo: 456 },
             },
-            response: 200
+            response: 200,
           },
           'to yield response',
           200
         ),
         'when rejected',
         'to have message',
-        expect.it(message =>
+        expect.it((message) =>
           expect(
             trimDiff(message),
             'to equal',
@@ -1206,15 +1206,15 @@ describe('unexpectedMitm', () => {
       'with http mocked out',
       {
         request: 'GET /',
-        response: { body: { foo: 123 } }
+        response: { body: { foo: 123 } },
       },
       'to yield response',
       {
         statusCode: 200,
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: { foo: 123 }
+        body: { foo: 123 },
       }
     ));
 
@@ -1224,15 +1224,15 @@ describe('unexpectedMitm', () => {
       'with http mocked out',
       {
         request: 'GET /',
-        response: { body: [{ foo: 123 }] }
+        response: { body: [{ foo: 123 }] },
       },
       'to yield response',
       {
         statusCode: 200,
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: [{ foo: 123 }]
+        body: [{ foo: 123 }],
       }
     ));
 
@@ -1245,19 +1245,19 @@ describe('unexpectedMitm', () => {
           [
             {
               request: 'GET /foo',
-              response: 200
+              response: 200,
             },
             {
               request: 'GET /foo',
-              response: 200
-            }
+              response: 200,
+            },
           ],
           'to yield response',
           200
         ),
         'when rejected',
         'to have message',
-        expect.it(message =>
+        expect.it((message) =>
           expect(
             trimDiff(message),
             'to equal',
@@ -1293,21 +1293,21 @@ describe('unexpectedMitm', () => {
           [
             {
               request: 'GET /foo',
-              response: 200
+              response: 200,
             },
             {
               request: 'GET /foo',
               response: {
-                body: responseBodyStream
-              }
-            }
+                body: responseBodyStream,
+              },
+            },
           ],
           'to yield response',
           200
         ),
         'when rejected',
         'to have message',
-        expect.it(message =>
+        expect.it((message) =>
           expect(
             trimDiff(message),
             'to equal',
@@ -1346,24 +1346,24 @@ describe('unexpectedMitm', () => {
           [
             {
               request: 'GET /foo',
-              response: 200
+              response: 200,
             },
             {
               request: 'GET /foo',
               response: {
                 headers: {
-                  'Content-Type': 'text/plain'
+                  'Content-Type': 'text/plain',
                 },
-                body: responseBodyStream
-              }
-            }
+                body: responseBodyStream,
+              },
+            },
           ],
           'to yield response',
           200
         ),
         'when rejected',
         'to have message',
-        expect.it(message =>
+        expect.it((message) =>
           expect(
             trimDiff(message),
             'to equal',
@@ -1403,14 +1403,14 @@ describe('unexpectedMitm', () => {
           [
             {
               request: 'GET /foo',
-              response: 200
+              response: 200,
             },
             {
               request: {
-                body: requestBodyStream
+                body: requestBodyStream,
               },
-              response: 200
-            }
+              response: 200,
+            },
           ],
           'to yield response',
           200
@@ -1429,23 +1429,23 @@ describe('unexpectedMitm', () => {
           [
             {
               request: 'GET /foo',
-              response: 200
+              response: 200,
             },
             {
               request: {
                 method: 'GET',
                 path: '/foo',
-                headers: { Foo: expect.it('to match', /bar/) }
+                headers: { Foo: expect.it('to match', /bar/) },
               },
-              response: 200
-            }
+              response: 200,
+            },
           ],
           'to yield response',
           200
         ),
         'when rejected',
         'to have message',
-        expect.it(message =>
+        expect.it((message) =>
           expect(
             trimDiff(message),
             'to equal',
@@ -1473,7 +1473,7 @@ describe('unexpectedMitm', () => {
         expect(
           {
             url: 'POST http://www.google.com/foo',
-            body: { foo: 123 }
+            body: { foo: 123 },
           },
           'with http mocked out',
           [
@@ -1481,25 +1481,25 @@ describe('unexpectedMitm', () => {
               request: {
                 url: 'POST /foo',
                 body: expect.it('when delayed a little bit', 'to equal', {
-                  foo: 123
-                })
+                  foo: 123,
+                }),
               },
-              response: 200
+              response: 200,
             },
             {
               request: {
                 url: 'GET /foo',
-                headers: { Foo: expect.it('to match', /bar/) }
+                headers: { Foo: expect.it('to match', /bar/) },
               },
-              response: 200
-            }
+              response: 200,
+            },
           ],
           'to yield response',
           200
         ),
         'when rejected',
         'to have message',
-        expect.it(message =>
+        expect.it((message) =>
           expect(
             trimDiff(message),
             'to equal',
@@ -1542,7 +1542,7 @@ describe('unexpectedMitm', () => {
         ),
         'when rejected',
         'to have message',
-        expect.it(message =>
+        expect.it((message) =>
           expect(
             message.replace(/^\/\/ Connection:.*\n/m, ''),
             'to equal',
@@ -1564,9 +1564,9 @@ describe('unexpectedMitm', () => {
           {
             url: 'http://www.google.com/foo',
             headers: {
-              'Content-Type': 'text/plain'
+              'Content-Type': 'text/plain',
             },
-            body: 'quux & xuuq'
+            body: 'quux & xuuq',
           },
           'with http mocked out',
           [],
@@ -1575,7 +1575,7 @@ describe('unexpectedMitm', () => {
         ),
         'when rejected',
         'to have message',
-        expect.it(message =>
+        expect.it((message) =>
           expect(
             message.replace(/^\/\/ Connection:.*\n/m, ''),
             'to equal',
@@ -1612,7 +1612,7 @@ describe('unexpectedMitm', () => {
         ),
         'when rejected',
         'to have message',
-        expect.it(message =>
+        expect.it((message) =>
           expect(
             message.replace(/^\/\/ Connection:.*\n/m, ''),
             'to equal',
@@ -1643,7 +1643,7 @@ describe('unexpectedMitm', () => {
       return expect(
         () =>
           expect(
-            cb => {
+            (cb) => {
               mocks.push({ request: 'GET /', response: 200 });
               issueGetAndConsume('http://www.example.com/', cb);
             },
@@ -1677,14 +1677,14 @@ describe('unexpectedMitm', () => {
         'with http mocked out',
         {
           request: 'GET /foo',
-          response: 200
+          response: 200,
         },
         'to yield response',
         412
       ),
       'when rejected',
       'to have message',
-      expect.it(message =>
+      expect.it((message) =>
         expect(
           trimDiff(message),
           'to equal',
@@ -1701,7 +1701,7 @@ describe('unexpectedMitm', () => {
   describe('with response function', () => {
     it('should allow returning a response in callback', () => {
       const cannedResponse = {
-        statusCode: 404
+        statusCode: 404,
       };
 
       return expect(
@@ -1713,7 +1713,7 @@ describe('unexpectedMitm', () => {
             res.statusCode = url === '/404' ? cannedResponse.statusCode : 200;
 
             res.end();
-          }
+          },
         },
         'to yield response',
         cannedResponse
@@ -1729,15 +1729,15 @@ describe('unexpectedMitm', () => {
         {
           request: {
             method: 'GET',
-            url: '/200'
+            url: '/200',
           },
           response(req, res) {
             res.end(expectedBuffer);
-          }
+          },
         },
         'to yield response',
         {
-          body: expectedBuffer
+          body: expectedBuffer,
         }
       ).then(([fulfilmentValue, { exchanges }]) => {
         expect(exchanges[0], 'to have a response with body', expectedBuffer);
@@ -1753,19 +1753,19 @@ describe('unexpectedMitm', () => {
         {
           request: {
             method: 'GET',
-            url: '/200'
+            url: '/200',
           },
           response(req, res) {
             res.writeHead(200, {
-              'Content-Type': 'application/json'
+              'Content-Type': 'application/json',
             });
 
             res.end(Buffer.from(JSON.stringify(expectedArray)));
-          }
+          },
         },
         'to yield response',
         {
-          body: expectedArray
+          body: expectedArray,
         }
       ).then(([fulfilmentValue, { exchanges }]) => {
         expect(exchanges[0], 'to have a response with body', expectedArray);
@@ -1774,7 +1774,7 @@ describe('unexpectedMitm', () => {
 
     it('should allow returning a response with a body Object', () => {
       const expectedBody = {
-        foo: 'bar'
+        foo: 'bar',
       };
 
       return expect(
@@ -1783,19 +1783,19 @@ describe('unexpectedMitm', () => {
         {
           request: {
             method: 'GET',
-            url: '/200'
+            url: '/200',
           },
           response(req, res) {
             res.writeHead(200, {
-              'Content-Type': 'application/json; charset=utf8'
+              'Content-Type': 'application/json; charset=utf8',
             });
 
             res.end(Buffer.from(JSON.stringify(expectedBody)));
-          }
+          },
         },
         'to yield response',
         {
-          body: expectedBody
+          body: expectedBody,
         }
       ).then(([fulfilmentValue, { exchanges }]) => {
         expect(exchanges[0], 'to have a response with body', expectedBody);
@@ -1804,13 +1804,13 @@ describe('unexpectedMitm', () => {
 
     it('should allow consuming the request body', () => {
       const expectedBody = {
-        foo: 'bar'
+        foo: 'bar',
       };
 
       return expect(
         {
           url: 'POST /',
-          body: expectedBody
+          body: expectedBody,
         },
         'with http mocked out with extra info',
         {
@@ -1818,11 +1818,11 @@ describe('unexpectedMitm', () => {
             .use(require('body-parser').json())
             .use(({ body }, res, next) => {
               res.send(body);
-            })
+            }),
         },
         'to yield response',
         {
-          body: expectedBody
+          body: expectedBody,
         }
       ).then(([fulfilmentValue, { exchanges }]) => {
         expect(exchanges[0], 'to have a response with body', expectedBody);
@@ -1835,21 +1835,21 @@ describe('unexpectedMitm', () => {
       return expect(
         {
           url: 'GET /stream',
-          body: expectedBuffer
+          body: expectedBuffer,
         },
         'with http mocked out with extra info',
         {
           request: {
             url: '/stream',
-            body: expectedBuffer
+            body: expectedBuffer,
           },
           response(req, res) {
             req.pipe(res);
-          }
+          },
         },
         'to yield response',
         {
-          body: expectedBuffer
+          body: expectedBuffer,
         }
       ).then(([fulfilmentValue, { exchanges }]) => {
         expect(exchanges[0], 'to have a response with body', expectedBuffer);
@@ -1866,11 +1866,11 @@ describe('unexpectedMitm', () => {
           {
             request: {
               method: 'GET',
-              url: '/404'
+              url: '/404',
             },
             response(req, res) {
               throw err;
-            }
+            },
           },
           'to yield response',
           200
@@ -1892,7 +1892,7 @@ describe('unexpectedMitm', () => {
         }
 
         res.writeHead(200, {
-          'Content-Type': 'text/plain'
+          'Content-Type': 'text/plain',
         });
         res.end(myMessage);
       }
@@ -1903,12 +1903,12 @@ describe('unexpectedMitm', () => {
           'with http mocked out',
           {
             request: '/thatOneExpectedThing',
-            response: documentationHandler
+            response: documentationHandler,
           },
           'to yield response',
           {
             statusCode: 200,
-            body: '<h1>to be expected</h1>'
+            body: '<h1>to be expected</h1>',
           }
         ));
 
@@ -1918,12 +1918,12 @@ describe('unexpectedMitm', () => {
           'with http mocked out',
           {
             request: '/somethingOtherThing',
-            response: documentationHandler
+            response: documentationHandler,
           },
           'to yield response',
           {
             statusCode: 200,
-            body: '<h1>how very unexpected</h1>'
+            body: '<h1>how very unexpected</h1>',
           }
         ));
     });
@@ -1937,7 +1937,7 @@ describe('unexpectedMitm', () => {
             url: 'https://www.google.com/foo',
             cert: Buffer.from([1]),
             key: Buffer.from([2]),
-            ca: Buffer.from([3])
+            ca: Buffer.from([3]),
           },
           'with http mocked out',
           {
@@ -1945,9 +1945,9 @@ describe('unexpectedMitm', () => {
               url: 'GET /foo',
               cert: Buffer.from([1]),
               key: Buffer.from([2]),
-              ca: Buffer.from([3])
+              ca: Buffer.from([3]),
             },
-            response: 200
+            response: 200,
           },
           'to yield response',
           200
@@ -1960,7 +1960,7 @@ describe('unexpectedMitm', () => {
               url: 'https://www.google.com/foo',
               cert: Buffer.from([1]),
               key: Buffer.from([2]),
-              ca: Buffer.from([3])
+              ca: Buffer.from([3]),
             },
             'with http mocked out',
             {
@@ -1968,16 +1968,16 @@ describe('unexpectedMitm', () => {
                 url: 'GET /foo',
                 cert: Buffer.from([1]),
                 key: Buffer.from([5]),
-                ca: Buffer.from([3])
+                ca: Buffer.from([3]),
               },
-              response: 200
+              response: 200,
             },
             'to yield response',
             200
           ),
           'when rejected',
           'to have message',
-          expect.it(message =>
+          expect.it((message) =>
             expect(
               trimDiff(message),
               'to equal',
@@ -2006,14 +2006,14 @@ describe('unexpectedMitm', () => {
           'with http mocked out',
           {
             request: 'GET /bar',
-            response: 200
+            response: 200,
           },
           'to yield response',
           200
         ),
         'when rejected',
         'to have message',
-        expect.it(message =>
+        expect.it((message) =>
           expect(
             trimDiff(message),
             'to equal',
@@ -2034,8 +2034,8 @@ describe('unexpectedMitm', () => {
       expect(
         () =>
           expect(
-            run =>
-              expect.promise(run => {
+            (run) =>
+              expect.promise((run) => {
                 http.get('http://www.google.com/foo').on(
                   'error',
                   run(() => {
@@ -2049,17 +2049,17 @@ describe('unexpectedMitm', () => {
                 request: 'GET http://www.google.com/',
                 response: {
                   headers: {
-                    'Content-Type': 'text/plain'
+                    'Content-Type': 'text/plain',
                   },
-                  body: 'hello'
-                }
-              }
+                  body: 'hello',
+                },
+              },
             ],
             'not to error'
           ),
         'when rejected',
         'to have message',
-        expect.it(message =>
+        expect.it((message) =>
           expect(
             trimDiff(message),
             'to equal',
@@ -2105,17 +2105,17 @@ describe('unexpectedMitm', () => {
                 request: 'GET http://www.google.com/',
                 response: {
                   headers: {
-                    'Content-Type': 'text/plain'
+                    'Content-Type': 'text/plain',
                   },
-                  body: 'hello'
-                }
-              }
+                  body: 'hello',
+                },
+              },
             ],
             'not to error'
           ),
         'when rejected',
         'to have message',
-        expect.it(message =>
+        expect.it((message) =>
           expect(
             trimDiff(message),
             'to equal',
@@ -2147,7 +2147,7 @@ describe('unexpectedMitm', () => {
         () =>
           expect(
             () =>
-              expect.promise(run => {
+              expect.promise((run) => {
                 issueGetAndConsume(
                   'http://www.google.com/foo',
                   run(() => {
@@ -2166,26 +2166,26 @@ describe('unexpectedMitm', () => {
                 request: 'GET http://www.google.com/',
                 response: {
                   headers: {
-                    'Content-Type': 'text/plain'
+                    'Content-Type': 'text/plain',
                   },
-                  body: 'hello'
-                }
+                  body: 'hello',
+                },
               },
               {
                 request: 'GET http://www.google.com/',
                 response: {
                   headers: {
-                    'Content-Type': 'text/plain'
+                    'Content-Type': 'text/plain',
                   },
-                  body: 'world'
-                }
-              }
+                  body: 'world',
+                },
+              },
             ],
             'not to error'
           ),
         'when rejected',
         'to have message',
-        expect.it(message =>
+        expect.it((message) =>
           expect(
             trimDiff(message),
             'to equal',
@@ -2259,9 +2259,9 @@ describe('unexpectedMitm', () => {
         {
           url: `POST ${serverUrl}`,
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
+            'Content-Type': 'application/x-www-form-urlencoded',
           },
-          body: 'foo=bar'
+          body: 'foo=bar',
         },
         'with expected http recording',
         {
@@ -2272,16 +2272,16 @@ describe('unexpectedMitm', () => {
             port: serverAddress.port,
             headers: {
               'Content-Type': 'application/x-www-form-urlencoded',
-              Host: `${serverHostname}:${serverAddress.port}`
+              Host: `${serverHostname}:${serverAddress.port}`,
             },
-            body: 'foo=bar'
+            body: 'foo=bar',
           },
           response: {
             statusCode: 405,
             headers: {
-              Allow: 'GET, HEAD'
-            }
-          }
+              Allow: 'GET, HEAD',
+            },
+          },
         },
         'to yield response',
         405
@@ -2289,9 +2289,11 @@ describe('unexpectedMitm', () => {
     });
 
     it('should preserve the fulfilment value', () =>
-      expect('foo', 'with http recorded', 'to match', /^(f)o/).then(matches => {
-        expect(matches, 'to satisfy', { 0: 'fo', 1: 'f', index: 0 });
-      }));
+      expect('foo', 'with http recorded', 'to match', /^(f)o/).then(
+        (matches) => {
+          expect(matches, 'to satisfy', { 0: 'fo', 1: 'f', index: 0 });
+        }
+      ));
 
     it('should not break on an exception from the request itself', () => {
       handleRequest = (req, res) => {
@@ -2304,10 +2306,10 @@ describe('unexpectedMitm', () => {
         expect(
           () =>
             expect.promise
-              .fromNode(cb => {
+              .fromNode((cb) => {
                 issueGetAndConsume(serverUrl, cb);
               })
-              .then(buffer => {
+              .then((buffer) => {
                 expect(buffer.toString('utf-8'), 'to equal', 'hello world');
               }),
           'with http recorded',
@@ -2315,7 +2317,7 @@ describe('unexpectedMitm', () => {
         ),
         'when rejected',
         'to have message',
-        expect.it(message =>
+        expect.it((message) =>
           expect(
             message,
             'to equal',
@@ -2353,9 +2355,9 @@ describe('unexpectedMitm', () => {
             path: '/',
             host: 'www.icwqjecoiqwjecoiwqjecoiwqjceoiwq.com',
             port: 80,
-            headers: { Host: 'www.icwqjecoiqwjecoiwqjecoiwqjceoiwq.com' }
+            headers: { Host: 'www.icwqjecoiqwjecoiwqjecoiwqjceoiwq.com' },
           },
-          response: expectedError
+          response: expectedError,
         },
         'to yield response',
         expectedError
@@ -2372,7 +2374,7 @@ describe('unexpectedMitm', () => {
 
       return expect(
         {
-          url: `GET ${serverUrl}`
+          url: `GET ${serverUrl}`,
         },
         'with expected http recording',
         {
@@ -2382,10 +2384,10 @@ describe('unexpectedMitm', () => {
             host: serverHostname,
             port: serverAddress.port,
             headers: {
-              Host: `${serverHostname}:${serverAddress.port}`
-            }
+              Host: `${serverHostname}:${serverAddress.port}`,
+            },
           },
-          response: expectedError
+          response: expectedError,
         },
         'to yield response',
         expectedError
@@ -2407,17 +2409,17 @@ describe('unexpectedMitm', () => {
             host: serverHostname,
             port: serverAddress.port,
             headers: {
-              Host: `${serverHostname}:${serverAddress.port}`
-            }
+              Host: `${serverHostname}:${serverAddress.port}`,
+            },
           },
           response: {
             body: {
-              foo: 123
+              foo: 123,
             },
             headers: {
-              'Content-Type': 'application/vnd.api+json'
-            }
-          }
+              'Content-Type': 'application/vnd.api+json',
+            },
+          },
         },
         'to yield response',
         200
@@ -2431,14 +2433,14 @@ describe('unexpectedMitm', () => {
           'with expected http recording',
           {
             request: 'GET /foo',
-            response: 404
+            response: 404,
           },
           'to yield response',
           412
         ),
         'when rejected',
         'to have message',
-        expect.it(message =>
+        expect.it((message) =>
           expect(
             trimDiff(message),
             'to begin with',
@@ -2508,7 +2510,7 @@ describe('unexpectedMitm', () => {
           server = https
             .createServer({
               cert: certificate,
-              key: serviceKey
+              key: serviceKey,
             })
             .on('request', (req, res) => {
               res.sendDate = false;
@@ -2535,7 +2537,7 @@ describe('unexpectedMitm', () => {
       const ca = Buffer.from([1, 2, 3]); // Can apparently be bogus
 
       beforeEach(() =>
-        createPemCertificate({ days: 1, selfSigned: true }).then(keys => {
+        createPemCertificate({ days: 1, selfSigned: true }).then((keys) => {
           clientKeys = keys;
         })
       );
@@ -2553,7 +2555,7 @@ describe('unexpectedMitm', () => {
             rejectUnauthorized: false,
             cert: clientKeys.certificate,
             key: clientKeys.serviceKey,
-            ca
+            ca,
           },
           'with expected http recording',
           {
@@ -2567,15 +2569,15 @@ describe('unexpectedMitm', () => {
               key: clientKeys.serviceKey,
               ca,
               headers: {
-                Host: `${serverHostname}:${serverAddress.port}`
-              }
+                Host: `${serverHostname}:${serverAddress.port}`,
+              },
             },
             response: {
               statusCode: 405,
               headers: {
-                Allow: 'GET, HEAD'
-              }
-            }
+                Allow: 'GET, HEAD',
+              },
+            },
           },
           'to yield response',
           405
@@ -2633,9 +2635,9 @@ describe('unexpectedMitm', () => {
             url: 'GET /',
             headers: {
               'Content-Type': 'application/x-www-form-urlencoded',
-              Host: `${serverHostname}:${serverAddress.port}`
+              Host: `${serverHostname}:${serverAddress.port}`,
             },
-            body: 'foo=bar'
+            body: 'foo=bar',
           },
           'with http mocked out by file',
           outputFile,
@@ -2675,24 +2677,24 @@ describe('unexpectedMitm', () => {
             port: serverAddress.port,
             headers: {
               'Content-Type': 'application/x-www-form-urlencoded',
-              Host: `${serverHostname}:${serverAddress.port}`
+              Host: `${serverHostname}:${serverAddress.port}`,
             },
-            body: 'foo=bar'
+            body: 'foo=bar',
           },
           response: {
             statusCode: 405,
             headers: {
-              Allow: 'GET, HEAD'
-            }
-          }
+              Allow: 'GET, HEAD',
+            },
+          },
         },
         'was written correctly on',
         {
           url: `POST ${serverUrl}`,
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
+            'Content-Type': 'application/x-www-form-urlencoded',
           },
-          body: 'foo=bar'
+          body: 'foo=bar',
         },
         'with http mocked out by file with extra info',
         outputFile,
@@ -2724,7 +2726,7 @@ describe('unexpectedMitm', () => {
         ),
         'when rejected',
         'to have message',
-        expect.it(message =>
+        expect.it((message) =>
           expect(
             trimDiff(message),
             'to begin with',
@@ -2785,7 +2787,7 @@ describe('unexpectedMitm', () => {
       return expect(
         expect(
           {
-            url: 'GET /'
+            url: 'GET /',
           },
           'with http mocked out by file',
           inputFile,
@@ -2811,13 +2813,13 @@ describe('unexpectedMitm', () => {
           response: {
             statusCode: 405,
             headers: {
-              Allow: 'GET, HEAD'
-            }
-          }
+              Allow: 'GET, HEAD',
+            },
+          },
         },
         'was read correctly from file with extra info as',
         {
-          url: 'GET /'
+          url: 'GET /',
         },
         'with http mocked out by file with extra info',
         inputFile,
@@ -2837,22 +2839,22 @@ describe('unexpectedMitm', () => {
       return expect(
         {
           request: {
-            body: expect.it('to end with', '123')
+            body: expect.it('to end with', '123'),
           },
           response: {
             statusCode: 405,
             headers: {
-              Allow: 'GET, HEAD'
-            }
-          }
+              Allow: 'GET, HEAD',
+            },
+          },
         },
         'was read correctly from file with extra info as',
         {
           url: 'POST /',
           headers: {
-            'Content-Type': 'text/plain'
+            'Content-Type': 'text/plain',
           },
-          body: 'testing testing 123'
+          body: 'testing testing 123',
         },
         'with http mocked out by file with extra info',
         inputFile,
@@ -2872,7 +2874,7 @@ describe('unexpectedMitm', () => {
       return expect(
         expect(
           {
-            url: 'POST /'
+            url: 'POST /',
           },
           'with http mocked out by file',
           inputFile,
@@ -2901,18 +2903,18 @@ describe('unexpectedMitm', () => {
         url: 'GET http://localhost/',
         port: 456,
         headers: {
-          Host: 'foobar:567'
-        }
+          Host: 'foobar:567',
+        },
       },
       'with http mocked out',
       {
         request: {
           url: 'http://localhost/',
           headers: {
-            Host: 'foobar:567'
-          }
+            Host: 'foobar:567',
+          },
         },
-        response: 200
+        response: 200,
       },
       'to yield response',
       200
@@ -2927,17 +2929,17 @@ describe('unexpectedMitm', () => {
         response: {
           statusCode: 200,
           headers: {
-            'Content-Type': 'application/octet-stream'
+            'Content-Type': 'application/octet-stream',
           },
-          body: { foo: 'bar' }
-        }
+          body: { foo: 'bar' },
+        },
       },
       'to yield response',
       {
         headers: {
-          'Content-Type': 'application/octet-stream'
+          'Content-Type': 'application/octet-stream',
         },
-        body: Buffer.from('{"foo":"bar"}', 'utf-8')
+        body: Buffer.from('{"foo":"bar"}', 'utf-8'),
       }
     ));
 
@@ -2949,7 +2951,7 @@ describe('unexpectedMitm', () => {
           'with http mocked out with extra info',
           {
             request: 'GET /',
-            response: 200
+            response: 200,
           },
           'to yield response',
           200
@@ -2959,7 +2961,7 @@ describe('unexpectedMitm', () => {
         [
           expect.it('to be an object'),
           new messy.HttpExchange(),
-          expect.it('to be an object')
+          expect.it('to be an object'),
         ]
       ));
 
@@ -2971,9 +2973,9 @@ describe('unexpectedMitm', () => {
           response: {
             statusCode: 200,
             headers: {
-              'X-Is-Test': 'yes'
-            }
-          }
+              'X-Is-Test': 'yes',
+            },
+          },
         },
         'to yield response',
         200
@@ -2991,7 +2993,7 @@ describe('unexpectedMitm', () => {
       [],
       'when passed as parameters to',
       Math.max
-    ).then(value => {
+    ).then((value) => {
       expect(value, 'to equal', 2);
     }));
 
@@ -3027,11 +3029,11 @@ describe('unexpectedMitm', () => {
       return expect(
         expect(
           {
-            url: `GET ${serverUrl}`
+            url: `GET ${serverUrl}`,
           },
           'with http mocked out and verified',
           {
-            response: 405
+            response: 405,
           },
           'to yield response',
           405
@@ -3051,11 +3053,11 @@ describe('unexpectedMitm', () => {
       return expect(
         expect(
           {
-            url: `GET ${serverUrl}`
+            url: `GET ${serverUrl}`,
           },
           'with http mocked out and verified with extra info',
           {
-            response: 405
+            response: 405,
           },
           'to yield response',
           405
@@ -3065,7 +3067,7 @@ describe('unexpectedMitm', () => {
         [
           expect.it('to be an object'),
           new messy.HttpExchange(),
-          expect.it('to be an object')
+          expect.it('to be an object'),
         ]
       );
     });
@@ -3085,7 +3087,7 @@ describe('unexpectedMitm', () => {
             0x67,
             0x72,
             0xf8,
-            0x64
+            0x64,
           ])
         );
       };
@@ -3093,13 +3095,13 @@ describe('unexpectedMitm', () => {
       return expect(
         expect(
           {
-            url: `GET ${serverUrl}`
+            url: `GET ${serverUrl}`,
           },
           'with http mocked out and verified',
           {
             response: {
               headers: {
-                'Content-Type': 'text/html; charset=ISO-8859-1'
+                'Content-Type': 'text/html; charset=ISO-8859-1',
               },
               body: Buffer.from([
                 0x62,
@@ -3111,9 +3113,9 @@ describe('unexpectedMitm', () => {
                 0x67,
                 0x72,
                 0xf8,
-                0x64
-              ])
-            }
+                0x64,
+              ]),
+            },
           },
           'to yield response',
           200
@@ -3132,26 +3134,26 @@ describe('unexpectedMitm', () => {
       return expect(
         expect(
           {
-            url: `GET ${serverUrl}`
+            url: `GET ${serverUrl}`,
           },
           'with http mocked out and verified',
           {
             response: {
               statusCode: 201,
               headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
               },
               body: {
-                foo: 'bar'
-              }
-            }
+                foo: 'bar',
+              },
+            },
           },
           'to yield response',
           {
             statusCode: 201,
             body: {
-              foo: 'bar'
-            }
+              foo: 'bar',
+            },
           }
         ),
         'to be fulfilled'
@@ -3168,16 +3170,16 @@ describe('unexpectedMitm', () => {
       return expect(
         expect(
           {
-            url: `GET ${serverUrl}`
+            url: `GET ${serverUrl}`,
           },
           'with http mocked out and verified',
           {
             response: 405,
             verify: {
               response: {
-                ignoreHeaders: ['x-is-test']
-              }
-            }
+                ignoreHeaders: ['x-is-test'],
+              },
+            },
           },
           'to yield response',
           405
@@ -3202,7 +3204,7 @@ describe('unexpectedMitm', () => {
 
       return expect(
         expect(
-          cb => {
+          (cb) => {
             issueGetAndConsume(serverUrl, () => {
               issueGetAndConsume(serverUrl, cb);
             });
@@ -3214,19 +3216,19 @@ describe('unexpectedMitm', () => {
               response: 405,
               verify: {
                 response: {
-                  ignoreHeaders: ['X-Is-Test']
-                }
-              }
+                  ignoreHeaders: ['X-Is-Test'],
+                },
+              },
             },
             {
               request: 'GET /',
               response: 406,
               verify: {
                 response: {
-                  ignoreHeaders: ['X-So-Is-This']
-                }
-              }
-            }
+                  ignoreHeaders: ['X-So-Is-This'],
+                },
+              },
+            },
           ],
           'to call the callback without error'
         ),
@@ -3243,18 +3245,18 @@ describe('unexpectedMitm', () => {
       return expect(
         expect(
           {
-            url: `GET ${serverUrl}`
+            url: `GET ${serverUrl}`,
           },
           'with http mocked out and verified',
           {
-            response: 405
+            response: 405,
           },
           'to yield response',
           405
         ),
         'when rejected',
         'to have message',
-        expect.it(message =>
+        expect.it((message) =>
           expect(
             trimDiff(message),
             'to equal',
@@ -3285,28 +3287,28 @@ describe('unexpectedMitm', () => {
             {
               method: 'POST',
               url: serverUrl,
-              body: [':-)']
+              body: [':-)'],
             },
             'with http mocked out and verified',
             {
               request: {
                 headers: {
-                  'Content-Type': 'application/json'
+                  'Content-Type': 'application/json',
                 },
-                body: [':-)']
+                body: [':-)'],
               },
               response: {
                 statusCode: 201,
                 headers: {
-                  'Content-Type': 'text/plain'
+                  'Content-Type': 'text/plain',
                 },
-                body: ':-)'
-              }
+                body: ':-)',
+              },
             },
             'to yield response',
             {
               statusCode: 201,
-              body: ':-)'
+              body: ':-)',
             }
           ),
           'to be fulfilled'
@@ -3334,31 +3336,31 @@ describe('unexpectedMitm', () => {
               method: 'POST',
               url: serverUrl,
               body: {
-                foo: ':-)'
-              }
+                foo: ':-)',
+              },
             },
             'with http mocked out and verified',
             {
               request: {
                 headers: {
-                  'Content-Type': 'application/json'
+                  'Content-Type': 'application/json',
                 },
                 body: {
-                  foo: ':-)'
-                }
+                  foo: ':-)',
+                },
               },
               response: {
                 statusCode: 201,
                 headers: {
-                  'Content-Type': 'text/plain'
+                  'Content-Type': 'text/plain',
                 },
-                body: ':-)'
-              }
+                body: ':-)',
+              },
             },
             'to yield response',
             {
               statusCode: 201,
-              body: ':-)'
+              body: ':-)',
             }
           ),
           'to be fulfilled'
@@ -3387,27 +3389,27 @@ describe('unexpectedMitm', () => {
               url: serverUrl,
               // TODO: unexpected-http does not infer text plain
               headers: {
-                'Content-Type': 'text/plain'
+                'Content-Type': 'text/plain',
               },
-              body: 'foo'
+              body: 'foo',
             },
             'with http mocked out and verified',
             {
               request: {
-                body: 'foo'
+                body: 'foo',
               },
               response: {
                 statusCode: 201,
                 headers: {
-                  'Content-Type': 'text/plain'
+                  'Content-Type': 'text/plain',
                 },
-                body: ':-)'
-              }
+                body: ':-)',
+              },
             },
             'to yield response',
             {
               statusCode: 201,
-              body: ':-)'
+              body: ':-)',
             }
           ),
           'to be fulfilled'
@@ -3432,7 +3434,7 @@ describe('unexpectedMitm', () => {
         return expect(
           expect(
             {
-              url: `GET ${serverUrl}`
+              url: `GET ${serverUrl}`,
             },
             'with http mocked out by file and verified',
             testFile,
@@ -3458,11 +3460,11 @@ describe('unexpectedMitm', () => {
         return expect(
           expect(
             {
-              url: `GET ${serverUrl}`
+              url: `GET ${serverUrl}`,
             },
             'with http mocked out',
             {
-              response: 405
+              response: 405,
             },
             'to yield response',
             405
@@ -3492,7 +3494,7 @@ describe('unexpectedMitm', () => {
         return expect(
           expect(
             {
-              url: `GET ${serverUrl}`
+              url: `GET ${serverUrl}`,
             },
             'with http mocked out by file',
             testFile,
@@ -3501,7 +3503,7 @@ describe('unexpectedMitm', () => {
           ),
           'when rejected',
           'to have message',
-          expect.it(message =>
+          expect.it((message) =>
             expect(trimDiff(message), 'to begin with', 'Explicit failure').and(
               'to contain',
               'The mock and service have diverged.'
@@ -3520,7 +3522,7 @@ describe('unexpectedMitm', () => {
         expect.promise((resolve, reject) => {
           const urls = ['http://www.google.com/', 'http://www.bing.com/'];
           let numInFlight = 0;
-          urls.forEach(url => {
+          urls.forEach((url) => {
             numInFlight += 1;
             issueGetAndConsume(url, () => {
               numInFlight -= 1;
@@ -3535,14 +3537,14 @@ describe('unexpectedMitm', () => {
         {
           request: {
             host: 'www.google.com',
-            headers: { Host: 'www.google.com' }
+            headers: { Host: 'www.google.com' },
           },
-          response: 200
+          response: 200,
         },
         {
           request: { host: 'www.bing.com', headers: { Host: 'www.bing.com' } },
-          response: 200
-        }
+          response: 200,
+        },
       ],
       'not to error'
     ));
@@ -3553,7 +3555,7 @@ describe('unexpectedMitm', () => {
     err.statusCode = 404;
     return expect(
       expect(
-        cb => setImmediate(cb),
+        (cb) => setImmediate(cb),
         'with http mocked out',
         { request: 'GET /', response: err },
         'to call the callback without error'

@@ -9,7 +9,7 @@ describe('formatRecordedExchange', () => {
     const exchange = new messy.HttpExchange({ request });
 
     expect(formatRecordedExchange(exchange), 'to equal', {
-      request: 'POST /'
+      request: 'POST /',
     });
   });
 
@@ -20,7 +20,7 @@ describe('formatRecordedExchange', () => {
 
     expect(formatRecordedExchange(exchange), 'to equal', {
       request: 'GET /',
-      response: 200
+      response: 200,
     });
   });
 
@@ -31,7 +31,7 @@ describe('formatRecordedExchange', () => {
 
     expect(formatRecordedExchange(exchange), 'to equal', {
       request: 'GET /',
-      response: 201
+      response: 201,
     });
   });
 
@@ -39,15 +39,15 @@ describe('formatRecordedExchange', () => {
     const request = new messy.HttpRequest({ url: '/', method: 'GET' });
     const response = new messy.HttpResponse({
       statusCode: 200,
-      body: Buffer.from([0x66, 0x6f, 0x6f])
+      body: Buffer.from([0x66, 0x6f, 0x6f]),
     });
     const exchange = new messy.HttpExchange({ request, response });
 
     expect(formatRecordedExchange(exchange), 'to equal', {
       request: 'GET /',
       response: {
-        body: Buffer.from([0x66, 0x6f, 0x6f])
-      }
+        body: Buffer.from([0x66, 0x6f, 0x6f]),
+      },
     });
   });
 
@@ -55,7 +55,7 @@ describe('formatRecordedExchange', () => {
     const request = new messy.HttpRequest({ url: '/', method: 'GET' });
     const response = new messy.HttpResponse({
       statusCode: 201,
-      body: Buffer.from([0x66, 0x6f, 0x6f])
+      body: Buffer.from([0x66, 0x6f, 0x6f]),
     });
     const exchange = new messy.HttpExchange({ request, response });
 
@@ -63,8 +63,8 @@ describe('formatRecordedExchange', () => {
       request: 'GET /',
       response: {
         statusCode: 201,
-        body: Buffer.from([0x66, 0x6f, 0x6f])
-      }
+        body: Buffer.from([0x66, 0x6f, 0x6f]),
+      },
     });
   });
 
@@ -72,9 +72,9 @@ describe('formatRecordedExchange', () => {
     const request = new messy.HttpRequest({ url: '/', method: 'GET' });
     const response = new messy.HttpResponse({
       headers: {
-        'Content-Type': 'text/plain'
+        'Content-Type': 'text/plain',
       },
-      body: Buffer.from([0x66, 0x6f, 0x6f])
+      body: Buffer.from([0x66, 0x6f, 0x6f]),
     });
     const exchange = new messy.HttpExchange({ request, response });
 
@@ -82,10 +82,10 @@ describe('formatRecordedExchange', () => {
       request: 'GET /',
       response: {
         headers: {
-          'Content-Type': 'text/plain'
+          'Content-Type': 'text/plain',
         },
-        body: 'foo'
-      }
+        body: 'foo',
+      },
     });
   });
 
@@ -93,30 +93,30 @@ describe('formatRecordedExchange', () => {
     const request = new messy.HttpRequest({ url: '/', method: 'GET' });
     const response = new messy.HttpResponse({
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
-      body: Buffer.from(JSON.stringify({ foo: true }), 'utf8')
+      body: Buffer.from(JSON.stringify({ foo: true }), 'utf8'),
     });
     const exchange = new messy.HttpExchange({ request, response });
 
     expect(formatRecordedExchange(exchange), 'to equal', {
       request: 'GET /',
       response: {
-        body: { foo: true }
-      }
+        body: { foo: true },
+      },
     });
   });
 
   it('should not serialise an empty body', () => {
     const request = new messy.HttpRequest({ url: '/', method: 'GET' });
     const response = new messy.HttpResponse({
-      body: Buffer.from([])
+      body: Buffer.from([]),
     });
     const exchange = new messy.HttpExchange({ request, response });
 
     expect(formatRecordedExchange(exchange), 'to equal', {
       request: 'GET /',
-      response: 200
+      response: 200,
     });
   });
 });

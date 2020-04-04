@@ -10,7 +10,7 @@ function consumeResponse(response, callback) {
   const chunks = [];
 
   response
-    .on('data', chunk => {
+    .on('data', (chunk) => {
       chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
     })
     .on('end', () => {
@@ -22,7 +22,7 @@ function issueGetAndConsume(url) {
   return new Promise((resolve, reject) => {
     http
       .get(url)
-      .on('response', response => consumeResponse(response, resolve))
+      .on('response', (response) => consumeResponse(response, resolve))
       .on('error', reject)
       .end();
   });
@@ -43,7 +43,7 @@ describe('UnexpectedMitmMocker', () => {
     const mocker = new UnexpectedMitmMocker({ requestDescriptions: [] });
 
     expect(mocker, 'to satisfy', {
-      strategy: expect.it('to be an', OrderedMockStrategy)
+      strategy: expect.it('to be an', OrderedMockStrategy),
     });
   });
 
@@ -52,7 +52,7 @@ describe('UnexpectedMitmMocker', () => {
     const mocker = new UnexpectedMitmMocker({ strategy });
 
     expect(mocker, 'to satisfy', {
-      strategy: expect.it('to be', strategy)
+      strategy: expect.it('to be', strategy),
     });
   });
 
@@ -64,13 +64,13 @@ describe('UnexpectedMitmMocker', () => {
         nextDescriptionForIncomingRequestArgs = args;
 
         return Promise.resolve(null);
-      }
+      },
     };
     const mocker = new UnexpectedMitmMocker({ strategy });
 
     return mocker
       .mock(() => {
-        return issueGetAndConsume('http://example.com/foo').catch(e => {});
+        return issueGetAndConsume('http://example.com/foo').catch((e) => {});
       })
       .then(({ fulfilmentValue, timeline }) => {
         expect(
@@ -82,8 +82,8 @@ describe('UnexpectedMitmMocker', () => {
               error: undefined,
               chunks: expect.it('to be an array'),
               properties: expect.it('to be an object'),
-              spec: undefined
-            }
+              spec: undefined,
+            },
           ]
         );
       });
@@ -94,13 +94,13 @@ describe('UnexpectedMitmMocker', () => {
       const strategy = {
         firstDescriptionRemaining: () => Promise.resolve(null),
         nextDescriptionForIncomingRequest: () =>
-          Promise.reject(new Error('fail'))
+          Promise.reject(new Error('fail')),
       };
       const mocker = new UnexpectedMitmMocker({ strategy });
 
       return mocker
         .mock(() => {
-          return issueGetAndConsume('http://example.com/foo').catch(e => {});
+          return issueGetAndConsume('http://example.com/foo').catch((e) => {});
         })
         .then(({ fulfilmentValue, timeline }) => {
           expect(timeline, 'to satisfy', [new Error('fail')]);
@@ -112,18 +112,18 @@ describe('UnexpectedMitmMocker', () => {
     it('should reject with an unexpected requests error', () => {
       const strategy = {
         firstDescriptionRemaining: () => Promise.resolve(null),
-        nextDescriptionForIncomingRequest: () => Promise.resolve(null)
+        nextDescriptionForIncomingRequest: () => Promise.resolve(null),
       };
       const mocker = new UnexpectedMitmMocker({ strategy });
 
       return mocker
         .mock(() => {
-          return issueGetAndConsume('http://example.com/foo').catch(e => {});
+          return issueGetAndConsume('http://example.com/foo').catch((e) => {});
         })
         .then(({ timeline }) => {
           expect(timeline, 'to satisfy', [
             { exchange: expect.it('to be a', messy.HttpExchange), spec: null },
-            expect.it('to be an', errors.SawUnexpectedRequestsError)
+            expect.it('to be an', errors.SawUnexpectedRequestsError),
           ]);
         });
     });
@@ -134,7 +134,7 @@ describe('UnexpectedMitmMocker', () => {
       const strategy = {
         firstDescriptionRemaining: () => Promise.resolve(null),
         nextDescriptionForIncomingRequest: () =>
-          Promise.reject(new errors.EarlyExitError())
+          Promise.reject(new errors.EarlyExitError()),
       };
       const mocker = new UnexpectedMitmMocker({ strategy });
 
@@ -146,9 +146,9 @@ describe('UnexpectedMitmMocker', () => {
           expect(timeline, 'to satisfy', [
             {
               exchange: expect.it('to be a', messy.HttpExchange),
-              spec: expect.it('not to be null')
+              spec: expect.it('not to be null'),
             },
-            expect.it('to be an', errors.EarlyExitError)
+            expect.it('to be an', errors.EarlyExitError),
           ]);
         });
     });

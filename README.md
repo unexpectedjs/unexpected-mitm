@@ -1,5 +1,4 @@
-unexpected-mitm
-===============
+# unexpected-mitm
 
 [![NPM version](https://badge.fury.io/js/unexpected-mitm.svg)](https://badge.fury.io/js/unexpected-mitm)
 [![Build Status](https://travis-ci.org/unexpectedjs/unexpected-mitm.svg?branch=master)](https://travis-ci.org/unexpectedjs/unexpected-mitm)
