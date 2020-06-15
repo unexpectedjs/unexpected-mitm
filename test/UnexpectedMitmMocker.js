@@ -47,8 +47,26 @@ describe('UnexpectedMitmMocker', () => {
     });
   });
 
+  it('should throw if the supplied strategy does not expose request descriptions', () => {
+    expect(
+      () => {
+        new UnexpectedMitmMocker({ strategy: {} });
+      },
+      'to throw',
+      'UnexpectedMitmMocker: supplied strategy has no request descriptions'
+    );
+  });
+
   it('should create an mocker with the specific strategy', () => {
-    const strategy = {};
+    const requestDescriptions = [];
+    const strategy = { requestDescriptions };
+    const mocker = new UnexpectedMitmMocker({ strategy });
+
+    expect(mocker.requestDescriptions, 'to be', requestDescriptions);
+  });
+
+  it('should provide a getter for requestDescriptions', () => {
+    const strategy = { requestDescriptions: [] };
     const mocker = new UnexpectedMitmMocker({ strategy });
 
     expect(mocker, 'to satisfy', {
@@ -59,6 +77,7 @@ describe('UnexpectedMitmMocker', () => {
   it('should call nextDescriptionForIncomingRequest with the correct args', () => {
     let nextDescriptionForIncomingRequestArgs;
     const strategy = {
+      requestDescriptions: [],
       firstDescriptionRemaining: () => Promise.resolve(null),
       nextDescriptionForIncomingRequest: (...args) => {
         nextDescriptionForIncomingRequestArgs = args;
@@ -92,6 +111,7 @@ describe('UnexpectedMitmMocker', () => {
   describe('when handling a request', () => {
     it('should reject with an unexpected requests error', () => {
       const strategy = {
+        requestDescriptions: [],
         firstDescriptionRemaining: () => Promise.resolve(null),
         nextDescriptionForIncomingRequest: () =>
           Promise.reject(new Error('fail')),
@@ -111,6 +131,7 @@ describe('UnexpectedMitmMocker', () => {
   describe('when there are no remaining requests', () => {
     it('should reject with an unexpected requests error', () => {
       const strategy = {
+        requestDescriptions: [],
         firstDescriptionRemaining: () => Promise.resolve(null),
         nextDescriptionForIncomingRequest: () => Promise.resolve(null),
       };
@@ -132,6 +153,7 @@ describe('UnexpectedMitmMocker', () => {
   describe('when the request does not match expectations', () => {
     it('should reject with an unexpected requests error', () => {
       const strategy = {
+        requestDescriptions: [],
         firstDescriptionRemaining: () => Promise.resolve(null),
         nextDescriptionForIncomingRequest: () =>
           Promise.reject(new errors.EarlyExitError()),
