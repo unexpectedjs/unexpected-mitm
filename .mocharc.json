@@ -1,0 +1,7 @@
+{
+  "reporter": "spec",
+  "recursive": true,
+  "checkLeaks": true,
+  "timeout": 120000,
+  "require": ["./bootstrap-unexpected-markdown", "unexpected-markdown"]
+}
