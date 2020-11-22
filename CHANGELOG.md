@@ -1,3 +1,8 @@
+### v14.0.1 (2020-11-22)
+
+- [Update unexpected-messy to ^10.0.0](https://github.com/unexpectedjs/unexpected-mitm/commit/4b2b2ba43eee669ab1fb8eef8992e30dbdd6e0e4) ([Andreas Lind](mailto:andreaslindpetersen@gmail.com))
+- [Update eslint to ^7.14.0](https://github.com/unexpectedjs/unexpected-mitm/commit/8a592d02a439e3ee9f058e08eb7b88aebb09ed83) ([Andreas Lind](mailto:andreaslindpetersen@gmail.com))
+
 ### v14.0.0 (2020-11-22)
 
 #### Pull requests
