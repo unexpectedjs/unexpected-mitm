@@ -1450,18 +1450,18 @@ describe('unexpectedMitm', () => {
             trimDiff(message),
             'to equal',
             "expected 'http://www.google.com/foo'\n" +
-            "with http mocked out [ { request: 'GET /foo', response: 200 }, { request: { method: 'GET', path: '/foo', headers: ... }, response: 200 } ] to yield response 200\n" +
-            '\n' +
-            'GET /foo HTTP/1.1\n' +
-            'Host: www.google.com\n' +
-            '\n' +
-            'HTTP/1.1 200 OK\n' +
-            '\n' +
-            '// missing:\n' +
-            '// GET /foo\n' +
-            "// Foo: // should satisfy expect.it('to match', /bar/)\n" +
-            '//      //\n' +
-            "//      // expected '' to match /bar/\n" + // Hmm, this is not ideal
+              "with http mocked out [ { request: 'GET /foo', response: 200 }, { request: { method: 'GET', path: '/foo', headers: ... }, response: 200 } ] to yield response 200\n" +
+              '\n' +
+              'GET /foo HTTP/1.1\n' +
+              'Host: www.google.com\n' +
+              '\n' +
+              'HTTP/1.1 200 OK\n' +
+              '\n' +
+              '// missing:\n' +
+              '// GET /foo\n' +
+              "// Foo: // should satisfy expect.it('to match', /bar/)\n" +
+              '//      //\n' +
+              "//      // expected '' to match /bar/\n" + // Hmm, this is not ideal
               '//\n' +
               '// HTTP/1.1 200 OK'
           )
