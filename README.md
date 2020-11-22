@@ -1,7 +1,7 @@
 # unexpected-mitm
 
 [![NPM version](https://badge.fury.io/js/unexpected-mitm.svg)](https://badge.fury.io/js/unexpected-mitm)
-[![Build Status](https://travis-ci.org/unexpectedjs/unexpected-mitm.svg?branch=master)](https://travis-ci.org/unexpectedjs/unexpected-mitm)
+[![Build Status](https://github.com/unexpectedjs/unexpected-mitm/workflows/Tests/badge.svg)](https://github.com/unexpectedjs/unexpected-mitm)
 [![Coverage Status](https://coveralls.io/repos/unexpectedjs/unexpected-mitm/badge.svg)](https://coveralls.io/r/unexpectedjs/unexpected-mitm)
 [![Dependency Status](https://david-dm.org/unexpectedjs/unexpected-mitm.svg)](https://david-dm.org/unexpectedjs/unexpected-mitm)
 
