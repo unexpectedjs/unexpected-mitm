@@ -21,7 +21,7 @@
     "deploy-site": "deploy-site.sh"
   },
   "peerDependencies": {
-    "unexpected": "^10.27.0 || ^11.0.0-3"
+    "unexpected": "^10.27.0 || ^11.0.0-3 || ^12.0.0"
   },
   "devDependencies": {
     "body-parser": "^1.18.2",
