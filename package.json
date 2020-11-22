@@ -60,7 +60,7 @@
     "messy": "^6.16.0",
     "mitm": "^1.7.1",
     "underscore": "^1.8.3",
-    "unexpected-messy": "^9.0.0"
+    "unexpected-messy": "^10.0.0"
   },
   "nyc": {
     "include": [
