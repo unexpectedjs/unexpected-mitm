@@ -16,6 +16,10 @@ repository: https://github.com/unexpectedjs/unexpected-mitm
 
 Plugin for Unexpected that allows you to mock out http(s) traffic via [mitm](https://github.com/moll/node-mitm) using a declarative syntax.
 
+## Releases
+
+[Changelog](https://github.com/unexpectedjs/unexpected-mitm/blob/master/CHANGELOG.md)
+
 ## License
 
 Unexpected-mitm is licensed under a standard 3-clause BSD license -- see the `LICENSE` file for details.
