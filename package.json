@@ -12,7 +12,7 @@
     "lib"
   ],
   "scripts": {
-    "lint": "eslint . && prettier --check '**/*.{js,md}'",
+    "lint": "eslint . && prettier --check '**/*.{js,json,md}'",
     "test": "mocha test/**/*.js documentation/**/*.md",
     "test:ci": "npm run coverage",
     "coverage": "nyc --reporter=lcov --reporter=text --all npm test && echo google-chrome coverage/lcov-report/index.html",
