@@ -36,7 +36,7 @@
     "express": "^4.16.3",
     "mocha": "^8.2.1",
     "nyc": "^15.0.0",
-    "offline-github-changelog": "^1.7.0",
+    "offline-github-changelog": "^2.3.0",
     "pem": "^1.13.1",
     "prettier": "~2.2.0",
     "request": "^2.53.0",
