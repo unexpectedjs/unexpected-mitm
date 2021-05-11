@@ -1599,12 +1599,9 @@ describe('unexpectedMitm', () => {
       expect(
         expect(
           () =>
-            expect(
-              'http://www.google.com/foo',
-              'to yield response',
-              200
-            ).then(() =>
-              expect('http://www.google.com/foo', 'to yield response', 200)
+            expect('http://www.google.com/foo', 'to yield response', 200).then(
+              () =>
+                expect('http://www.google.com/foo', 'to yield response', 200)
             ),
           'with http mocked out',
           [],
@@ -3078,16 +3075,7 @@ describe('unexpectedMitm', () => {
         res.setHeader('Content-Type', 'text/html; charset=ISO-8859-1');
         res.end(
           Buffer.from([
-            0x62,
-            0x6c,
-            0xe5,
-            0x62,
-            0xe6,
-            0x72,
-            0x67,
-            0x72,
-            0xf8,
-            0x64,
+            0x62, 0x6c, 0xe5, 0x62, 0xe6, 0x72, 0x67, 0x72, 0xf8, 0x64,
           ])
         );
       };
@@ -3104,16 +3092,7 @@ describe('unexpectedMitm', () => {
                 'Content-Type': 'text/html; charset=ISO-8859-1',
               },
               body: Buffer.from([
-                0x62,
-                0x6c,
-                0xe5,
-                0x62,
-                0xe6,
-                0x72,
-                0x67,
-                0x72,
-                0xf8,
-                0x64,
+                0x62, 0x6c, 0xe5, 0x62, 0xe6, 0x72, 0x67, 0x72, 0xf8, 0x64,
               ]),
             },
           },
