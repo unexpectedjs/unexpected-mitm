@@ -38,7 +38,7 @@
     "nyc": "^15.0.0",
     "offline-github-changelog": "^1.7.0",
     "pem": "^1.13.1",
-    "prettier": "~2.3.0",
+    "prettier": "~2.4.1",
     "request": "^2.53.0",
     "semver": "^7.0.0",
     "sinon": "^11.1.2",
