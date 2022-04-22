@@ -42,14 +42,14 @@ function trimDiff(message) {
 
 // :scream_cat:
 function createGetAddrInfoError(host, port) {
-  var getaddrinfoError;
+  let getaddrinfoError;
   // Different versions of node have shuffled around the properties of error instances:
-  var nodeJsVersion = process.version.replace(/^v/, '');
+  const nodeJsVersion = process.version.replace(/^v/, '');
   if (nodeJsVersion === '0.10.29') {
     getaddrinfoError = new Error('getaddrinfo EADDRINFO');
     getaddrinfoError.code = getaddrinfoError.errno = 'EADDRINFO';
   } else if (semver.satisfies(nodeJsVersion, '>=0.12.0')) {
-    var message =
+    const message =
       'getaddrinfo ENOTFOUND www.icwqjecoiqwjecoiwqjecoiwqjceoiwq.com';
     if (semver.satisfies(nodeJsVersion, '>=9.7.0 <10')) {
       // https://github.com/nodejs/node/issues/19716
