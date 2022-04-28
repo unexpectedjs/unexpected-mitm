@@ -1,3 +1,33 @@
+### v14.0.1 (2022-04-28)
+
+#### Pull requests
+
+- [#159](https://github.com/unexpectedjs/unexpected-mitm/pull/159) Upgrade eslint-plugin-mocha to version 10.0.1 ([depfu[bot]](mailto:23717796+depfu[bot]@users.noreply.github.com))
+- [#158](https://github.com/unexpectedjs/unexpected-mitm/pull/158) Upgrade prettier to version 2.5.0 ([depfu[bot]](mailto:23717796+depfu[bot]@users.noreply.github.com))
+- [#157](https://github.com/unexpectedjs/unexpected-mitm/pull/157) Upgrade sinon to version 12.0.1 ([depfu[bot]](mailto:23717796+depfu[bot]@users.noreply.github.com))
+- [#154](https://github.com/unexpectedjs/unexpected-mitm/pull/154) Upgrade prettier to version 2.4.1 ([depfu[bot]](mailto:23717796+depfu[bot]@users.noreply.github.com))
+- [#155](https://github.com/unexpectedjs/unexpected-mitm/pull/155) Upgrade eslint to version 8.0.1 ([depfu[bot]](mailto:23717796+depfu[bot]@users.noreply.github.com))
+- [#156](https://github.com/unexpectedjs/unexpected-mitm/pull/156) Upgrade mocha to version 9.1.3 ([depfu[bot]](mailto:23717796+depfu[bot]@users.noreply.github.com))
+- [#149](https://github.com/unexpectedjs/unexpected-mitm/pull/149) Upgrade eslint-plugin-mocha to version 9.0.0 ([depfu[bot]](mailto:23717796+depfu[bot]@users.noreply.github.com))
+- [#150](https://github.com/unexpectedjs/unexpected-mitm/pull/150) Upgrade sinon to version 11.1.2 ([depfu[bot]](mailto:23717796+depfu[bot]@users.noreply.github.com))
+- [#147](https://github.com/unexpectedjs/unexpected-mitm/pull/147) Upgrade unexpected-messy to version 11.0.1 ([depfu[bot]](mailto:23717796+depfu[bot]@users.noreply.github.com))
+- [#152](https://github.com/unexpectedjs/unexpected-mitm/pull/152) Upgrade eslint-plugin-promise to version 5.1.1 ([depfu[bot]](mailto:23717796+depfu[bot]@users.noreply.github.com))
+- [#142](https://github.com/unexpectedjs/unexpected-mitm/pull/142) Upgrade sinon to version 10.0.0 ([depfu[bot]](mailto:23717796+depfu[bot]@users.noreply.github.com))
+- [#138](https://github.com/unexpectedjs/unexpected-mitm/pull/138) Upgrade eslint-config-prettier to version 7.0.0 ([depfu[bot]](mailto:23717796+depfu[bot]@users.noreply.github.com))
+- [#135](https://github.com/unexpectedjs/unexpected-mitm/pull/135) Upgrade messy to version 7.0.0 ([depfu[bot]](mailto:23717796+depfu[bot]@users.noreply.github.com))
+- [#136](https://github.com/unexpectedjs/unexpected-mitm/pull/136) Upgrade eslint-plugin-standard to version 5.0.0 ([depfu[bot]](mailto:23717796+depfu[bot]@users.noreply.github.com))
+- [#132](https://github.com/unexpectedjs/unexpected-mitm/pull/132) Upgrade unexpected-sinon to version 11.0.0 ([depfu[bot]](mailto:23717796+depfu[bot]@users.noreply.github.com))
+- [#133](https://github.com/unexpectedjs/unexpected-mitm/pull/133) Upgrade prettier to version 2.2.0 ([depfu[bot]](mailto:23717796+depfu[bot]@users.noreply.github.com))
+
+#### Commits to master
+
+- [npm i --save-dev unexpected-express@latest unexpected-sinon@latest unexpected-http@latest](https://github.com/unexpectedjs/unexpected-mitm/commit/b59d5e2d0be55cf45bb262e9960fbc4fc1407659) ([Andreas Lind](mailto:andreaslindpetersen@gmail.com))
+- [Update unexpected the dev dep to ^13.0.0, allow 13 for the peer dep](https://github.com/unexpectedjs/unexpected-mitm/commit/f13e6736f617edd473399d4f4df7dfca439bc0fe) ([Andreas Lind](mailto:andreaslindpetersen@gmail.com))
+- [eslint --fix .](https://github.com/unexpectedjs/unexpected-mitm/commit/e3835a2971132c8d772baaaa5475ddaafd9fdad8) ([Andreas Lind](mailto:andreas.lind@workday.com))
+- [npm i --save-dev eslint-plugin-n eslint-config-standard@latest && npm uninstall eslint-plugin-node eslint-plugin-standard](https://github.com/unexpectedjs/unexpected-mitm/commit/f4f4800b7a22cdd807b77548b8f851aa7abc8e2f) ([Andreas Lind](mailto:andreas.lind@workday.com))
+- [Update eslint-plugin-promise to version 6.0.0](https://github.com/unexpectedjs/unexpected-mitm/commit/cc1f60b20a3edfb1cea93f37e786cd66f5f3b9c9) ([depfu[bot]](mailto:23717796+depfu[bot]@users.noreply.github.com))
+- [+10 more](https://github.com/unexpectedjs/unexpected-mitm/compare/v14.0.1...v14.0.1)
+
 ### v14.0.1 (2020-11-22)
 
 - [Update unexpected-messy to ^10.0.0](https://github.com/unexpectedjs/unexpected-mitm/commit/4b2b2ba43eee669ab1fb8eef8992e30dbdd6e0e4) ([Andreas Lind](mailto:andreaslindpetersen@gmail.com))
