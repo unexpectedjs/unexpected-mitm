@@ -21,7 +21,7 @@
     "preversion": "offline-github-changelog --next=${npm_package_version} > CHANGELOG.md && git add CHANGELOG.md"
   },
   "peerDependencies": {
-    "unexpected": "^10.27.0 || ^11.0.0-3 || ^12.0.0"
+    "unexpected": "^10.27.0 || ^11.0.0-3 || ^12.0.0 || ^13.0.0"
   },
   "devDependencies": {
     "body-parser": "^1.18.2",
@@ -42,7 +42,7 @@
     "semver": "^7.0.0",
     "sinon": "^12.0.1",
     "socketerrors-papandreou": "^0.2.0-patch2",
-    "unexpected": "^12.0.0",
+    "unexpected": "^13.0.0",
     "unexpected-documentation-site-generator": "^6.1.0",
     "unexpected-express": "^13.0.1",
     "unexpected-http": "^8.0.0",
