@@ -2,7 +2,7 @@ module.exports = {
     "response": 202,
     "verify": {
         "response": {
-            "ignoreHeaders": ["X-Is-Test"]
+            "ignoreHeaders": ["X-Is-Test", "Keep-Alive"]
         }
     }
 };
