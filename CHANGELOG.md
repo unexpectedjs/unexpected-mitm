@@ -1,4 +1,16 @@
-### v14.0.1 (2022-04-28)
+### v14.2.0 (2024-08-26)
+
+#### Pull requests
+
+- [#163](https://github.com/unexpectedjs/unexpected-mitm/pull/163) Support node.js 20 and 22 ([Andreas Lind](mailto:andreaslindpetersen@gmail.com))
+- [#161](https://github.com/unexpectedjs/unexpected-mitm/pull/161) Test on node 14, 16 and 18 ([Gustav Nikolaj Olsen](mailto:gno@one.com))
+
+#### Commits to master
+
+- [Fix CHANGELOG generation in preversion script now that an npm env var changed](https://github.com/unexpectedjs/unexpected-mitm/commit/e8f4495259690ad43e272cc6ac21bd8038892532) ([Andreas Lind](mailto:andreaslindpetersen@gmail.com))
+- [Update unexpected-http to ^9.0.0](https://github.com/unexpectedjs/unexpected-mitm/commit/851728f155b1276b18efb1fc5c7dba496145654d) ([Andreas Lind](mailto:andreaslindpetersen@gmail.com))
+
+### v14.1.0 (2022-04-28)
 
 #### Pull requests
 
@@ -26,7 +38,7 @@
 - [eslint --fix .](https://github.com/unexpectedjs/unexpected-mitm/commit/e3835a2971132c8d772baaaa5475ddaafd9fdad8) ([Andreas Lind](mailto:andreas.lind@workday.com))
 - [npm i --save-dev eslint-plugin-n eslint-config-standard@latest && npm uninstall eslint-plugin-node eslint-plugin-standard](https://github.com/unexpectedjs/unexpected-mitm/commit/f4f4800b7a22cdd807b77548b8f851aa7abc8e2f) ([Andreas Lind](mailto:andreas.lind@workday.com))
 - [Update eslint-plugin-promise to version 6.0.0](https://github.com/unexpectedjs/unexpected-mitm/commit/cc1f60b20a3edfb1cea93f37e786cd66f5f3b9c9) ([depfu[bot]](mailto:23717796+depfu[bot]@users.noreply.github.com))
-- [+10 more](https://github.com/unexpectedjs/unexpected-mitm/compare/v14.0.1...v14.0.1)
+- [+10 more](https://github.com/unexpectedjs/unexpected-mitm/compare/v14.0.1...v14.1.0)
 
 ### v14.0.1 (2020-11-22)
 
