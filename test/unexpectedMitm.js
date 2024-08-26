@@ -3153,7 +3153,7 @@ describe('unexpectedMitm', () => {
             response: 405,
             verify: {
               response: {
-                ignoreHeaders: ['x-is-test', 'Keep-Alive'],
+                ignoreHeaders: ['x-is-test'],
               },
             },
           },
@@ -3192,7 +3192,7 @@ describe('unexpectedMitm', () => {
               response: 405,
               verify: {
                 response: {
-                  ignoreHeaders: ['X-Is-Test', 'Keep-Alive'],
+                  ignoreHeaders: ['X-Is-Test'],
                 },
               },
             },
@@ -3201,7 +3201,7 @@ describe('unexpectedMitm', () => {
               response: 406,
               verify: {
                 response: {
-                  ignoreHeaders: ['X-So-Is-This', 'Keep-Alive'],
+                  ignoreHeaders: ['X-So-Is-This'],
                 },
               },
             },
