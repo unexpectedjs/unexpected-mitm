@@ -55,7 +55,7 @@
     "detect-indent": "^6.0.0",
     "memoizesync": "^1.1.1",
     "messy": "^7.0.0",
-    "mitm": "github:moll/node-mitm#34552640de17820418671d9d74daedfbdfbb5596",
+    "mitm": "^1.7.3",
     "underscore": "^1.8.3",
     "unexpected-messy": "^11.0.1"
   },
